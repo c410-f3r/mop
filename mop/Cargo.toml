@@ -1,0 +1,24 @@
+[dependencies]
+mop-blocks = { features = ["with_rand"], path = "../mop-blocks", version = "0.0.10" }
+mop-facades = { path = "../mop-facades", version = "0.0.10" }
+mop-solvers = { path = "../mop-solvers", version = "0.0.10" }
+
+[features]
+default = []
+std = ["mop-blocks/std", "mop-facades/std", "mop-solvers/std"]
+with_arrayvec = ["mop-blocks/with_arrayvec"]
+with_ndsparse = ["mop-blocks/with_ndsparse"]
+with_rayon = ["mop-blocks/with_rayon", "std"]
+with_serde = ["mop-blocks/with_serde"]
+
+[package]
+authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
+categories = ["algorithms", "concurrency"]
+description = "Flexible and modular single or multi-objective solver for contiguous and discrete problems"
+edition = "2018"
+keywords = ["solver", "performance", "metaheuristic", "optimization"]
+license = "Apache-2.0"
+name = "mop"
+readme = "README.md"
+repository = "https://github.com/c410-f3r/mop"
+version = "0.0.10"

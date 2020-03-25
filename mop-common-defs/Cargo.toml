@@ -1,0 +1,15 @@
+[features]
+default = []
+std = []
+with_rayon = ["std"]
+
+[package]
+authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
+description = "Common definitions for MOP crates."
+edition = "2018"
+keywords = ["mop"]
+license = "Apache-2.0"
+name = "mop-common-defs"
+readme = "README.md"
+repository = "https://github.com/c410-f3r/mop"
+version = "0.0.10"

@@ -1,0 +1,21 @@
+[dependencies]
+arrayvec = { optional = true, version = "0.5" }
+js-sys = { optional = true, version = "0.3" }
+mop = { path = "../mop" }
+rand = { default-features = false, features = ["getrandom"], version = "0.7" }
+wasm-bindgen = { optional = true, version = "0.2" }
+
+[lib]
+crate-type = ["cdylib"]
+
+[features]
+default = []
+with_rayon = ["mop/with_rayon"]
+with_wasm_bindgen = ["arrayvec", "mop/with_arrayvec", "js-sys", "wasm-bindgen"]
+
+[package]
+edition = "2018"
+name = "mop-bindings"
+publish = false
+version = "0.0.0"
+

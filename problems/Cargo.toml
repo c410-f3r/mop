@@ -1,0 +1,21 @@
+[dependencies]
+cl-traits = "1.0"
+mop = { features = ["with_rayon"], path = "../mop" }
+ndsparse = { features = ["with_arrayvec"], version = "0.5" }
+plotters = { default-features = false, features = ["svg"], optional = true, version = "0.2" }
+rand = { default-features = false, features = ["getrandom"], version = "0.7" }
+
+[features]
+binh_and_korn = []
+default = []
+rastrigin = []
+schaffer_function_2 = []
+stdout = []
+test_function_4 = []
+with_plotters = ["plotters"]
+
+[package]
+edition = "2018"
+name = "problems"
+publish = false
+version = "0.0.0"

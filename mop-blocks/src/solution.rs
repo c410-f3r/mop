@@ -53,7 +53,7 @@ macro_rules! array_impls {
         }
 
         fn len(&self) -> usize {
-          $N
+          self.len()
         }
       }
 

@@ -6,8 +6,13 @@ use {
     Rng,
   },
 };
-
 pub trait SolutionDomain<S> {
+  fn is_empty(&self) -> bool {
+    self.len() == 0
+  }
+
+  fn len(&self) -> usize;
+
   #[cfg(feature = "with_rand")]
   fn new_random_solution<R>(&self, rng: &mut R) -> S
   where
@@ -19,7 +24,6 @@ pub trait SolutionDomain<S> {
     R: Rng;
 }
 
-#[cfg(feature = "with_rand")]
 macro_rules! array_impls {
   ($($N:expr),+) => {
     $(
@@ -27,20 +31,21 @@ macro_rules! array_impls {
       where
         T: Copy + SampleUniform,
       {
+        fn len(&self) -> usize {
+          $N
+        }
+
+        #[cfg(feature = "with_rand")]
         fn new_random_solution<R>(&self, rng: &mut R) -> [T; $N]
         where
           R: Rng,
         {
-          let mut s: [T; $N] = [
-            Uniform::from(*self[0].start()..=*self[0].end()).sample(rng);
-            $N
-          ];
-          for (domain, array_elem) in self.iter().zip(s.iter_mut()).skip(1) {
-            *array_elem = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
-          }
-          s
+          cl_traits::create_array(|idx| {
+            Uniform::from(*self[idx].start()..=*self[idx].end()).sample(rng)
+          })
         }
 
+        #[cfg(feature = "with_rand")]
         fn set_rnd_solution_domain<R>(&self, s: &mut [T; $N], idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -56,20 +61,23 @@ macro_rules! array_impls {
       where
         T: Copy + SampleUniform,
       {
+        fn len(&self) -> usize {
+          self.len()
+        }
+
+        #[cfg(feature = "with_rand")]
         fn new_random_solution<R>(&self, rng: &mut R) -> arrayvec::ArrayVec<[T; $N]>
         where
           R: Rng,
         {
-          let mut s: [T; $N] = [
-            Uniform::from(*self[0].start()..=*self[0].end()).sample(rng);
-            $N
-          ];
-          for (domain, array_elem) in self.iter().zip(s.iter_mut()).skip(1) {
-            *array_elem = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
+          let mut s = arrayvec::ArrayVec::new();
+          for domain in self.iter() {
+            s.push(Uniform::from(*domain.start()..=*domain.end()).sample(rng));
           }
-          arrayvec::ArrayVec::from(s)
+          s
         }
 
+        #[cfg(feature = "with_rand")]
         fn set_rnd_solution_domain<R>(&self, s: &mut arrayvec::ArrayVec<[T; $N]>, idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -90,6 +98,11 @@ macro_rules! array_impls {
         OS: AsMut<[usize]> + AsRef<[usize]> + Default + cl_traits::Push<Input = usize>,
         rand::distributions::Standard: rand::distributions::Distribution<DATA>
       {
+        fn len(&self) -> usize {
+          self.data().len()
+        }
+
+        #[cfg(feature = "with_rand")]
         fn new_random_solution<R>(&self, mut rng: &mut R) -> ndsparse::csl::Csl<DA, DS, IS, OS>
         where
           R: Rng,
@@ -97,6 +110,7 @@ macro_rules! array_impls {
           ndsparse::csl::Csl::new_random_with_rand(&mut rng, self.len())
         }
 
+        #[cfg(feature = "with_rand")]
         fn set_rnd_solution_domain<R>(&self, s: &mut ndsparse::csl::Csl<DA, DS, IS, OS>, idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -110,7 +124,6 @@ macro_rules! array_impls {
   }
 }
 
-#[cfg(feature = "with_rand")]
 array_impls!(
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
   27, 28, 29, 30, 31, 32

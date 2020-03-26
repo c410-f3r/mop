@@ -71,7 +71,7 @@ fn main() {
   let mut problem = Mph::with_capacity(
     MphDefinitionsBuilder::default()
       .push_hard_cstr(g1 as fn(&Solution) -> usize)
-      .push_hard_cstr(g2 as fn(&Solution) -> usize)
+      .push_hard_cstr(g2)
       .push_obj((ObjDirection::Min, f1 as fn(&Solution) -> f64))
       .push_obj((ObjDirection::Min, f2))
       .solution_domain([0.0..=5.0, 0.0..=3.0])

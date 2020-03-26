@@ -1,9 +1,13 @@
 [dependencies]
-arrayvec = { optional = true, version = "0.5" }
-js-sys = { optional = true, version = "0.3" }
+arrayvec = { default-features = false, optional = true, version = "0.5" }
+js-sys = { default-features = false, optional = true, version = "0.3" }
 mop = { path = "../mop" }
-rand = { default-features = false, features = ["getrandom"], version = "0.7" }
-wasm-bindgen = { optional = true, version = "0.2" }
+rand = { default-features = false,  optional = true, version = "0.7" }
+wasm-bindgen = { default-features = true, optional = true, version = "0.2" }
+getrandom = { default-features = false, features = ["wasm-bindgen"], optional = true, version = "0.1" }
+
+[dev-dependencies]
+wasm-bindgen-test = "0.3"
 
 [lib]
 crate-type = ["cdylib"]
@@ -11,7 +15,7 @@ crate-type = ["cdylib"]
 [features]
 default = []
 with_rayon = ["mop/with_rayon"]
-with_wasm_bindgen = ["arrayvec", "mop/with_arrayvec", "js-sys", "wasm-bindgen"]
+with_wasm_bindgen = ["arrayvec", "getrandom", "js-sys", "mop/with_arrayvec", "rand", "wasm-bindgen"]
 
 [package]
 edition = "2018"

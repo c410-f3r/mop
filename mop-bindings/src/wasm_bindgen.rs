@@ -6,9 +6,9 @@ use mop::{
   blocks::{
     self,
     mph::{Mph, MphDefinitions, MphDefinitionsBuilder, MphOrVec, MphOrs},
-    Cstr, Pct,
+    Cstr,
   },
-  facades::opt::{self, OptFacade},
+  facades::{initial_solutions::RandomInitialSolutions, opt},
   solvers::{
     genetic_algorithm::{
       operators::{
@@ -44,7 +44,6 @@ impl SolutionDomain {
       let upper_bound = Self::parse_bound(iter.next());
       va.push(lower_bound..=upper_bound);
     });
-
     SolutionDomain(va)
   }
 
@@ -62,6 +61,10 @@ impl SolutionDomain {
 }
 
 impl blocks::SolutionDomain<Solution> for SolutionDomain {
+  fn len(&self) -> usize {
+    self.0.len()
+  }
+
   fn new_random_solution<R>(&self, rng: &mut R) -> Solution
   where
     R: Rng,
@@ -149,28 +152,26 @@ impl ObjDirection {
   }
 }
 
-// OptFacadeJs
-
-pub type OptFacadeType = OptFacade<HardCstr, Obj, (), f64, Solution, SolutionDomain>;
+// OptFacade
 
 #[wasm_bindgen]
 #[derive(Debug)]
-pub struct OptFacadeJs(OptFacadeType);
+pub struct OptFacade(opt::OptFacade<HardCstr, Obj, (), f64, Solution, SolutionDomain>);
 
 #[wasm_bindgen]
-impl OptFacadeJs {
+impl OptFacade {
   pub fn solve(self, problem: &mut OptProblem) -> Self {
     let spea2 = Spea2::new(
-      Pct::from_percent(50),
+      blocks::Pct::from_percent(50),
       GeneticAlgorithmParamsBuilder::default()
-        .crossover(MultiPoint::new(1, Pct::from_percent(70)))
+        .crossover(MultiPoint::new(1, blocks::Pct::from_percent(70)))
         .mating_selection(Tournament::new(2, ParetoComparator::default()))
-        .mutation(RandomDomainAssignments::new(1, Pct::from_percent(20)))
+        .mutation(RandomDomainAssignments::new(1, blocks::Pct::from_percent(30)))
         .build(),
       &problem.0,
       ParetoComparator::default(),
     );
-    OptFacadeJs(self.0.solve_problem_with(&mut problem.0, spea2))
+    OptFacade(self.0.solve_problem_with(&mut problem.0, spea2))
   }
 }
 
@@ -187,8 +188,9 @@ impl OptFacadeBuilder {
     OptFacadeBuilder(opt::OptFacadeBuilder::default())
   }
 
-  pub fn build(self) -> OptFacadeJs {
-    OptFacadeJs(self.0.build())
+  pub fn build(self, problem: &mut OptProblem) -> OptFacade {
+    let initial_solutions = RandomInitialSolutions::default();
+    OptFacade(self.0.opt_hooks(()).initial_solutions(initial_solutions, &mut problem.0).build())
   }
 
   pub fn max_iterations(self, max_iterations: usize) -> Self {
@@ -199,7 +201,7 @@ impl OptFacadeBuilder {
     OptFacadeBuilder(self.0.objs_goals(objs_goals))
   }
 
-  pub fn stagnation_percentage(self, stagnation_percentage: PctJs) -> Self {
+  pub fn stagnation_percentage(self, stagnation_percentage: Pct) -> Self {
     OptFacadeBuilder(self.0.stagnation_percentage(stagnation_percentage.0))
   }
 
@@ -257,6 +259,10 @@ impl OptProblemDefinitionsBuilder {
     OptProblemDefinitionsBuilder(self.0.solution_domain(solution_domain))
   }
 
+  pub fn name(self, name: String) -> Self {
+    OptProblemDefinitionsBuilder(self.0.name(name))
+  }
+
   pub fn push_hard_cstr(self, hard_cstr: HardCstr) -> Self {
     OptProblemDefinitionsBuilder(self.0.push_hard_cstr(hard_cstr))
   }
@@ -312,20 +318,20 @@ impl OptProblemResult {
   }
 }
 
-// PctJs
+// Pct
 
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
-pub struct PctJs(Pct);
+pub struct Pct(blocks::Pct);
 
 #[wasm_bindgen]
-impl PctJs {
+impl Pct {
   pub fn from_decimal(pct: f64) -> Self {
-    PctJs(Pct::from_decimal(pct))
+    Pct(blocks::Pct::from_decimal(pct))
   }
 
   pub fn from_percent(pct: f64) -> Self {
-    PctJs(Pct::from_percent(pct))
+    Pct(blocks::Pct::from_percent(pct))
   }
 }
 
@@ -357,5 +363,51 @@ impl blocks::Solution for Solution {
 
   fn len(&self) -> usize {
     self.0.len()
+  }
+}
+
+#[cfg(test)]
+mod tests {
+  use crate::wasm_bindgen::*;
+  use wasm_bindgen_test::*;
+
+  #[wasm_bindgen_test]
+  fn test_problem() {
+    let opdbj = OptProblemDefinitionsBuilder::new()
+      .domain(SolutionDomain::new(vec![JsValue::from_str("0=5"), JsValue::from_str("0=3")]))
+      .name("Problem".into())
+      .push_hard_cstr(HardCstr::new(Function::new_with_args(
+        "solution, value",
+        "let x = solution[0]; let y = solution[1]; \
+        return (Math.pow(x, 2) - 10 * x + 25) + Math.pow(y, 2) > 25 | 0;",
+      )))
+      .push_hard_cstr(HardCstr::new(Function::new_with_args(
+        "solution, value",
+        "let x = solution[0]; let y = solution[1]; \
+        return (Math.pow(x, 2) - 16 * x + 64) + (Math.pow(y, 2) + 6 * y + 9) < 7.7 | 0;",
+      )))
+      .push_obj(Obj::new(
+        ObjDirection::Min,
+        Function::new_with_args(
+          "solution, value",
+          "return 4 * Math.pow(solution[0], 2) + 4 * Math.pow(solution[1], 2);",
+        ),
+      ))
+      .push_obj(Obj::new(
+        ObjDirection::Min,
+        Function::new_with_args(
+          "solution, value",
+          "let x = solution[0]; let y = solution[1]; \
+          return (Math.pow(x, 2) - 10 * x + 25) + (Math.pow(y, 2) - 10 * y + 25);",
+        ),
+      ));
+
+    let mut problem = OptProblem::with_capacity(opdbj.build(), 100);
+    let facade = OptFacadeBuilder::new()
+      .max_iterations(50)
+      .stagnation_percentage(Pct::from_percent(1.0))
+      .stagnation_threshold(10)
+      .build(&mut problem);
+    facade.solve(&mut problem);
   }
 }

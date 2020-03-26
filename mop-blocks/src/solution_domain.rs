@@ -24,6 +24,7 @@ pub trait SolutionDomain<S> {
     R: Rng;
 }
 
+#[cfg(feature = "with_rand")]
 macro_rules! array_impls {
   ($($N:expr),+) => {
     $(
@@ -35,7 +36,6 @@ macro_rules! array_impls {
           $N
         }
 
-        #[cfg(feature = "with_rand")]
         fn new_random_solution<R>(&self, rng: &mut R) -> [T; $N]
         where
           R: Rng,
@@ -45,7 +45,6 @@ macro_rules! array_impls {
           })
         }
 
-        #[cfg(feature = "with_rand")]
         fn set_rnd_solution_domain<R>(&self, s: &mut [T; $N], idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -65,7 +64,6 @@ macro_rules! array_impls {
           self.len()
         }
 
-        #[cfg(feature = "with_rand")]
         fn new_random_solution<R>(&self, rng: &mut R) -> arrayvec::ArrayVec<[T; $N]>
         where
           R: Rng,
@@ -77,7 +75,6 @@ macro_rules! array_impls {
           s
         }
 
-        #[cfg(feature = "with_rand")]
         fn set_rnd_solution_domain<R>(&self, s: &mut arrayvec::ArrayVec<[T; $N]>, idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -99,18 +96,16 @@ macro_rules! array_impls {
         rand::distributions::Standard: rand::distributions::Distribution<DATA>
       {
         fn len(&self) -> usize {
-          self.data().len()
+          self.as_ref().len()
         }
 
-        #[cfg(feature = "with_rand")]
         fn new_random_solution<R>(&self, mut rng: &mut R) -> ndsparse::csl::Csl<DA, DS, IS, OS>
         where
           R: Rng,
         {
-          ndsparse::csl::Csl::new_random_with_rand(&mut rng, self.len())
+          ndsparse::csl::Csl::new_random_with_rand(&mut rng, self.as_ref().len())
         }
 
-        #[cfg(feature = "with_rand")]
         fn set_rnd_solution_domain<R>(&self, s: &mut ndsparse::csl::Csl<DA, DS, IS, OS>, idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -124,6 +119,7 @@ macro_rules! array_impls {
   }
 }
 
+#[cfg(feature = "with_rand")]
 array_impls!(
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
   27, 28, 29, 30, 31, 32

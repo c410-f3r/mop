@@ -1,6 +1,6 @@
 [dependencies]
-mop-blocks = { features = ["with_rand"], path = "../mop-blocks", version = "0.0.10" }
-mop-common-defs = { path = "../mop-common-defs", version = "0.0.10" }
+mop-blocks = { features = ["with_rand"], path = "../mop-blocks", version = "0.1.0" }
+mop-common-defs = { path = "../mop-common-defs", version = "0.1.0" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, version = "0.7" }
 
@@ -17,4 +17,4 @@ license = "Apache-2.0"
 name = "mop-solvers"
 readme = "README.md"
 repository = "https://github.com/c410-f3r/mop"
-version = "0.0.10"
+version = "0.1.0"

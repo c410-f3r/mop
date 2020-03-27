@@ -1,7 +1,7 @@
-use crate::{initial_solutions::InitialSolutions, opt::OptFacade};
+use crate::opt::OptFacade;
 use alloc::vec::Vec;
 use core::{fmt::Debug, ops::Sub};
-use mop_blocks::{mph::Mph, Pct, SolutionDomain};
+use mop_blocks::Pct;
 use num_traits::{NumCast, One, Zero};
 
 #[derive(Debug)]
@@ -25,20 +25,6 @@ where
       self.stagnation_percentage.unwrap(),
       self.stagnation_threshold.unwrap(),
     )
-  }
-
-  /// Fill all solutions with initial data
-  pub fn initial_solutions<C, I, O, S, SD>(
-    self,
-    mut initial_solutions: I,
-    problem: &mut Mph<C, O, OR, S, SD>,
-  ) -> Self
-  where
-    I: InitialSolutions<C, O, OR, S, SD>,
-    SD: SolutionDomain<S>,
-  {
-    initial_solutions.initial_solutions(problem);
-    self
   }
 
   /// The maximum number of times the solver will process the solution

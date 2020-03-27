@@ -1,4 +1,7 @@
-use crate::opt::{OptFacadeBuilder, OptHooks};
+use crate::{
+  initial_solutions::InitialSolutions,
+  opt::{OptFacadeBuilder, OptHooks},
+};
 use alloc::{string::String, vec::Vec};
 use core::{
   fmt::Debug,
@@ -71,17 +74,24 @@ where
   C: Cstr<S>,
   O: Obj<OR, S>,
   OH: OptHooks<S>,
-  OR: Copy
-    + Div<OR, Output = OR>
-    + NumCast
-    + One
-    + PartialOrd
-    + Sub<OR, Output = OR>
-    + Zero
-    + TraitCfg,
+  OR: Copy + Div<OR, Output = OR> + NumCast + One + PartialOrd + Sub<OR, Output = OR> + Zero,
   SD: SolutionDomain<S>,
 {
-  pub fn solve_problem_with<SOLVER>(
+  /// Fill all solutions with initial data
+  pub fn initial_solutions<I>(
+    self,
+    mut initial_solutions: I,
+    problem: &mut Mph<C, O, OR, S, SD>,
+  ) -> Self
+  where
+    I: InitialSolutions<C, O, OR, S, SD>,
+  {
+    problem.results_mut().clear();
+    initial_solutions.initial_solutions(problem);
+    self
+  }
+
+  pub async fn solve_problem_with<SOLVER>(
     mut self,
     problem: &mut Mph<C, O, OR, S, SD>,
     mut solver: SOLVER,
@@ -98,14 +108,14 @@ where
           .iter_mut()
           .for_each(|mut x| self.opt_hooks.before_iter(x.solution_mut()));
       }
-      solver.before_iter(problem);
+      solver.before_iter(problem).await;
       if self.iterations_number_has_extrapolated()
         || self.objs_are_not_converging(problem)
         || self.were_all_specified_goals_achieved(problem)
       {
         break;
       }
-      solver.after_iter(problem);
+      solver.after_iter(problem).await;
       {
         problem
           .results_mut()
@@ -169,13 +179,13 @@ impl<C, O, OH, OR, S, SD> OptFacade<C, O, OH, OR, S, SD>
 where
   C: Cstr<S> + TraitCfg,
   O: Obj<OR, S> + TraitCfg,
-  SD: SolutionDomain<S> + TraitCfg,
+  SD: SolutionDomain<S>,
   OH: OptHooks<S>,
   OR: Copy + Debug + Div<OR, Output = OR> + NumCast + TraitCfg + Zero,
-  S: Clone + TraitCfg,
+  S: Clone,
 {
-  pub fn cstrs_reasons(&mut self, problem: &Mph<C, O, OR, S, SD>) -> DrMatrixVec<String> {
+  pub async fn cstrs_reasons(&mut self, problem: &Mph<C, O, OR, S, SD>) -> DrMatrixVec<String> {
     let (defs, results) = problem.parts();
-    MphOrsEvaluators::cstrs_reasons(defs, results)
+    MphOrsEvaluators::eval_cstrs_reasons(defs, results).await
   }
 }

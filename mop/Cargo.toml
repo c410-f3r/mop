@@ -7,8 +7,8 @@ mop-solvers = { path = "../mop-solvers", version = "0.0.10" }
 default = []
 std = ["mop-blocks/std", "mop-facades/std", "mop-solvers/std"]
 with_arrayvec = ["mop-blocks/with_arrayvec"]
+with_futures = ["mop-blocks/with_futures"]
 with_ndsparse = ["mop-blocks/with_ndsparse"]
-with_rayon = ["mop-blocks/with_rayon", "std"]
 with_serde = ["mop-blocks/with_serde"]
 
 [package]

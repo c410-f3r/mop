@@ -50,10 +50,3 @@ fn dr_matrix_row_iter_split_at(dm: DrMatrixVec<i32>) -> bool {
     second_half.enumerate().all(|(row_idx, row)| row == dm.row(row_idx + split_in));
   is_first_ok && is_second_ok
 }
-
-#[cfg(feature = "with_rayon")]
-#[quickcheck_macros::quickcheck]
-fn dr_matrix_row_par_iter(dm: DrMatrixVec<i32>) -> bool {
-  use rayon::prelude::*;
-  dm.row_par_iter().enumerate().all(|(row_idx, row)| row == dm.row(row_idx))
-}

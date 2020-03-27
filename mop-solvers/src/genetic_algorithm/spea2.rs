@@ -11,7 +11,7 @@ use crate::{
   quality_comparator::QualityComparator,
   utils::{euclidean_distance, verify_pareto_dominance},
 };
-use alloc::vec::Vec;
+use alloc::{boxed::Box, vec::Vec};
 use arch_union_popul::{ArchUnionPopul, Properties};
 use core::{
   cmp::Ordering,
@@ -25,7 +25,7 @@ use mop_blocks::{
   mph::{Mph, MphOrRef, MphOrs, MphOrsEvaluators},
   Cstr, Obj, Pct, SolutionDomain,
 };
-use mop_common_defs::{Solver, TraitCfg};
+use mop_common_defs::{Solver, SolverFuture, TraitCfg};
 use num_traits::{NumCast, One, Pow, Zero};
 use rand::distributions::uniform::SampleUniform;
 
@@ -65,7 +65,6 @@ where
     + PartialOrd
     + Pow<OR, Output = OR>
     + Sub<OR, Output = OR>
-    + TraitCfg
     + Zero,
   SD: SolutionDomain<S>,
   S: Clone,
@@ -242,10 +241,10 @@ where
 impl<C, CO, QC, M, MS, O, OR, S, SD> Solver for Spea2<C, CO, QC, M, MS, O, OR, S, SD>
 where
   C: Cstr<S> + TraitCfg,
-  CO: Crossover<MphOrs<OR, S>>,
-  QC: for<'a> QualityComparator<[O], MphOrRef<'a, OR, S>>,
-  M: Mutation<SD, MphOrs<OR, S>>,
-  MS: MatingSelection<[O], MphOrs<OR, S>>,
+  CO: Crossover<MphOrs<OR, S>> + TraitCfg,
+  QC: for<'a> QualityComparator<[O], MphOrRef<'a, OR, S>> + TraitCfg,
+  M: Mutation<SD, MphOrs<OR, S>> + TraitCfg,
+  MS: MatingSelection<[O], MphOrs<OR, S>> + TraitCfg,
   O: Obj<OR, S> + TraitCfg,
   OR: Copy
     + Debug
@@ -259,12 +258,12 @@ where
     + Sub<OR, Output = OR>
     + TraitCfg
     + Zero,
-  SD: SolutionDomain<S> + TraitCfg,
   S: Clone + TraitCfg,
+  SD: SolutionDomain<S> + TraitCfg,
 {
   type Problem = Mph<C, O, OR, S, SD>;
 
-  fn after_iter(&mut self, p: &mut Self::Problem) {
+  fn after_iter<'a>(&'a mut self, p: &'a mut Self::Problem) -> SolverFuture<'a> {
     let filling_num = p.results().results_num();
     self.gap.mating_selection.mating_selection(
       p.definitions().objs(),
@@ -276,23 +275,27 @@ where
 
     let (defs, results) = p.parts_mut();
     self.gap.mutation.mutation(defs.solution_domain_mut(), results);
+
+    Box::pin(async {})
   }
 
-  fn before_iter(&mut self, p: &mut Self::Problem) {
-    {
-      let (defs, results) = p.parts_mut();
-      let ar = &mut self.arch_results;
-      MphOrsEvaluators::eval_ors_cstrs(defs, ar);
-      MphOrsEvaluators::eval_ors_objs(defs, ar);
-      MphOrsEvaluators::eval_ors_cstrs(defs, results);
-      MphOrsEvaluators::eval_ors_objs(defs, results);
-    }
-    self.arch_u_popul.results.clear();
-    self.arch_u_popul.results.extend(&self.arch_results);
-    self.arch_u_popul.results.extend(&p.results_mut());
-    self.fitness_assignment(p);
-    self.environment_selection();
-    let best_idx = self.best_result(p);
-    p.results_mut().set_best(best_idx);
+  fn before_iter<'a>(&'a mut self, p: &'a mut Self::Problem) -> SolverFuture<'a> {
+    Box::pin(async move {
+      {
+        let (defs, results) = p.parts_mut();
+        let ar = &mut self.arch_results;
+        MphOrsEvaluators::eval_cstrs_violations(defs, ar).await;
+        MphOrsEvaluators::eval_objs(defs, ar).await;
+        MphOrsEvaluators::eval_cstrs_violations(defs, results).await;
+        MphOrsEvaluators::eval_objs(defs, results).await;
+      }
+      self.arch_u_popul.results.clear();
+      self.arch_u_popul.results.extend(&self.arch_results);
+      self.arch_u_popul.results.extend(&p.results_mut());
+      self.fitness_assignment(p);
+      self.environment_selection();
+      let best_idx = self.best_result(p);
+      p.results_mut().set_best(best_idx);
+    })
   }
 }

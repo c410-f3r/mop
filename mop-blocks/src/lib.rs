@@ -29,12 +29,3 @@ pub use crate::{
   solution::*,
   solution_domain::*,
 };
-
-#[cfg(feature = "with_rayon")]
-#[derive(Debug)]
-pub struct ParallelIteratorWrapper<I>(pub(crate) I);
-
-#[cfg(feature = "with_rayon")]
-/// Parallel producer for Rayon implementation. This is mostly an internal detail.
-#[derive(Debug)]
-pub struct ParallelProducerWrapper<I>(pub(crate) I);

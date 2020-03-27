@@ -1,7 +1,7 @@
 [features]
 default = []
 std = []
-with_rayon = ["std"]
+with_futures = []
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]

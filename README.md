@@ -6,13 +6,18 @@
 [![License](https://img.shields.io/badge/license-APACHE2-blue.svg)](./LICENSE)
 [![Rustc](https://img.shields.io/badge/rustc-1.42-lightgray")](https://blog.rust-lang.org/2020/03/12/Rust-1.42.html)
 
-MOP is a flexible and modular single or multi-objective solver for contiguous and discrete problems. Through its default pipeline you can define your own custom problem and choose any supported solver combination.
+MOP is a flexible and modular framework for different NP-Problems with different solvers. Through its default pipeline you can define your own custom problem and choose any supported solver combination.
 
-# Example
+See [this blog post](https://c410-f3r.github.io/posts/a-flexible-and-modular-framework-to-solve-np-problems) for more details or have fun using [the online playground](https://c410-f3r.github.io/mop-playground/).
+
+## Example
+
+The definitions and results of `Binh and Korn`, a multi-objective problem with two hard constraints and two objectives.
+
+![Binh and Korn](https://imgur.com/VDB0oBM.jpg)
+##### Picture taken from https://en.wikipedia.org/wiki/Test_functions_for_optimization#Test_functions_for_multi-objective_optimization.
 
 ```rust
-//! Binh  and  U.  Korn; MOBES:  A  multiobjective  evolution  strategy for constrained optimization problems
-
 use core::cmp::Ordering;
 use mop::{
   blocks::{
@@ -67,7 +72,8 @@ fn print_result(result: MphOrRef<f64, Solution>) {
   println!();
 }
 
-fn main() {
+#[tokio::main] // Or any other runtime
+async fn main() {
   let mut problem = Mph::with_capacity(
     MphDefinitionsBuilder::default()
       .push_hard_cstr(g1 as fn(&Solution) -> usize)
@@ -78,9 +84,8 @@ fn main() {
       .build(),
     500,
   );
-  
+
   let facade = OptFacadeBuilder::default()
-    .initial_solutions(RandomInitialSolutions::default(), &mut problem)
     .max_iterations(50)
     .opt_hooks(())
     .stagnation_percentage(Pct::from_percent(2))
@@ -98,7 +103,9 @@ fn main() {
     ParetoComparator::default(),
   );
 
-  facade.solve_problem_with(&mut problem, spea2);
+  facade
+    .initial_solutions(RandomInitialSolutions::default(), &mut problem)
+    .solve_problem_with(&mut problem, spea2).await;
 
   for (result_idx, result) in problem.results().iter().enumerate() {
     println!("***** Result #{} *****", result_idx + 1);
@@ -110,8 +117,17 @@ fn main() {
 }
 ```
 
-![Binh and Korn](https://imgur.com/VwmLLzP.jpg)
+![Binh and Korn - Objectives](https://imgur.com/VwmLLzP.jpg)
 
 ## Solvers
 
 * `SPEA2` (Zitzler and Thiele; SPEA2: Improving the Strength Pareto Evolutionary Algorithm)
+
+## Optional features
+
+- `std`
+- Bindings (wasm-bindgen)
+- Concurrent evaluation (futures)
+- Deserialization/Serialization (serde)
+- Dynamic arrays (ArrayVec)
+- Multidimensional storage (ndsparse)

@@ -5,13 +5,17 @@ use core::{
   f64::consts::PI,
   ops::{Range, RangeInclusive},
 };
-use mop::blocks::{
-  mph::{Mph, MphDefinitionsBuilder},
-  ObjDirection,
+use mop::{
+  blocks::{
+    mph::{Mph, MphDefinitionsBuilder},
+    ObjDirection,
+  },
+  facades::{initial_solutions::RandomInitialSolutions, opt::OptFacade},
 };
 
 const N_USIZE: usize = 2;
 const N_F64: f64 = 2.0;
+const SOLUTION_DOMAIN: SolutionDomain = [-5.12..=5.12, -5.12..=5.12];
 
 type Constrain = ();
 type Objective = (ObjDirection, fn(&Solution) -> f64);
@@ -28,7 +32,15 @@ fn f1(s: &Solution) -> f64 {
 
 pub struct Rastrigin;
 
-impl Problem<Constrain, Objective, f64, Solution, SolutionDomain> for Rastrigin {
+impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for Rastrigin {
+  fn facade(
+    &self,
+    facade: OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain>,
+    problem: &mut Mph<Constrain, Objective, f64, Solution, SolutionDomain>,
+  ) -> OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain> {
+    facade.initial_solutions(RandomInitialSolutions::default(), problem)
+  }
+
   fn graph_ranges(&self) -> [Range<f64>; N_USIZE] {
     [-6.0..6.0, -6.0..6.0]
   }
@@ -42,7 +54,7 @@ impl Problem<Constrain, Objective, f64, Solution, SolutionDomain> for Rastrigin 
         .name("Rastrigin")
         .push_hard_cstr(())
         .push_obj((ObjDirection::Min, f1 as fn(&Solution) -> f64))
-        .solution_domain([-5.12..=5.12, -5.12..=5.12])
+        .solution_domain(SOLUTION_DOMAIN)
         .build(),
       results_num,
     )

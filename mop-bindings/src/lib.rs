@@ -8,5 +8,5 @@
 ))))]
 #![forbid(missing_debug_implementations)]
 
-#[cfg(all(not(feature = "with_rayon"), feature = "with_wasm_bindgen"))]
+#[cfg(all(not(feature = "with_futures"), feature = "with_wasm_bindgen"))]
 mod wasm_bindgen;

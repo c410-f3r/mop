@@ -9,8 +9,10 @@
 ))))]
 #![forbid(missing_debug_implementations)]
 
+extern crate alloc;
+
 mod solver;
 mod trait_cfg;
-pub mod utils;
+mod utils;
 
-pub use crate::{solver::Solver, trait_cfg::TraitCfg};
+pub use crate::{solver::*, trait_cfg::*, utils::*};

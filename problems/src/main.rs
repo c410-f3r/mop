@@ -1,25 +1,13 @@
+//! Run any problem by typing `cargo run --features "stdout with_plotters ANY_SUPPORTED_PROBLEM" --release`
+
 mod problems;
 
-#[allow(unused)]
-use mop::{
-  blocks::{mph::MphOrRef, Pct},
-  facades::{initial_solutions::RandomInitialSolutions, opt::OptFacadeBuilder},
-  solvers::{
-    genetic_algorithm::{
-      operators::{
-        crossover::MultiPoint, mating_selection::Tournament, mutation::RandomDomainAssignments,
-      },
-      GeneticAlgorithmParamsBuilder, Spea2,
-    },
-    quality_comparator::ParetoComparator,
-  },
-};
 #[cfg(feature = "with_plotters")]
 use plotters::prelude::*;
 use problems::Problem;
 
 #[cfg(feature = "stdout")]
-fn print_result<OR, S>(result: MphOrRef<OR, S>)
+fn print_result<OR, S>(result: mop::blocks::mph::MphOrRef<OR, S>)
 where
   OR: core::fmt::Debug,
   S: core::fmt::Debug,
@@ -78,65 +66,85 @@ where
   ctx.draw_series(data).unwrap();
 }
 
-#[allow(unused)]
 macro_rules! exec {
-  ($problem:expr) => {
-    let results_num = 200;
-    let mut problem = $problem.problem(results_num);
-    let facade = OptFacadeBuilder::default()
-      .initial_solutions(RandomInitialSolutions::default(), &mut problem)
-      .max_iterations(199)
-      .opt_hooks(())
-      .stagnation_percentage(Pct::from_percent(2))
-      .stagnation_threshold(5)
-      .build();
+  ($($feature:literal, $problem:expr)+) => {
+    #[cfg(any($(feature = $feature),+))]
+    use mop::{
+      blocks::Pct,
+      facades::opt::OptFacadeBuilder,
+      solvers::{
+        genetic_algorithm::{
+          operators::{
+            crossover::MultiPoint, mating_selection::Tournament, mutation::RandomDomainAssignments,
+          },
+          GeneticAlgorithmParamsBuilder, Spea2,
+        },
+        quality_comparator::ParetoComparator,
+      },
+    };
 
-    let spea2 = Spea2::new(
-      Pct::from_percent(50),
-      GeneticAlgorithmParamsBuilder::default()
-        .crossover(MultiPoint::new(1, Pct::from_percent(70)))
-        .mating_selection(Tournament::new(10, ParetoComparator::default()))
-        .mutation(RandomDomainAssignments::new(1, Pct::from_percent(30)))
-        .build(),
-      &problem,
-      ParetoComparator::default(),
-    );
+    $(
+      #[cfg(feature = $feature)]
+      {
+        let results_num = 200;
+        let mut problem = $problem.problem(results_num);
 
-    facade.solve_problem_with(&mut problem, spea2);
+        let facade = OptFacadeBuilder::default()
+          .max_iterations(199)
+          .opt_hooks(())
+          .stagnation_percentage(Pct::from_percent(1))
+          .stagnation_threshold(10)
+          .build();
 
-    #[cfg(feature = "stdout")]
-    {
-      for (result_idx, result) in problem.results().iter().enumerate() {
-        println!("***** Result #{} *****", result_idx + 1);
-        print_result(result);
+          let spea2 = Spea2::new(
+            Pct::from_percent(50),
+            GeneticAlgorithmParamsBuilder::default()
+              .crossover(MultiPoint::new(1, Pct::from_percent(70)))
+              .mating_selection(Tournament::new(4, ParetoComparator::default()))
+              .mutation(RandomDomainAssignments::new(1, Pct::from_percent(30)))
+              .build(),
+            &problem,
+            ParetoComparator::default(),
+          );
+
+        $problem.facade(facade, &mut problem).solve_problem_with(&mut problem, spea2).await;
+
+        #[cfg(feature = "stdout")]
+        {
+          for (result_idx, result) in problem.results().iter().enumerate() {
+            println!("***** Result #{} *****", result_idx + 1);
+            print_result(result);
+          }
+
+          println!("***** Best result *****");
+          print_result(problem.results().best().unwrap());
+        }
+
+        #[cfg(feature = "with_plotters")]
+        {
+          if problem.definitions().objs().len() == 2 {
+            let [x, y] = $problem.graph_ranges();
+            manage_plotting(
+              x,
+              y,
+              &format!("{} - Objectives", problem.definitions().name()),
+              problem.results().iter().map(|r| (r.objs()[0], r.objs()[1])),
+            );
+          }
+        }
       }
-
-      println!("***** Best result *****");
-      print_result(problem.results().best().unwrap());
-    }
-
-    #[cfg(feature = "with_plotters")]
-    {
-      if problem.definitions().objs().len() == 2 {
-        let [x, y] = $problem.graph_ranges();
-        manage_plotting(
-          x,
-          y,
-          &format!("{} - Objectives", problem.definitions().name()),
-          problem.results().iter().map(|r| (r.objs()[0], r.objs()[1])),
-        );
-      }
-    }
+    )+
   };
 }
 
-fn main() {
-  #[cfg(feature = "binh_and_korn")]
-  exec!(problems::binh_and_korn::BinhAndKorn);
-  #[cfg(feature = "test_function_4")]
-  exec!(problems::test_function_4::TestFunction4);
-  #[cfg(feature = "rastrigin")]
-  exec!(problems::rastrigin::Rastrigin);
-  #[cfg(feature = "schaffer_function_2")]
-  exec!(problems::schaffer_function_2::SchafferFunction2);
+#[tokio::main]
+async fn main() {
+  exec!(
+    "binh_and_korn", problems::binh_and_korn::BinhAndKorn
+    "constr", problems::constr::Constr
+    "cvrp", problems::cvrp::Cvrp
+    "rastrigin", problems::rastrigin::Rastrigin
+    "schaffer_function_2", problems::schaffer_function_2::SchafferFunction2
+    "test_function_4", problems::test_function_4::TestFunction4
+  );
 }

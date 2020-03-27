@@ -5,9 +5,10 @@ use crate::{
 };
 use alloc::string::String;
 use core::{fmt::Debug, marker::PhantomData, ops::Div};
+#[cfg(feature = "with_futures")]
+use futures::stream::{self, StreamExt};
+use mop_common_defs::TraitCfg;
 use num_traits::{NumCast, Zero};
-#[cfg(feature = "with_rayon")]
-use rayon::prelude::*;
 
 #[derive(Debug)]
 pub struct MphOrsEvaluators<C, O, OR, S, SD> {
@@ -16,94 +17,60 @@ pub struct MphOrsEvaluators<C, O, OR, S, SD> {
 
 impl<C, O, OR, S, SD> MphOrsEvaluators<C, O, OR, S, SD>
 where
-  O: Obj<OR, S>,
-  OR: Copy + Debug + Div<OR, Output = OR> + NumCast + Zero,
+  C: Cstr<S> + TraitCfg,
+  O: Obj<OR, S> + TraitCfg,
+  OR: Copy + Debug + Div<OR, Output = OR> + NumCast + TraitCfg + Zero,
 {
-  #[cfg(feature = "with_rayon")]
-  pub fn eval_ors_cstrs(defs: &MphDefinitions<C, O, SD>, rslts: &mut MphOrs<OR, S>)
-  where
-    C: Cstr<S>,
-    C: Send + Sync,
-    O: Send + Sync,
-    OR: Send + Sync,
-    SD: Send + Sync,
-    S: Send + Sync,
-  {
-    rslts.par_iter_mut().for_each(|mut x| Self::eval_or_cstrs(defs.hard_cstrs(), &mut x));
+  pub async fn eval_cstrs_reasons(
+    defs: &MphDefinitions<C, O, SD>,
+    rslts: &MphOrs<OR, S>,
+  ) -> DrMatrixVec<String> {
+    let func = |(reasons, r)| Self::eval_cstrs_reasons_for_solution(defs.hard_cstrs(), reasons, &r);
+    let mut reasons = DrMatrixVec::with_capacity(rslts.hard_cstrs.rows(), rslts.hard_cstrs.cols());
+    reasons.fill(|_, _| String::with_capacity(256));
+    let iter = reasons.row_iter_mut().zip(rslts.iter());
+    #[cfg(not(feature = "with_futures"))]
+    iter.for_each(func);
+    #[cfg(feature = "with_futures")]
+    stream::iter(iter)
+      .for_each_concurrent(None, |(reasons, r)| async move { func((reasons, r)) })
+      .await;
+    reasons
   }
 
-  #[cfg(not(feature = "with_rayon"))]
-  pub fn eval_ors_cstrs(defs: &MphDefinitions<C, O, SD>, rslts: &mut MphOrs<OR, S>)
-  where
-    C: Cstr<S>,
-  {
-    rslts.iter_mut().for_each(|mut x| Self::eval_or_cstrs(defs.hard_cstrs(), &mut x));
+  pub async fn eval_cstrs_violations(defs: &MphDefinitions<C, O, SD>, rslts: &mut MphOrs<OR, S>) {
+    let func = |r| Self::eval_cstrs_violations_for_solution(defs.hard_cstrs(), r);
+    #[cfg(not(feature = "with_futures"))]
+    rslts.iter_mut().for_each(func);
+    #[cfg(feature = "with_futures")]
+    stream::iter(rslts.iter_mut()).for_each_concurrent(None, |r| async { func(r) }).await;
   }
 
-  fn eval_or_cstrs(cstrs: &[C], rslt: &mut MphOrMut<'_, OR, S>)
-  where
-    C: Cstr<S>,
-  {
+  pub async fn eval_objs(defs: &MphDefinitions<C, O, SD>, rslts: &mut MphOrs<OR, S>) {
+    let func = |r| Self::eval_objs_for_solution(defs.objs(), r);
+    #[cfg(not(feature = "with_futures"))]
+    rslts.iter_mut().for_each(func);
+    #[cfg(feature = "with_futures")]
+    stream::iter(rslts.iter_mut()).for_each_concurrent(None, |r| async { func(r) }).await;
+  }
+
+  fn eval_cstrs_reasons_for_solution(
+    cstrs: &[C],
+    reasons: &mut [String],
+    rslt: &MphOrRef<'_, OR, S>,
+  ) {
+    for (c, r) in cstrs.iter().zip(reasons.iter_mut()) {
+      *r = c.reasons(rslt.solution);
+    }
+  }
+
+  fn eval_cstrs_violations_for_solution(cstrs: &[C], rslt: MphOrMut<'_, OR, S>) {
     for (c, cr) in cstrs.iter().zip(rslt.hard_cstrs.iter_mut()) {
       *cr = c.violations(rslt.solution);
     }
   }
 
-  #[cfg(feature = "with_rayon")]
-  pub fn eval_ors_objs(defs: &MphDefinitions<C, O, SD>, rslts: &mut MphOrs<OR, S>)
-  where
-    C: Send + Sync,
-    O: Send + Sync,
-    OR: Send + Sync,
-    SD: Send + Sync,
-    S: Send + Sync,
-  {
-    rslts.par_iter_mut().for_each(|r| Self::eval_or_objs(defs.objs(), r));
-  }
-
-  #[cfg(not(feature = "with_rayon"))]
-  pub fn eval_ors_objs(defs: &MphDefinitions<C, O, SD>, rslts: &mut MphOrs<OR, S>) {
-    rslts.iter_mut().for_each(|r| Self::eval_or_objs(defs.objs(), r));
-  }
-
-  #[cfg(feature = "with_rayon")]
-  pub fn cstrs_reasons(
-    defs: &MphDefinitions<C, O, SD>,
-    rslts: &MphOrs<OR, S>,
-  ) -> DrMatrixVec<String>
-  where
-    C: Cstr<S>,
-    C: Send + Sync,
-    O: Send + Sync,
-    OR: Send + Sync,
-    SD: Send + Sync,
-    S: Send + Sync,
-  {
-    let mut reasons = DrMatrixVec::with_capacity(rslts.hard_cstrs.rows(), rslts.hard_cstrs.cols());
-    reasons.fill(|_, _| String::new());
-    reasons.row_par_iter_mut().zip(rslts.par_iter()).for_each(|(rslt_reasons, rslt)| {
-      Self::result_cstrs_reasons(defs.hard_cstrs(), rslt_reasons, &rslt)
-    });
-    reasons
-  }
-
-  #[cfg(not(feature = "with_rayon"))]
-  pub fn cstrs_reasons(
-    defs: &MphDefinitions<C, O, SD>,
-    rslts: &MphOrs<OR, S>,
-  ) -> DrMatrixVec<String>
-  where
-    C: Cstr<S>,
-  {
-    let mut reasons = DrMatrixVec::with_capacity(rslts.hard_cstrs.rows(), rslts.hard_cstrs.cols());
-    reasons.fill(|_, _| String::with_capacity(256));
-    reasons.row_iter_mut().zip(rslts.iter()).for_each(|(rslt_reasons, rslt)| {
-      Self::result_cstrs_reasons(defs.hard_cstrs(), rslt_reasons, &rslt)
-    });
-    reasons
-  }
-
-  fn eval_or_objs(objs: &[O], rslt: MphOrMut<'_, OR, S>) {
+  fn eval_objs_for_solution(objs: &[O], rslt: MphOrMut<'_, OR, S>) {
     let mut objs_avg = OR::zero();
     for (obj, obj_rslts) in objs.iter().zip(rslt.objs.iter_mut()) {
       let rslt = obj.result(&rslt.solution);
@@ -112,14 +79,5 @@ where
     }
     let cast = NumCast::from(objs.len()).unwrap();
     *rslt.objs_avg = objs_avg / cast;
-  }
-
-  fn result_cstrs_reasons(cstrs: &[C], reasons: &mut [String], rslt: &MphOrRef<'_, OR, S>)
-  where
-    C: Cstr<S>,
-  {
-    for (c, r) in cstrs.iter().zip(reasons.iter_mut()) {
-      *r = c.reasons(rslt.solution);
-    }
   }
 }

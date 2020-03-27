@@ -2,8 +2,6 @@
 mod dr_matrix_quickcheck;
 mod dr_matrix_row_constructor;
 mod dr_matrix_row_iter_impls;
-#[cfg(feature = "with_rayon")]
-mod dr_matrix_row_par_iter_impls;
 
 use alloc::vec::Vec;
 use cl_traits::{ArrayWrapper, Clear, Push, Storage, Truncate, WithCapacity};
@@ -183,11 +181,6 @@ where
     DrMatrixRowIter::new(self.rows(), self.cols, self.data().as_ptr())
   }
 
-  #[cfg(feature = "with_rayon")]
-  pub fn row_par_iter(&self) -> crate::ParallelIteratorWrapper<DrMatrixRowIter<'_, DATA>> {
-    crate::ParallelIteratorWrapper(self.row_iter())
-  }
-
   /// # Example
   ///
   /// ```rust
@@ -220,13 +213,6 @@ where
 
   pub fn row_iter_mut(&mut self) -> DrMatrixRowIterMut<'_, DATA> {
     DrMatrixRowIterMut::new(self.rows, self.cols, self.data_mut().as_mut_ptr())
-  }
-
-  #[cfg(feature = "with_rayon")]
-  pub fn row_par_iter_mut(
-    &mut self,
-  ) -> crate::ParallelIteratorWrapper<DrMatrixRowIterMut<'_, DATA>> {
-    crate::ParallelIteratorWrapper(self.row_iter_mut())
   }
 
   pub fn swap(&mut self, a: [usize; 2], b: [usize; 2]) {

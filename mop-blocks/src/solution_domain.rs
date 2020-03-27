@@ -6,6 +6,7 @@ use {
     Rng,
   },
 };
+
 pub trait SolutionDomain<S> {
   fn is_empty(&self) -> bool {
     self.len() == 0
@@ -99,11 +100,19 @@ macro_rules! array_impls {
           self.as_ref().len()
         }
 
-        fn new_random_solution<R>(&self, mut rng: &mut R) -> ndsparse::csl::Csl<DA, DS, IS, OS>
+        fn new_random_solution<R>(&self, rng: &mut R) -> ndsparse::csl::Csl<DA, DS, IS, OS>
         where
           R: Rng,
         {
-          ndsparse::csl::Csl::new_random_with_rand(&mut rng, self.as_ref().len())
+          let nnz = self.as_ref().len();
+          let mut dims = cl_traits::ArrayWrapper::default();
+          let iter = (&mut *dims as &mut DA).slice_mut().iter_mut();
+          match nnz {
+            0 => {}
+            1 => iter.for_each(|dim| *dim = 1),
+            _ => iter.for_each(|dim| *dim = rng.gen_range(1, nnz)),
+          }
+          ndsparse::csl::Csl::new_controlled_random_with_rand(dims, nnz, rng, |g, _| g.gen())
         }
 
         fn set_rnd_solution_domain<R>(&self, s: &mut ndsparse::csl::Csl<DA, DS, IS, OS>, idx: usize, rng: &mut R)

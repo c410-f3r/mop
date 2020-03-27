@@ -1,12 +1,15 @@
 [dependencies]
 cl-traits = "1.0"
-mop = { features = ["with_rayon"], path = "../mop" }
+mop = { features = ["with_futures", "with_ndsparse"], path = "../mop" }
 ndsparse = { features = ["with_arrayvec"], version = "0.5" }
 plotters = { default-features = false, features = ["svg"], optional = true, version = "0.2" }
 rand = { default-features = false, features = ["getrandom"], version = "0.7" }
+tokio = { default-features = false, features = ["macros", "rt-threaded"], version = "0.2" }
 
 [features]
 binh_and_korn = []
+constr = []
+cvrp = []
 default = []
 rastrigin = []
 schaffer_function_2 = []

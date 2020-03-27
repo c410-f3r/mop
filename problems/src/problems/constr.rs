@@ -1,4 +1,4 @@
-//! Binh  and  U.  Korn; MOBES:  A  multiobjective  evolution  strategy for constrained optimization problems
+//! Deb, Kalyanmoy (2002) Multiobjective optimization using evolutionary algorithms
 
 use crate::Problem;
 use core::{
@@ -13,7 +13,7 @@ use mop::{
   facades::{initial_solutions::RandomInitialSolutions, opt::OptFacade},
 };
 
-const SOLUTION_DOMAIN: SolutionDomain = [0.0..=5.0, 0.0..=3.0];
+const SOLUTION_DOMAIN: SolutionDomain = [0.1..=1.0, 0.0..=5.0];
 
 type Constrain = fn(&Solution) -> usize;
 type Objective = (ObjDirection, fn(&Solution) -> f64);
@@ -21,32 +21,32 @@ type Solution = [f64; 2];
 type SolutionDomain = [RangeInclusive<f64>; 2];
 
 fn f1(s: &Solution) -> f64 {
-  4.0 * s[0].powi(2) + 4.0 * s[1].powi(2)
+  s[0]
 }
 
 fn f2(s: &Solution) -> f64 {
-  (s[0].powi(2) - 10.0 * s[0] + 25.0) + (s[1].powi(2) - 10.0 * s[1] + 25.0)
+  (1.0 + s[1]) / 1.0
 }
 
 fn g1(s: &Solution) -> usize {
-  let lhs = (s[0].powi(2) - 10.0 * s[0] + 25.0) + s[1].powi(2);
-  match lhs.partial_cmp(&25.0) {
-    Some(Ordering::Equal) | Some(Ordering::Less) => 0,
-    _ => 1,
-  }
-}
-
-fn g2(s: &Solution) -> usize {
-  let lhs = (s[0].powi(2) - 16.0 * s[0] + 64.0) + (s[1].powi(2) + 6.0 * s[1] + 9.0);
-  match lhs.partial_cmp(&7.7) {
+  let lhs = s[1] + 9.0 * s[0];
+  match lhs.partial_cmp(&6.0) {
     Some(Ordering::Equal) | Some(Ordering::Greater) => 0,
     _ => 1,
   }
 }
 
-pub struct BinhAndKorn;
+fn g2(s: &Solution) -> usize {
+  let lhs = -s[1] + 9.0 * s[0];
+  match lhs.partial_cmp(&1.0) {
+    Some(Ordering::Equal) | Some(Ordering::Greater) => 0,
+    _ => 1,
+  }
+}
 
-impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for BinhAndKorn {
+pub struct Constr;
+
+impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for Constr {
   fn facade(
     &self,
     facade: OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain>,
@@ -56,7 +56,7 @@ impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for BinhAn
   }
 
   fn graph_ranges(&self) -> [Range<f64>; 2] {
-    [0.0..140.0, 0.0..50.0]
+    [0.3..1.0, 1.0..9.0]
   }
 
   fn problem(
@@ -65,7 +65,7 @@ impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for BinhAn
   ) -> Mph<Constrain, Objective, f64, Solution, SolutionDomain> {
     Mph::with_capacity(
       MphDefinitionsBuilder::default()
-        .name("Binh and Korn")
+        .name("Constr")
         .push_hard_cstr(g1 as fn(&Solution) -> usize)
         .push_hard_cstr(g2)
         .push_obj((ObjDirection::Min, f1 as fn(&Solution) -> f64))

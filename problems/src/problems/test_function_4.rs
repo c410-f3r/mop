@@ -5,10 +5,15 @@ use core::{
   cmp::Ordering,
   ops::{Range, RangeInclusive},
 };
-use mop::blocks::{
-  mph::{Mph, MphDefinitionsBuilder},
-  ObjDirection,
+use mop::{
+  blocks::{
+    mph::{Mph, MphDefinitionsBuilder},
+    ObjDirection,
+  },
+  facades::{initial_solutions::RandomInitialSolutions, opt::OptFacade},
 };
+
+const SOLUTION_DOMAIN: SolutionDomain = [-7.0..=4.0, -7.0..=4.0];
 
 type Constrain = fn(&Solution) -> usize;
 type Objective = (ObjDirection, fn(&Solution) -> f64);
@@ -49,7 +54,15 @@ fn g3(s: &Solution) -> usize {
 
 pub struct TestFunction4;
 
-impl Problem<Constrain, Objective, f64, Solution, SolutionDomain> for TestFunction4 {
+impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for TestFunction4 {
+  fn facade(
+    &self,
+    facade: OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain>,
+    problem: &mut Mph<Constrain, Objective, f64, Solution, SolutionDomain>,
+  ) -> OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain> {
+    facade.initial_solutions(RandomInitialSolutions::default(), problem)
+  }
+
   fn graph_ranges(&self) -> [Range<f64>; 2] {
     [-3.0..13.0, -8.0..-4.0]
   }
@@ -65,7 +78,7 @@ impl Problem<Constrain, Objective, f64, Solution, SolutionDomain> for TestFuncti
         .push_hard_cstr(g3)
         .push_obj((ObjDirection::Min, f1 as fn(&Solution) -> f64))
         .push_obj((ObjDirection::Min, f2))
-        .solution_domain([-7.0..=4.0, -7.0..=4.0])
+        .solution_domain(SOLUTION_DOMAIN)
         .build(),
       results_num,
     )

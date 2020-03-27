@@ -20,7 +20,6 @@ use mop::{
   },
 };
 use rand::Rng;
-
 use {
   js_sys::{Array, Function},
   wasm_bindgen::prelude::*,
@@ -160,7 +159,7 @@ pub struct OptFacade(opt::OptFacade<HardCstr, Obj, (), f64, Solution, SolutionDo
 
 #[wasm_bindgen]
 impl OptFacade {
-  pub fn solve(self, problem: &mut OptProblem) -> Self {
+  pub async fn solve(self, mut problem: OptProblem) {
     let spea2 = Spea2::new(
       blocks::Pct::from_percent(50),
       GeneticAlgorithmParamsBuilder::default()
@@ -171,7 +170,7 @@ impl OptFacade {
       &problem.0,
       ParetoComparator::default(),
     );
-    OptFacade(self.0.solve_problem_with(&mut problem.0, spea2))
+    self.0.solve_problem_with(&mut problem.0, spea2).await;
   }
 }
 
@@ -190,7 +189,7 @@ impl OptFacadeBuilder {
 
   pub fn build(self, problem: &mut OptProblem) -> OptFacade {
     let initial_solutions = RandomInitialSolutions::default();
-    OptFacade(self.0.opt_hooks(()).initial_solutions(initial_solutions, &mut problem.0).build())
+    OptFacade(self.0.opt_hooks(()).build().initial_solutions(initial_solutions, &mut problem.0))
   }
 
   pub fn max_iterations(self, max_iterations: usize) -> Self {
@@ -408,6 +407,7 @@ mod tests {
       .stagnation_percentage(Pct::from_percent(1.0))
       .stagnation_threshold(10)
       .build(&mut problem);
-    facade.solve(&mut problem);
+
+    wasm_bindgen_futures::spawn_local(facade.solve(problem));
   }
 }

@@ -5,8 +5,6 @@ use crate::{
   mph::{MphDefinitions, MphOrConstructor, MphOrMut, MphOrRef},
 };
 use alloc::vec::Vec;
-#[cfg(feature = "with_rayon")]
-use rayon::prelude::*;
 
 /// MPH-ORS (Multi-objective Problem with Hard constraint - Optimization ResultS)
 ///
@@ -147,48 +145,6 @@ impl<OR, S> MphOrs<OR, S> {
   #[inline]
   pub fn len(&self) -> usize {
     self.solutions.len()
-  }
-
-  #[cfg(feature = "with_rayon")]
-  pub fn par_iter(&self) -> impl IndexedParallelIterator<Item = MphOrRef<'_, OR, S>>
-  where
-    OR: Send + Sync,
-    S: Send + Sync,
-  {
-    self
-      .hard_cstrs
-      .row_par_iter()
-      .zip_eq(
-        self.objs.row_par_iter().zip_eq(self.objs_avg.par_iter().zip_eq(self.solutions.par_iter())),
-      )
-      .map(|(hard_cstrs, (objs, (objs_avg, solution)))| MphOrRef {
-        hard_cstrs,
-        objs,
-        objs_avg,
-        solution,
-      })
-  }
-
-  #[cfg(feature = "with_rayon")]
-  pub fn par_iter_mut(&mut self) -> impl IndexedParallelIterator<Item = MphOrMut<'_, OR, S>>
-  where
-    OR: Send + Sync,
-    S: Send + Sync,
-  {
-    self
-      .hard_cstrs
-      .row_par_iter_mut()
-      .zip_eq(
-        self.objs.row_par_iter_mut().zip_eq(
-          self.objs_avg.as_mut_slice().par_iter_mut().zip_eq(self.solutions.par_iter_mut()),
-        ),
-      )
-      .map(|(hard_cstrs, (objs, (objs_avg, solution)))| MphOrMut {
-        hard_cstrs,
-        objs,
-        objs_avg,
-        solution,
-      })
   }
 
   pub fn remove(&mut self, idx: usize) {

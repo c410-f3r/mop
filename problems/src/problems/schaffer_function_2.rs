@@ -1,12 +1,19 @@
 //! Schaffer, J. David (1984). Some experiments in machine learning using vector evaluated genetic
 //! algorithms (artificial intelligence, optimization, adaptation, pattern recognition)
 
+#![allow(clippy::trivially_copy_pass_by_ref)]
+
 use crate::Problem;
 use core::ops::{Range, RangeInclusive};
-use mop::blocks::{
-  mph::{Mph, MphDefinitionsBuilder},
-  ObjDirection,
+use mop::{
+  blocks::{
+    mph::{Mph, MphDefinitionsBuilder},
+    ObjDirection,
+  },
+  facades::{initial_solutions::RandomInitialSolutions, opt::OptFacade},
 };
+
+const SOLUTION_DOMAIN: SolutionDomain = [-5.0..=10.0];
 
 type Constrain = ();
 type Objective = (ObjDirection, fn(&Solution) -> f64);
@@ -28,7 +35,15 @@ fn f2(s: &Solution) -> f64 {
 
 pub struct SchafferFunction2;
 
-impl Problem<Constrain, Objective, f64, Solution, SolutionDomain> for SchafferFunction2 {
+impl Problem<Constrain, Objective, (), f64, Solution, SolutionDomain> for SchafferFunction2 {
+  fn facade(
+    &self,
+    facade: OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain>,
+    problem: &mut Mph<Constrain, Objective, f64, Solution, SolutionDomain>,
+  ) -> OptFacade<Constrain, Objective, (), f64, Solution, SolutionDomain> {
+    facade.initial_solutions(RandomInitialSolutions::default(), problem)
+  }
+
   fn graph_ranges(&self) -> [Range<f64>; 2] {
     [-1.0..1.0, 0.0..16.0]
   }
@@ -43,7 +58,7 @@ impl Problem<Constrain, Objective, f64, Solution, SolutionDomain> for SchafferFu
         .push_hard_cstr(())
         .push_obj((ObjDirection::Min, f1 as fn(&Solution) -> f64))
         .push_obj((ObjDirection::Min, f2))
-        .solution_domain([-5.0..=10.0])
+        .solution_domain(SOLUTION_DOMAIN)
         .build(),
       results_num,
     )

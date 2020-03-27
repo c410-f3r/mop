@@ -1,11 +1,11 @@
-#[cfg(feature = "alloc")]
+#[cfg(feature = "std")]
 use std::{
   fs::File,
   io::{self, prelude::*, BufReader},
   path::Path,
 };
 
-#[cfg(feature = "alloc")]
+#[cfg(feature = "std")]
 pub fn file_get_contents<P: AsRef<Path>>(filename: P) -> io::Result<String> {
   let file = File::open(filename)?;
   let mut buf_reader = BufReader::new(file);

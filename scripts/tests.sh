@@ -32,26 +32,28 @@ test_package_with_feature() {
 }
 
 test_package_generic "mop-bindings"
-test_package_with_feature "mop-bindings" "with_rayon"
+test_package_with_feature "mop-bindings" "with_futures"
 test_package_with_feature "mop-bindings" "with_wasm_bindgen"
 
 test_package_generic "mop-blocks"
 test_package_with_feature "mop-blocks" "std"
 test_package_with_feature "mop-blocks" "with_arrayvec"
+test_package_with_feature "mop-blocks" "with_futures"
 test_package_with_feature "mop-blocks" "with_ndsparse"
 test_package_with_feature "mop-blocks" "with_rand"
-test_package_with_feature "mop-blocks" "with_rayon"
 test_package_with_feature "mop-blocks" "with_serde"
 
 test_package_generic "mop-common-defs"
 test_package_with_feature "mop-common-defs" "std"
-test_package_with_feature "mop-common-defs" "with_rayon"
+test_package_with_feature "mop-common-defs" "with_futures"
 
 test_package_generic "mop-facades"
 
 test_package_generic "mop-solvers"
 
 run_package_with_feature "problems" "binh_and_korn"
+run_package_with_feature "problems" "constr"
+run_package_with_feature "problems" "cvrp"
 run_package_with_feature "problems" "rastrigin"
 run_package_with_feature "problems" "schaffer_function_2"
 run_package_with_feature "problems" "test_function_4"

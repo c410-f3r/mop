@@ -159,7 +159,7 @@ pub struct OptFacade(opt::OptFacade<HardCstr, Obj, (), f64, Solution, SolutionDo
 
 #[wasm_bindgen]
 impl OptFacade {
-  pub async fn solve(self, mut problem: OptProblem) {
+  pub async fn solve(self, mut problem: OptProblem) -> OptProblem {
     let spea2 = Spea2::new(
       blocks::Pct::from_percent(50),
       GeneticAlgorithmParamsBuilder::default()
@@ -171,6 +171,7 @@ impl OptFacade {
       ParetoComparator::default(),
     );
     self.0.solve_problem_with(&mut problem.0, spea2).await;
+    problem
   }
 }
 
@@ -408,6 +409,6 @@ mod tests {
       .stagnation_threshold(10)
       .build(&mut problem);
 
-    wasm_bindgen_futures::spawn_local(facade.solve(problem));
+    wasm_bindgen_futures::spawn_local(async { facade.solve(problem).await; });
   }
 }

@@ -15,7 +15,8 @@ See [this blog post](https://c410-f3r.github.io/posts/a-flexible-and-modular-fra
 The definitions and results of `Binh and Korn`, a multi-objective problem with two hard constraints and two objectives.
 
 ![Binh and Korn](https://imgur.com/VDB0oBM.jpg)
-##### Picture taken from https://en.wikipedia.org/wiki/Test_functions_for_optimization#Test_functions_for_multi-objective_optimization.
+
+###### Picture taken from https://en.wikipedia.org/wiki/Test_functions_for_optimization#Test_functions_for_multi-objective_optimization.
 
 ```rust
 use core::cmp::Ordering;
@@ -76,6 +77,7 @@ fn print_result(result: MphOrRef<f64, Solution>) {
 async fn main() {
   let mut problem = Mph::with_capacity(
     MphDefinitionsBuilder::default()
+      .name("Binh and Korn")
       .push_hard_cstr(g1 as fn(&Solution) -> usize)
       .push_hard_cstr(g2)
       .push_obj((ObjDirection::Min, f1 as fn(&Solution) -> f64))

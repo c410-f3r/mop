@@ -22,10 +22,10 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: stable
+          toolchain: nightly-2020-03-26
           profile: minimal
           override: true
-          components: clippy, rustfmt
+          components: clippy
 
       - name: Cache cargo registry
         uses: actions/cache@v1
@@ -50,12 +50,6 @@ jobs:
         with:
           command: clippy
           args: --all-features -- -D warnings
-
-      - name: Rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
 
       - name: Test
         run: ./scripts/tests.sh

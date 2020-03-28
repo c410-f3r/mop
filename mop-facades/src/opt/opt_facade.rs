@@ -97,7 +97,7 @@ where
     mut solver: SOLVER,
   ) -> Self
   where
-    SOLVER: Solver<Problem = Mph<C, O, OR, S, SD>>,
+    SOLVER: Solver<Mph<C, O, OR, S, SD>>,
   {
     solver.init(problem);
     self.opt_hooks.init();

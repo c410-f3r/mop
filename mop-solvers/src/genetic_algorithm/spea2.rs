@@ -238,7 +238,7 @@ where
   }
 }
 
-impl<C, CO, QC, M, MS, O, OR, S, SD> Solver for Spea2<C, CO, QC, M, MS, O, OR, S, SD>
+impl<C, CO, QC, M, MS, O, OR, S, SD> Solver<Mph<C, O, OR, S, SD>> for Spea2<C, CO, QC, M, MS, O, OR, S, SD>
 where
   C: Cstr<S> + TraitCfg,
   CO: Crossover<MphOrs<OR, S>> + TraitCfg,
@@ -261,9 +261,7 @@ where
   S: Clone + TraitCfg,
   SD: SolutionDomain<S> + TraitCfg,
 {
-  type Problem = Mph<C, O, OR, S, SD>;
-
-  fn after_iter<'a>(&'a mut self, p: &'a mut Self::Problem) -> SolverFuture<'a> {
+  fn after_iter<'a>(&'a mut self, p: &'a mut Mph<C, O, OR, S, SD>) -> SolverFuture<'a> {
     let filling_num = p.results().results_num();
     self.gap.mating_selection.mating_selection(
       p.definitions().objs(),
@@ -279,7 +277,7 @@ where
     Box::pin(async {})
   }
 
-  fn before_iter<'a>(&'a mut self, p: &'a mut Self::Problem) -> SolverFuture<'a> {
+  fn before_iter<'a>(&'a mut self, p: &'a mut Mph<C, O, OR, S, SD>) -> SolverFuture<'a> {
     Box::pin(async move {
       {
         let (defs, results) = p.parts_mut();

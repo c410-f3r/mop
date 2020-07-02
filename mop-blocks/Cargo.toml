@@ -2,7 +2,7 @@
 arrayvec = { default-features = false, version = "0.5" }
 cl-traits = { default-features = false, features = ["alloc", "with-arrayvec"], version = "4.0" }
 futures = { default-features = false, features = ["alloc"], optional = true, version = "0.3" }
-mop-common = { path = "../mop-common", version = "0.2.0" }
+mop-common = { path = "../mop-common", version = "0.3.0" }
 ndsparse = { default-features = false, optional = true, version = "0.7" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.7" }
@@ -28,4 +28,4 @@ license = "Apache-2.0"
 name = "mop-blocks"
 readme = "README.md"
 repository = "https://github.com/c410-f3r/mop"
-version = "0.2.0"
+version = "0.3.0"

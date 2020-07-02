@@ -1,25 +1,23 @@
 [dependencies]
-arrayvec = { default-features = false, optional = true, version = "0.5" }
-cl-traits = { features = ["alloc"], version = "1.0" }
+arrayvec = { default-features = false, version = "0.5" }
+cl-traits = { default-features = false, features = ["alloc", "with-arrayvec"], version = "4.0" }
 futures = { default-features = false, features = ["alloc"], optional = true, version = "0.3" }
-mop-common-defs = { path = "../mop-common-defs", version = "0.2.0" }
-ndsparse = { optional = true, version = "0.5" }
+mop-common = { path = "../mop-common", version = "0.2.0" }
+ndsparse = { default-features = false, optional = true, version = "0.7" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.7" }
 serde = { default-features = false, features = ["derive"], optional = true, version = "1.0" }
 
 [dev-dependencies]
-quickcheck = "0.9"
-quickcheck_macros = "0.9"
+mop-problems = { path = "../mop-problems" }
 
 [features]
 default = []
-std = ["arrayvec/std", "cl-traits/std", "futures/std", "mop-common-defs/std", "ndsparse/std", "num-traits/std", "rand/std", "serde/std"]
-with_arrayvec = ["arrayvec", "cl-traits/with_arrayvec", "ndsparse/with_arrayvec"]
-with_futures = ["futures", "mop-common-defs/with_futures"]
-with_ndsparse = ["ndsparse"]
-with_rand = ["ndsparse/with_rand", "rand"]
-with_serde = ["arrayvec/serde", "cl-traits/with_serde", "ndsparse/with_serde", "rand/serde1", "serde"]
+std = ["cl-traits/std", "futures/std", "mop-common/std", "ndsparse/std", "num-traits/std", "rand/std", "serde/std"]
+with-futures = ["futures", "mop-common/with-futures"]
+with-ndsparse = ["ndsparse"]
+with-rand = ["ndsparse/with-rand", "rand"]
+with-serde = ["cl-traits/with-serde", "ndsparse/with-serde", "rand/serde1", "serde"]
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]

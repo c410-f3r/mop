@@ -1,22 +1,22 @@
-#![deny(rust_2018_idioms)]
-
 use arrayvec::ArrayVec;
 use core::ops::RangeInclusive;
 use mop::{
   blocks::{
     self,
-    mph::{Mph, MphDefinitions, MphDefinitionsBuilder, MphOrVec, MphOrs},
+    gp::{
+      new_defsb_o_ref, GpOperations, MpVec, MphDefinitionsBuilderVec, MphDefinitionsVec, MphMpMph,
+      MphOrVec, MphOrsVec, MphVec, NoCstr, NoCstrRslts,
+    },
+    objs::MinCstrsRslts,
+    quality_comparator::ObjsAvg,
     Cstr,
   },
-  facades::{initial_solutions::RandomInitialSolutions, opt},
-  solvers::{
-    genetic_algorithm::{
-      operators::{
-        crossover::MultiPoint, mating_selection::Tournament, mutation::RandomDomainAssignments,
-      },
-      GeneticAlgorithmParamsBuilder, Spea2,
+  facades::opt,
+  solvers::genetic_algorithm::{
+    operators::{
+      crossover::MultiPoint, mating_selection::Tournament, mutation::RandomDomainAssignments,
     },
-    quality_comparator::ParetoComparator,
+    GeneticAlgorithmParamsBuilder, Spea2,
   },
 };
 use rand::Rng;
@@ -24,60 +24,6 @@ use {
   js_sys::{Array, Function},
   wasm_bindgen::prelude::*,
 };
-
-// SolutionDomain
-
-#[wasm_bindgen]
-#[derive(Clone, Debug)]
-pub struct SolutionDomain(ArrayVec<[RangeInclusive<f64>; 16]>);
-
-#[wasm_bindgen]
-impl SolutionDomain {
-  #[wasm_bindgen(constructor)]
-  pub fn new(ranges: Vec<JsValue>) -> Self {
-    let mut va = ArrayVec::new();
-    ranges.iter().for_each(|x| {
-      let string = x.as_string().unwrap();
-      let mut iter = string.split('=');
-      let lower_bound = Self::parse_bound(iter.next());
-      let upper_bound = Self::parse_bound(iter.next());
-      va.push(lower_bound..=upper_bound);
-    });
-    SolutionDomain(va)
-  }
-
-  fn parse_bound(bound_option: Option<&str>) -> f64 {
-    if let Some(bound_str) = bound_option {
-      if let Ok(bound) = bound_str.parse::<f64>() {
-        bound
-      } else {
-        panic!("Couldn't parse domain range into a floating number");
-      }
-    } else {
-      panic!("Empty left or right bound for range domain");
-    }
-  }
-}
-
-impl blocks::SolutionDomain<Solution> for SolutionDomain {
-  fn len(&self) -> usize {
-    self.0.len()
-  }
-
-  fn new_random_solution<R>(&self, rng: &mut R) -> Solution
-  where
-    R: Rng,
-  {
-    Solution(self.0.new_random_solution(rng))
-  }
-
-  fn set_rnd_solution_domain<R>(&self, s: &mut Solution, idx: usize, rng: &mut R)
-  where
-    R: Rng,
-  {
-    self.0.set_rnd_solution_domain(&mut s.0, idx, rng);
-  }
-}
 
 // HardCstr
 
@@ -104,7 +50,7 @@ impl Cstr<Solution> for HardCstr {
   }
 }
 
-// HardCstr
+// Obj
 
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
@@ -155,58 +101,70 @@ impl ObjDirection {
 
 #[wasm_bindgen]
 #[derive(Debug)]
-pub struct OptFacade(opt::OptFacade<HardCstr, Obj, (), f64, Solution, SolutionDomain>);
+pub struct OptFacade(
+  opt::OptFacade<
+    Domain,
+    NoCstrRslts,
+    NoCstr,
+    (),
+    f64,
+    Vec<f64>,
+    Vec<Obj>,
+    ObjsAvg,
+    NoCstrRslts,
+    NoCstr,
+    Vec<Solution>,
+  >,
+);
 
 #[wasm_bindgen]
 impl OptFacade {
-  pub async fn solve(self, mut problem: OptProblem) -> OptProblem {
-    let spea2 = Spea2::new(
-      blocks::Pct::from_percent(50),
-      GeneticAlgorithmParamsBuilder::default()
-        .crossover(MultiPoint::new(1, blocks::Pct::from_percent(70)))
-        .mating_selection(Tournament::new(2, ParetoComparator::default()))
-        .mutation(RandomDomainAssignments::new(1, blocks::Pct::from_percent(30)))
-        .build(),
-      &problem.0,
-      ParetoComparator::default(),
-    );
-    self.0.solve_problem_with(&mut problem.0, spea2).await;
-    problem
-  }
-}
-
-// OptFacadeBuilder
-
-#[wasm_bindgen]
-#[derive(Debug, Default)]
-pub struct OptFacadeBuilder(opt::OptFacadeBuilder<(), f64>);
-
-#[wasm_bindgen]
-impl OptFacadeBuilder {
   #[wasm_bindgen(constructor)]
-  pub fn new() -> Self {
-    OptFacadeBuilder(opt::OptFacadeBuilder::default())
+  pub fn new(max_iterations: usize) -> Self {
+    OptFacade(opt::OptFacade::new(max_iterations))
   }
 
-  pub fn build(self, problem: &mut OptProblem) -> OptFacade {
-    let initial_solutions = RandomInitialSolutions::default();
-    OptFacade(self.0.opt_hooks(()).build().initial_solutions(initial_solutions, &mut problem.0))
+  pub fn set_max_iterations(self, max_iterations: usize) -> Self {
+    OptFacade(self.0.set_max_iterations(max_iterations))
   }
 
-  pub fn max_iterations(self, max_iterations: usize) -> Self {
-    OptFacadeBuilder(self.0.max_iterations(max_iterations))
+  pub fn set_stagnation(self, percentage: Pct, threshold: usize) -> Result<OptFacade, JsValue> {
+    let this = js_err(self.0.set_stagnation(percentage.0, threshold))?;
+    Ok(OptFacade(this))
   }
 
-  pub fn objs_goals(self, objs_goals: Vec<f64>) -> Self {
-    OptFacadeBuilder(self.0.objs_goals(objs_goals))
-  }
+  pub async fn solve(self, mut orig: OptProblem, rslts_num: usize) -> Result<OptProblem, JsValue> {
+    let (mph_defs, mut mph_rslts) = orig.0.parts_mut();
 
-  pub fn stagnation_percentage(self, stagnation_percentage: Pct) -> Self {
-    OptFacadeBuilder(self.0.stagnation_percentage(stagnation_percentage.0))
-  }
+    let mcr = MinCstrsRslts::from_gp_hcs(mph_defs);
+    let mp_defs_ref = js_err(new_defsb_o_ref(mph_defs, mph_rslts).push_obj(&mcr).build())?;
+    let mut mp_ref = js_err(MpVec::with_random_solutions(mp_defs_ref, 100))?;
 
-  pub fn stagnation_threshold(self, stagnation_threshold: usize) -> Self {
-    OptFacadeBuilder(self.0.stagnation_threshold(stagnation_threshold))
+    let spea2 = js_err(Spea2::new(
+      blocks::Pct::from_percent(50),
+      js_err(
+        GeneticAlgorithmParamsBuilder::default()
+          .crossover(MultiPoint::new(1, blocks::Pct::from_percent(70)))
+          .mating_selection(Tournament::new(2, ObjsAvg))
+          .mutation(RandomDomainAssignments::new(1, blocks::Pct::from_percent(30)))
+          .build(),
+      )?,
+      &mp_ref,
+      rslts_num,
+    ))?;
+    let facade = opt::OptFacade::new(self.0.max_iterations())
+      .set_quality_comparator(ObjsAvg)
+      .set_opt_hooks(());
+    let facade = if let Some((pct, threshold)) = self.0.stagnation() {
+      js_err(facade.set_stagnation(pct, threshold))?
+    } else {
+      facade
+    };
+    js_err(facade.solve_problem_with(&mut mp_ref, spea2).await)?;
+
+    js_err(MphMpMph::transfer(&mph_defs, &mut mph_rslts, &mp_ref).await)?;
+
+    Ok(orig)
   }
 }
 
@@ -214,21 +172,20 @@ impl OptFacadeBuilder {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
-pub struct OptProblem(Mph<HardCstr, Obj, f64, Solution, SolutionDomain>);
+pub struct OptProblem(MphVec<Domain, HardCstr, Obj, f64, Solution>);
 
 #[wasm_bindgen]
 impl OptProblem {
-  pub fn with_capacity(definitions: OptProblemDefinitions, results_num: usize) -> Self {
-    let results = MphOrs::with_capacity(&definitions.0, results_num);
-    OptProblem(Mph::new(definitions.0, results))
+  pub fn with_capacity(defs: OptProblemDefinitions, len: usize) -> Self {
+    OptProblem(MphVec::with_capacity(defs.0, len))
   }
 
-  pub fn definitions(self) -> OptProblemDefinitions {
+  pub fn defs(self) -> OptProblemDefinitions {
     OptProblemDefinitions(self.0.into_parts().0)
   }
 
-  pub fn results(self) -> OptProblemResults {
-    OptProblemResults(self.0.into_parts().1)
+  pub fn rslts(self) -> OptProblemRslts {
+    OptProblemRslts(self.0.into_parts().1)
   }
 }
 
@@ -236,31 +193,28 @@ impl OptProblem {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
-pub struct OptProblemDefinitions(MphDefinitions<HardCstr, Obj, SolutionDomain>);
+pub struct OptProblemDefinitions(MphDefinitionsVec<Domain, HardCstr, Obj>);
 
 // OptProblemDefinitionsBuilder
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Default)]
-pub struct OptProblemDefinitionsBuilder(MphDefinitionsBuilder<HardCstr, Obj, SolutionDomain>);
+pub struct OptProblemDefinitionsBuilder(MphDefinitionsBuilderVec<Domain, HardCstr, Obj>);
 
 #[wasm_bindgen]
 impl OptProblemDefinitionsBuilder {
   #[wasm_bindgen(constructor)]
   pub fn new() -> Self {
-    OptProblemDefinitionsBuilder(MphDefinitionsBuilder::default())
+    OptProblemDefinitionsBuilder(MphDefinitionsBuilderVec::default())
   }
 
-  pub fn build(self) -> OptProblemDefinitions {
-    OptProblemDefinitions(self.0.build())
+  pub fn build(self) -> Result<OptProblemDefinitions, JsValue> {
+    let op = js_err(self.0.build())?;
+    Ok(OptProblemDefinitions(op))
   }
 
-  pub fn domain(self, solution_domain: SolutionDomain) -> Self {
-    OptProblemDefinitionsBuilder(self.0.solution_domain(solution_domain))
-  }
-
-  pub fn name(self, name: String) -> Self {
-    OptProblemDefinitionsBuilder(self.0.name(name))
+  pub fn domain(self, domain: Domain) -> Self {
+    OptProblemDefinitionsBuilder(self.0.domain(domain))
   }
 
   pub fn push_hard_cstr(self, hard_cstr: HardCstr) -> Self {
@@ -272,28 +226,25 @@ impl OptProblemDefinitionsBuilder {
   }
 }
 
-// OptProblemResults
+// OptProblemRslts
 
 #[wasm_bindgen]
 #[derive(Clone, Debug)]
-pub struct OptProblemResults(MphOrs<f64, Solution>);
+pub struct OptProblemRslts(MphOrsVec<f64, Solution>);
 
 #[wasm_bindgen]
-impl OptProblemResults {
-  pub fn best(&self) -> Option<OptProblemResult> {
-    self.0.best().map(|b| OptProblemResult(b.to_vec()))
+impl OptProblemRslts {
+  pub fn get(&self, idx: usize) -> Result<OptProblemResult, JsValue> {
+    let result = self.0.get(idx).ok_or_else(|| JsValue::from("Unknown element"))?;
+    Ok(OptProblemResult(result.to_mph_vec()))
   }
 
-  pub fn get(&self, idx: usize) -> OptProblemResult {
-    OptProblemResult(self.0.get(idx).to_vec())
-  }
-
-  pub fn len(&self) -> usize {
-    self.0.len()
+  pub fn rslts_num(&self) -> usize {
+    self.0.rslts_num()
   }
 }
 
-// OptProblemResults
+// OptProblemRslts
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -301,16 +252,12 @@ pub struct OptProblemResult(MphOrVec<f64, Solution>);
 
 #[wasm_bindgen]
 impl OptProblemResult {
-  pub fn hard_cstrs(&self) -> Vec<u32> {
-    self.0.hard_cstrs().iter().map(|&x| x as u32).collect()
+  pub fn hard_cstr_rslts(&self) -> Vec<u32> {
+    self.0.hard_cstr_rslts().iter().map(|&x| x as u32).collect()
   }
 
-  pub fn objs(&self) -> Vec<f64> {
-    self.0.objs().to_vec()
-  }
-
-  pub fn objs_avg(&self) -> f64 {
-    *self.0.objs_avg()
+  pub fn obj_rslts(&self) -> Vec<f64> {
+    self.0.obj_rslts().to_vec()
   }
 
   pub fn solution(&self) -> Solution {
@@ -326,11 +273,7 @@ pub struct Pct(blocks::Pct);
 
 #[wasm_bindgen]
 impl Pct {
-  pub fn from_decimal(pct: f64) -> Self {
-    Pct(blocks::Pct::from_decimal(pct))
-  }
-
-  pub fn from_percent(pct: f64) -> Self {
+  pub fn from_percent(pct: u16) -> Self {
     Pct(blocks::Pct::from_percent(pct))
   }
 }
@@ -338,7 +281,7 @@ impl Pct {
 // Solution
 
 #[wasm_bindgen]
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Default)]
 pub struct Solution(ArrayVec<[f64; 16]>);
 
 #[wasm_bindgen]
@@ -349,6 +292,8 @@ impl Solution {
 }
 
 impl blocks::Solution for Solution {
+  const MAX_LEN: usize = 16;
+
   fn has_var(&self, idx: usize) -> bool {
     self.0.has_var(idx)
   }
@@ -366,6 +311,69 @@ impl blocks::Solution for Solution {
   }
 }
 
+// Domain
+
+#[wasm_bindgen]
+#[derive(Clone, Debug, Default)]
+pub struct Domain(ArrayVec<[RangeInclusive<f64>; 16]>);
+
+#[wasm_bindgen]
+impl Domain {
+  #[wasm_bindgen(constructor)]
+  pub fn new(ranges: Vec<JsValue>) -> Result<Domain, JsValue> {
+    let mut va = ArrayVec::new();
+    for x in ranges {
+      let string = x.as_string().ok_or_else(|| JsValue::from_str("Bad range"))?;
+      let mut iter = string.split('=');
+      let lower_bound = Self::parse_bound(iter.next());
+      let upper_bound = Self::parse_bound(iter.next());
+      va.push(lower_bound..=upper_bound);
+    }
+    Ok(Domain(va))
+  }
+
+  fn parse_bound(bound_option: Option<&str>) -> f64 {
+    if let Some(bound_str) = bound_option {
+      if let Ok(bound) = bound_str.parse::<f64>() {
+        bound
+      } else {
+        panic!("Couldn't parse domain range into a floating number");
+      }
+    } else {
+      panic!("Empty left or right bound for range domain");
+    }
+  }
+}
+
+impl blocks::Domain<Solution> for Domain {
+  type Error = mop::blocks::Error;
+
+  fn len(&self) -> usize {
+    self.0.len()
+  }
+
+  fn new_random_solution<R>(&self, rng: &mut R) -> Result<Solution, mop::blocks::Error>
+  where
+    R: Rng,
+  {
+    Ok(Solution(self.0.new_random_solution(rng)?))
+  }
+
+  fn set_rnd_domain<R>(&self, s: &mut Solution, idx: usize, rng: &mut R)
+  where
+    R: Rng,
+  {
+    self.0.set_rnd_domain(&mut s.0, idx, rng);
+  }
+}
+
+fn js_err<T, E>(rslt: Result<T, E>) -> Result<T, JsValue>
+where
+  E: core::fmt::Debug,
+{
+  rslt.map_err(|e| JsValue::from(format!("{:?}", e)))
+}
+
 #[cfg(test)]
 mod tests {
   use crate::wasm_bindgen::*;
@@ -373,9 +381,8 @@ mod tests {
 
   #[wasm_bindgen_test]
   fn test_problem() {
-    let opdbj = OptProblemDefinitionsBuilder::new()
-      .domain(SolutionDomain::new(vec![JsValue::from_str("0=5"), JsValue::from_str("0=3")]))
-      .name("Problem".into())
+    let opdb = OptProblemDefinitionsBuilder::default()
+      .domain(Domain::new(vec![JsValue::from_str("0=5"), JsValue::from_str("0=3")]).unwrap())
       .push_hard_cstr(HardCstr::new(Function::new_with_args(
         "solution, value",
         "let x = solution[0]; let y = solution[1]; \
@@ -402,13 +409,11 @@ mod tests {
         ),
       ));
 
-    let mut problem = OptProblem::with_capacity(opdbj.build(), 100);
-    let facade = OptFacadeBuilder::new()
-      .max_iterations(50)
-      .stagnation_percentage(Pct::from_percent(1.0))
-      .stagnation_threshold(10)
-      .build(&mut problem);
+    let problem = OptProblem::with_capacity(opdb.build().unwrap(), 100);
+    let facade = OptFacade::new(50).set_stagnation(Pct::from_percent(1), 10).unwrap();
 
-    wasm_bindgen_futures::spawn_local(async { facade.solve(problem).await; });
+    wasm_bindgen_futures::spawn_local(async {
+      facade.solve(problem, 100).await.unwrap();
+    });
   }
 }

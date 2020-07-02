@@ -1,10 +1,9 @@
 #!/usr/bin/env bash
-set -e
 
-# Based on https://github.com/SergioBenitez/Rocket/blob/master/scripts/publish.sh
+set -eux
 
 PACKAGES=(
-    mop-common-defs
+    mop-common
     mop-blocks
     mop-solvers
     mop-facades    

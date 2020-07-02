@@ -13,10 +13,10 @@ rpath = false
 members = [
     "mop",
     "mop-blocks",
-    "mop-common-defs",
+    "mop-common",
     "mop-facades",
     "mop-solvers",
 
     "mop-bindings",
-    "problems",
+    "mop-problems",
 ]

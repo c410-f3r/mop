@@ -1,30 +1,30 @@
-pub trait OptHooks<S> {
+pub trait OptHooks<P> {
   fn init(&mut self);
 
-  fn before_iter(&mut self, s: &mut S);
+  fn before_iter(&mut self, p: &mut P);
 
-  fn after_iter(&mut self, s: &mut S);
+  fn after_iter(&mut self, p: &mut P);
 
   fn finished(&mut self);
 }
 
-impl<S> OptHooks<S> for () {
-  fn before_iter(&mut self, _: &mut S) {}
+impl<P> OptHooks<P> for () {
+  fn before_iter(&mut self, _: &mut P) {}
 
-  fn after_iter(&mut self, _: &mut S) {}
+  fn after_iter(&mut self, _: &mut P) {}
 
   fn finished(&mut self) {}
 
   fn init(&mut self) {}
 }
 
-impl<S> OptHooks<S> for (fn(&mut S), fn(&mut S), fn(), fn()) {
-  fn before_iter(&mut self, s: &mut S) {
-    (self.0)(s);
+impl<P> OptHooks<P> for (fn(&mut P), fn(&mut P), fn(), fn()) {
+  fn before_iter(&mut self, p: &mut P) {
+    (self.0)(p);
   }
 
-  fn after_iter(&mut self, s: &mut S) {
-    (self.1)(s);
+  fn after_iter(&mut self, p: &mut P) {
+    (self.1)(p);
   }
 
   fn finished(&mut self) {

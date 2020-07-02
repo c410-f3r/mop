@@ -15,14 +15,24 @@ use crate::dr_matrix::{DrMatrixArray, DrMatrixVec};
 /// //  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 /// ```
 pub fn dr_matrix_array() -> DrMatrixArray<[i32; 20]> {
-  DrMatrixArray::new(4, 5, [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20])
+  DrMatrixArray {
+    cols: 5,
+    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].into(),
+    rows: 4,
+  }
 }
 
+/// `Vec` version of `dr_matrix_array`.
 pub fn dr_matrix_vec() -> DrMatrixVec<i32> {
   let dr_matrix_array = dr_matrix_array();
-  DrMatrixVec::new(dr_matrix_array.rows(), dr_matrix_array.cols(), dr_matrix_array.data().to_vec())
+  DrMatrixVec {
+    cols: dr_matrix_array.cols(),
+    data: dr_matrix_array.data().to_vec(),
+    rows: dr_matrix_array.rows(),
+  }
 }
 
+/// Empty `Vec` version of `dr_matrix_array`.
 pub fn capacited_dr_matrix_vec() -> DrMatrixVec<i32> {
   let dr_matrix_array = dr_matrix_array();
   DrMatrixVec::with_capacity(dr_matrix_array.rows(), dr_matrix_array.cols())

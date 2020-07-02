@@ -8,12 +8,12 @@ pub struct GeneticAlgorithmParamsBuilder<C, M, MS> {
 }
 
 impl<C, M, MS> GeneticAlgorithmParamsBuilder<C, M, MS> {
-  pub fn build(self) -> GeneticAlgorithmParams<C, M, MS> {
-    GeneticAlgorithmParams {
-      crossover: self.crossover.unwrap(),
-      mating_selection: self.mating_selection.unwrap(),
-      mutation: self.mutation.unwrap(),
-    }
+  pub fn build(self) -> Result<GeneticAlgorithmParams<C, M, MS>, mop_blocks::Error> {
+    Ok(GeneticAlgorithmParams {
+      crossover: mop_blocks::Error::opt_rslt(self.crossover)?,
+      mating_selection: mop_blocks::Error::opt_rslt(self.mating_selection)?,
+      mutation: mop_blocks::Error::opt_rslt(self.mutation)?,
+    })
   }
 
   pub fn crossover(mut self, crossover: C) -> Self {

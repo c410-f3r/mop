@@ -1,17 +1,17 @@
 use core::fmt;
 
-type OptHooksFn<S> = (fn(&mut S), fn(&mut S), fn(), fn());
+type OptHooksFn<P> = (fn(&mut P), fn(&mut P), fn(), fn());
 
 #[derive(Debug)]
-pub struct OptHooksFnBuilder<S> {
-  after_opt_move: Option<FnWrapper<S>>,
-  before_opt_move: Option<FnWrapper<S>>,
+pub struct OptHooksFnBuilder<P> {
+  after_opt_move: Option<FnWrapper<P>>,
+  before_opt_move: Option<FnWrapper<P>>,
   finished: Option<fn()>,
   init: Option<fn()>,
 }
 
-impl<S> OptHooksFnBuilder<S> {
-  pub fn build(self) -> OptHooksFn<S> {
+impl<P> OptHooksFnBuilder<P> {
+  pub fn build(self) -> OptHooksFn<P> {
     (
       self.after_opt_move.unwrap_or_default().0,
       self.before_opt_move.unwrap_or_default().0,
@@ -20,12 +20,12 @@ impl<S> OptHooksFnBuilder<S> {
     )
   }
 
-  pub fn after_iter(mut self, after_opt_move: fn(&mut S)) -> Self {
+  pub fn after_iter(mut self, after_opt_move: fn(&mut P)) -> Self {
     self.after_opt_move = Some(FnWrapper(after_opt_move));
     self
   }
 
-  pub fn before_iter(mut self, before_opt_move: fn(&mut S)) -> Self {
+  pub fn before_iter(mut self, before_opt_move: fn(&mut P)) -> Self {
     self.before_opt_move = Some(FnWrapper(before_opt_move));
     self
   }
@@ -41,21 +41,22 @@ impl<S> OptHooksFnBuilder<S> {
   }
 }
 
-impl<S> Default for OptHooksFnBuilder<S> {
+impl<P> Default for OptHooksFnBuilder<P> {
   fn default() -> Self {
     Self { after_opt_move: None, before_opt_move: None, finished: None, init: None }
   }
 }
 
-struct FnWrapper<S>(fn(&mut S));
+struct FnWrapper<P>(fn(&mut P));
 
-impl<S> fmt::Debug for FnWrapper<S> {
+#[allow(clippy::as_conversions)]
+impl<P> fmt::Debug for FnWrapper<P> {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     fmt::Pointer::fmt(&(self.0 as *const ()), f)
   }
 }
 
-impl<S> Default for FnWrapper<S> {
+impl<P> Default for FnWrapper<P> {
   fn default() -> Self {
     FnWrapper(|_| {})
   }

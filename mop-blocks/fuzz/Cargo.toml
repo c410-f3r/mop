@@ -1,0 +1,27 @@
+[[bin]]
+name = "dr_matrix_fuzz"
+path = "fuzz_targets/dr_matrix_fuzz.rs"
+
+[[bin]]
+name = "gp_fuzz"
+path = "fuzz_targets/gp_fuzz.rs"
+
+[dependencies]
+arbitrary = { default-features = false, features = ["derive"], version = "0.4" }
+libfuzzer-sys = { default-features = false, version = "0.3" }
+mop-blocks = { default-features = false, features = ["with-rand"], path = ".." }
+
+[package]
+authors = ["Automatically generated"]
+edition = "2018"
+license = "Apache-2.0"
+name = "mop-blocks-fuzz"
+publish = false
+version = "0.0.0"
+
+[package.metadata]
+cargo-fuzz = true
+
+[workspace]
+members = ["."]
+

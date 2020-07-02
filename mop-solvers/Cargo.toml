@@ -1,12 +1,17 @@
 [dependencies]
-mop-blocks = { features = ["with_rand"], path = "../mop-blocks", version = "0.2.0" }
-mop-common-defs = { path = "../mop-common-defs", version = "0.2.0" }
+cl-traits = { default-features = false, version = "4.0" }
+mop-blocks = { features = ["with-rand"], path = "../mop-blocks", version = "0.2.0" }
+mop-common = { path = "../mop-common", version = "0.2.0" }
+num-integer = { default-features = false, version = "0.1" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, version = "0.7" }
 
+[dev-dependencies]
+mop-problems = { path = "../mop-problems" }
+
 [features]
 default = []
-std = ["mop-blocks/std", "mop-common-defs/std", "num-traits/std", "rand/std"]
+std = ["mop-blocks/std", "mop-common/std", "num-traits/std", "rand/std"]
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]

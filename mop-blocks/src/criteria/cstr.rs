@@ -1,6 +1,6 @@
 //! Constraint
 
-use alloc::string::String;
+use alloc::{boxed::Box, string::String};
 
 /// Constraint
 ///
@@ -15,9 +15,29 @@ pub trait Cstr<S> {
   fn violations(&self, solution: &S) -> usize;
 }
 
-impl<S> Cstr<S> for () {
-  fn violations(&self, _: &S) -> usize {
-    core::usize::MAX
+impl<C, S> Cstr<S> for &'_ C
+where
+  C: Cstr<S> + ?Sized,
+{
+  fn reasons(&self, solution: &S) -> String {
+    (*self).reasons(solution)
+  }
+
+  fn violations(&self, solution: &S) -> usize {
+    (*self).violations(solution)
+  }
+}
+
+impl<C, S> Cstr<S> for Box<C>
+where
+  C: Cstr<S>,
+{
+  fn reasons(&self, solution: &S) -> String {
+    self.as_ref().reasons(solution)
+  }
+
+  fn violations(&self, solution: &S) -> usize {
+    self.as_ref().violations(solution)
   }
 }
 
@@ -36,3 +56,9 @@ impl<S> Cstr<S> for (fn(&S) -> String, fn(&S) -> usize) {
     self.1(solution)
   }
 }
+
+//impl<S> Cstr<S> for () {
+//  fn violations(&self, _: &S) -> usize {
+//    usize::MAX
+//  }
+//}

@@ -1,15 +1,15 @@
 [dependencies]
-mop-blocks = { features = ["with_rand"], path = "../mop-blocks", version = "0.2.0" }
+mop-blocks = { features = ["with-rand"], path = "../mop-blocks", version = "0.2.0" }
 mop-facades = { path = "../mop-facades", version = "0.2.0" }
-mop-solvers = { path = "../mop-solvers", version = "0.2.0" }
+mop-solvers = { optional = true, path = "../mop-solvers", version = "0.2.0" }
 
 [features]
-default = []
+default = ["with-mop-solvers"]
 std = ["mop-blocks/std", "mop-facades/std", "mop-solvers/std"]
-with_arrayvec = ["mop-blocks/with_arrayvec"]
-with_futures = ["mop-blocks/with_futures"]
-with_ndsparse = ["mop-blocks/with_ndsparse"]
-with_serde = ["mop-blocks/with_serde"]
+with-futures = ["mop-blocks/with-futures"]
+with-mop-solvers = ["mop-solvers"]
+with-ndsparse = ["mop-blocks/with-ndsparse"]
+with-serde = ["mop-blocks/with-serde"]
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]

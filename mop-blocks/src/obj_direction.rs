@@ -10,7 +10,7 @@ pub enum ObjDirection {
 }
 
 impl ObjDirection {
-  pub fn partial_cmp<T>(self, a: &T, b: &T) -> Option<Ordering>
+  pub fn is_better<T>(self, a: &T, b: &T) -> Option<Ordering>
   where
     T: PartialOrd,
   {

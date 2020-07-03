@@ -127,9 +127,8 @@ where
   }
 
   /// Push objective
-  pub fn push_obj<I>(mut self, obj: I) -> Self
+  pub fn push_obj(mut self, obj: O) -> Self
   where
-    I: Into<O>,
     OS: Default + Push<Input = O>,
   {
     if let Some(objs) = &mut self.objs {

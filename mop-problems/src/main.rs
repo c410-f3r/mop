@@ -109,7 +109,7 @@ macro_rules! exec {
         let (mph_defs, mut mph_rslts) = mph.parts_mut();
 
         let mcr = MinCstrsRslts::from_gp_hcs(mph_defs);
-        let mp_defs_ref = new_defsb_o_ref(mph_defs, mph_rslts).push_obj(&mcr).build()?;
+        let mp_defs_ref = new_defsb_o_ref(mph_defs, mph_rslts).push_obj((&mcr).into()).build()?;
         let mut mp_ref = MpVec::with_random_solutions(mp_defs_ref, 100)?;
 
         let spea2 = Spea2::new(

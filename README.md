@@ -117,7 +117,7 @@ async fn main() -> Result<(), mop::blocks::Error> {
   let of = OptFacade::new(50)
     .set_opt_hooks(())
     .set_quality_comparator(ObjsAvg)
-    .set_stagnation(Pct::from_percent(2i32), 10)?
+    .set_stagnation(Pct::from_percent(2), 10)?
     .solve_problem_with(&mut mp_ref, spea2)
     .await?;
 
@@ -150,7 +150,6 @@ async fn main() -> Result<(), mop::blocks::Error> {
 
 - `no_std` by default
 - Different storages (Array, Vec, Slice and more!)
-- Fully documented
 - Fuzz testing
 - No `unsafe`
 

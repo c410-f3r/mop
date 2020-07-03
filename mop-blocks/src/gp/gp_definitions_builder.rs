@@ -132,10 +132,10 @@ where
     OS: Default + Push<Input = O>,
   {
     if let Some(objs) = &mut self.objs {
-      objs.push(obj.into());
+      objs.push(obj);
     } else {
       let mut objs = OS::default();
-      objs.push(obj.into());
+      objs.push(obj);
       self.objs = Some(objs);
     }
     self

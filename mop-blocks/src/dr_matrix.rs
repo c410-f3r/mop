@@ -15,7 +15,7 @@ pub type Result<T> = core::result::Result<T, DrMatrixError>;
 
 /// Dense Row Matrix
 ///
-/// Dense matrix filled row-by-row, i.e., the tradicional matrix that is generally taught
+/// Dense matrix filled row-by-row, i.e., the traditional matrix that is generally taught
 /// in class or used by dense linear algebra algorithms.
 ///
 /// Tailored exclusively for storing purposes, doesn't provide any arithmetic method.
@@ -32,6 +32,7 @@ pub struct DrMatrix<DS> {
 }
 
 impl<DS> DrMatrix<DS> {
+  /// See [`DrMatrixRowsConstructor`](struct.DrMatrixRowsConstructor.html) for more information.
   pub fn constructor(&mut self) -> DrMatrixRowsConstructor<'_, DS> {
     DrMatrixRowsConstructor::new(&mut self.rows, self.cols, &mut self.data)
   }
@@ -197,6 +198,13 @@ where
     &self.data.as_ref()
   }
 
+  /// If `row_idx` is out of bounds, returns `None`. Otherwise, returns a slice
+  /// representing data of the given row index.
+  ///
+  /// # Arguments
+  ///
+  /// * `row_idx`: Row index
+  ///
   /// # Example
   ///
   /// ```rust

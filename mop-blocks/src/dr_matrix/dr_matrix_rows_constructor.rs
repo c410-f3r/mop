@@ -11,7 +11,6 @@ pub type DrMatrixRowConstructorVec<'a, T> = DrMatrixRowsConstructor<'a, Vec<T>>;
 ///
 /// This struct may panic when out of scope. Please see the `Drop` documentation in
 /// the [`Trait Implementations`](#implementations) section for more information.
-/// #[derive(Debug, PartialEq)]
 #[derive(Debug, PartialEq)]
 pub struct DrMatrixRowsConstructor<'a, DS> {
   pub(crate) data: &'a mut DS,

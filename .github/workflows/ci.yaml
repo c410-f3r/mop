@@ -6,20 +6,6 @@ on:
       - master
 
 jobs:
-  cargo-audit:
-    name: Cargo audit
-    runs-on: ubuntu-latest
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - uses: actions-rs/install@v0.1
-      with:
-        crate: cargo-audit
-        use-tool-cache: true
-
-    - run: cargo audit
-
   cargo-fuzz:
     name: Cargo fuzz
     runs-on: ubuntu-latest

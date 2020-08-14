@@ -83,6 +83,8 @@ impl<DS> DrMatrix<DS> {
     self.rows
   }
 
+  /// Keeps the initial `until_row_idx` number of rows, cleaning the remaining data.
+  ///
   /// # Example
   ///
   /// ```rust

@@ -45,7 +45,6 @@ pub type SpOrsVec<OR, S> = SpOrs<Vec<OR>, Vec<S>>;
 pub struct GpOrs<HCRS, ORS, SCRS, SS> {
   pub(crate) hard_cstr_rslts: DrMatrix<HCRS>,
   pub(crate) obj_rslts: DrMatrix<ORS>,
-  pub(crate) rslts_num: usize,
   pub(crate) soft_cstr_rslts: DrMatrix<SCRS>,
   pub(crate) solutions: SS,
 }
@@ -79,7 +78,7 @@ impl<HCRS, ORS, SCRS, SS> GpOrs<HCRS, ORS, SCRS, SS> {
 
   #[inline]
   pub fn rslts_num(&self) -> usize {
-    self.rslts_num
+    self.obj_rslts.rows()
   }
 }
 
@@ -94,7 +93,6 @@ where
     GpOrsConstructor {
       hard_cstr_rslts: self.hard_cstr_rslts.constructor(),
       obj_rslts: self.obj_rslts.constructor(),
-      rslts_num: &mut self.rslts_num,
       soft_cstr_rslts: self.soft_cstr_rslts.constructor(),
       solutions: &mut self.solutions,
     }
@@ -198,7 +196,6 @@ where
       hard_cstr_rslts: self.hard_cstr_rslts.as_ref(),
       soft_cstr_rslts: self.soft_cstr_rslts.as_ref(),
       obj_rslts: self.obj_rslts.as_ref(),
-      rslts_num: self.rslts_num,
       solutions: self.solutions.as_ref(),
     }
   }
@@ -257,6 +254,6 @@ where
     let obj_rslts = DrMatrix::with_capacity(rslts_num, defs.objs().len());
     let soft_cstr_rslts = DrMatrix::with_capacity(rslts_num, defs.soft_cstrs().len());
     let solutions = SS::with_capacity(rslts_num);
-    Self { hard_cstr_rslts, obj_rslts, rslts_num: 0, soft_cstr_rslts, solutions }
+    Self { hard_cstr_rslts, obj_rslts, soft_cstr_rslts, solutions }
   }
 }

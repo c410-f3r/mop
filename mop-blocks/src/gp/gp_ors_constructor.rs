@@ -20,7 +20,6 @@ pub type SpOrsConstructor<'a, ORS, SS> = GpOrsConstructor<'a, NoCstrRslts, ORS, 
 pub struct GpOrsConstructor<'a, HCRS, ORS, SCRS, SS> {
   pub(crate) hard_cstr_rslts: DrMatrixRowsConstructor<'a, HCRS>,
   pub(crate) obj_rslts: DrMatrixRowsConstructor<'a, ORS>,
-  pub(crate) rslts_num: &'a mut usize,
   pub(crate) soft_cstr_rslts: DrMatrixRowsConstructor<'a, SCRS>,
   pub(crate) solutions: &'a mut SS,
 }
@@ -44,7 +43,6 @@ where
     self.obj_rslts = self.obj_rslts.row_slice(from.obj_rslts)?;
     self.soft_cstr_rslts = self.soft_cstr_rslts.row_slice(from.soft_cstr_rslts)?;
     self.solutions.push(from.solution.clone());
-    *self.rslts_num += 1;
     Some(self)
   }
 
@@ -57,7 +55,6 @@ where
     self.obj_rslts = self.obj_rslts.matrix_ref(other.obj_rslts)?;
     self.soft_cstr_rslts = self.soft_cstr_rslts.matrix_ref(other.soft_cstr_rslts)?;
     self.solutions.extend(other.solutions.iter().cloned());
-    *self.rslts_num += other.rslts_num();
     Some(self)
   }
 
@@ -74,7 +71,6 @@ where
       self.obj_rslts = self.obj_rslts.fill_row(OR::default());
       self.soft_cstr_rslts = self.soft_cstr_rslts.fill_row(SCR::default());
       self.solutions.push(solution.ok()?);
-      *self.rslts_num += 1;
     }
     Some(self)
   }
@@ -115,7 +111,6 @@ where
     self.obj_rslts = self.obj_rslts.row_iter(ori)?;
     self.soft_cstr_rslts = self.soft_cstr_rslts.row_iter(scri)?;
     self.solutions.push(s);
-    *self.rslts_num += 1;
     Some(self)
   }
 

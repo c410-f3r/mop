@@ -69,6 +69,7 @@ where
     for idx in 0..self.cols {
       self.data.push(cb(idx));
     }
+    *self.rows += 1;
     self
   }
 

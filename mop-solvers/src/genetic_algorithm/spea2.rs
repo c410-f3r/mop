@@ -336,7 +336,7 @@ mod tests {
   fn spea2() {
     let is_equal = |x: f64, y: f64| (x - y).abs() < 0.001;
 
-    let mut problem = dummy_mp_with_solutions().unwrap();
+    let mut problem = dummy_mp_with_solutions();
 
     let mut spea2 = Spea2::new(
       Pct::from_percent(50),

@@ -61,9 +61,7 @@ mod tests {
     let (defs, a) = problem.parts_mut();
     a.constructor()
       .or_hcos_iter([0, 0].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
-      .unwrap()
-      .or_hcos_iter([0, 1].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
-      .unwrap();
+      .or_hcos_iter([0, 1].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(Nsga2.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);
   }
 
@@ -73,9 +71,7 @@ mod tests {
     let (defs, a) = problem.parts_mut();
     a.constructor()
       .or_hcos_iter([1, 1].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
-      .unwrap()
-      .or_hcos_iter([2, 2].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
-      .unwrap();
+      .or_hcos_iter([2, 2].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(Nsga2.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);
   }
 
@@ -85,9 +81,7 @@ mod tests {
     let (defs, a) = problem.parts_mut();
     a.constructor()
       .or_hcos_iter([0, 0].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
-      .unwrap()
-      .or_hcos_iter([0, 0].iter().cloned(), [0.0, 2.0].iter().cloned(), [10.0, 20.0])
-      .unwrap();
+      .or_hcos_iter([0, 0].iter().cloned(), [0.0, 2.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(Nsga2.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);
   }
 }

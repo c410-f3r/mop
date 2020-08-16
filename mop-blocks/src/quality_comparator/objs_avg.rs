@@ -34,8 +34,8 @@ mod tests {
   fn objs_avg() {
     let mut problem = dummy_mp();
     let (defs, a) = problem.parts_mut();
-    a.constructor().or_os_iter([0.0, 2.0].iter().cloned(), [10.0, 20.0]).unwrap();
-    a.constructor().or_os_iter([2.0, 2.0].iter().cloned(), [10.0, 20.0]).unwrap();
+    a.constructor().or_os_iter([0.0, 2.0].iter().cloned(), [10.0, 20.0]);
+    a.constructor().or_os_iter([2.0, 2.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(ObjsAvg.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);
   }
 }

@@ -86,7 +86,7 @@ where
   SCR: Default,
   SCRS: Extend<SCR> + Length<Output = usize> + Storage<Item = SCR>,
 {
-  pub fn or_hcos_iter<HCRI, ORI>(self, hcri: HCRI, ori: ORI, solution: S) -> Option<Self>
+  pub fn or_hcos_iter<HCRI, ORI>(self, hcri: HCRI, ori: ORI, solution: S) -> Self
   where
     HCRI: Iterator<Item = HCR>,
     ORI: Iterator<Item = OR>,
@@ -95,26 +95,20 @@ where
     self.or_hcossc_iter(hcri, ori, solution, scri)
   }
 
-  pub fn or_hcossc_iter<HCRI, ORI, SCRI>(
-    mut self,
-    hcri: HCRI,
-    ori: ORI,
-    s: S,
-    scri: SCRI,
-  ) -> Option<Self>
+  pub fn or_hcossc_iter<HCRI, ORI, SCRI>(mut self, hcri: HCRI, ori: ORI, s: S, scri: SCRI) -> Self
   where
     HCRI: Iterator<Item = HCR>,
     ORI: Iterator<Item = OR>,
     SCRI: Iterator<Item = SCR>,
   {
-    self.hard_cstr_rslts = self.hard_cstr_rslts.row_iter(hcri)?;
-    self.obj_rslts = self.obj_rslts.row_iter(ori)?;
-    self.soft_cstr_rslts = self.soft_cstr_rslts.row_iter(scri)?;
+    self.hard_cstr_rslts = self.hard_cstr_rslts.row_iter(hcri);
+    self.obj_rslts = self.obj_rslts.row_iter(ori);
+    self.soft_cstr_rslts = self.soft_cstr_rslts.row_iter(scri);
     self.solutions.push(s);
-    Some(self)
+    self
   }
 
-  pub fn or_os_iter<ORI>(self, ori: ORI, solution: S) -> Option<Self>
+  pub fn or_os_iter<ORI>(self, ori: ORI, solution: S) -> Self
   where
     ORI: Iterator<Item = OR>,
   {

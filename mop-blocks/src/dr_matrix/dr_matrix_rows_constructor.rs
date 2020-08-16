@@ -1,6 +1,6 @@
 use crate::dr_matrix::DrMatrixRef;
 use alloc::vec::Vec;
-use cl_traits::{Length, Storage};
+use cl_traits::{Length, Push, Storage};
 use core::iter::Extend;
 
 pub type DrMatrixRowConstructorMut<'a, DATA> = DrMatrixRowsConstructor<'a, &'a mut [DATA]>;
@@ -61,7 +61,18 @@ where
     Some(self)
   }
 
-  pub fn row_iter<I>(self, i: I) -> Option<Self>
+  pub fn row_cb<F>(self, mut cb: F) -> Self
+  where
+    DS: Push<Input = DATA>,
+    F: FnMut(usize) -> DATA,
+  {
+    for idx in 0..self.cols {
+      self.data.push(cb(idx));
+    }
+    self
+  }
+
+  pub fn row_iter<I>(self, i: I) -> Self
   where
     DATA: Default,
     DS: Extend<DATA> + Length<Output = usize>,
@@ -73,7 +84,7 @@ where
     let diff = self.cols - (new_len - old_len);
     self.data.extend((0..diff).map(|_| DATA::default()));
     *self.rows += 1;
-    Some(self)
+    self
   }
 
   /// Clones all values of `row` into the current row.

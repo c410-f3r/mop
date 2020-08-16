@@ -242,6 +242,7 @@ where
   /// assert_eq!(ri.next(), Some(&[6, 7, 8, 9, 10][..]));
   /// assert_eq!(ri.next(), Some(&[11, 12, 13, 14, 15][..]));
   /// assert_eq!(ri.next(), Some(&[16, 17, 18, 19, 20][..]));
+  /// assert_eq!(ri.next(), None);
   /// ```
   pub fn row_iter(&self) -> DrMatrixRowIter<'_, DATA> {
     DrMatrixRowIter::new(self.rows(), self.cols, self.data().as_ref())

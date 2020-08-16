@@ -67,16 +67,16 @@ pub fn dummy_mp() -> DummyMpTy {
   )
 }
 
-pub fn dummy_mp_with_solutions() -> Option<DummyMpTy> {
+pub fn dummy_mp_with_solutions() -> DummyMpTy {
   let mut problem = dummy_mp();
   problem
     .rslts_mut()
     .constructor()
-    .or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 2.0])?
-    .or_os_iter([8.0, 8.0].iter().cloned(), [3.0, 3.0])?
-    .or_os_iter([8.0, 12.0].iter().cloned(), [4.0, 4.0])?
-    .or_os_iter([12.0, 12.0].iter().cloned(), [5.0, 5.0])?;
-  Some(problem)
+    .or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 2.0])
+    .or_os_iter([8.0, 8.0].iter().cloned(), [3.0, 3.0])
+    .or_os_iter([8.0, 12.0].iter().cloned(), [4.0, 4.0])
+    .or_os_iter([12.0, 12.0].iter().cloned(), [5.0, 5.0]);
+  problem
 }
 
 pub fn dummy_mph() -> DummyMphTy {
@@ -92,14 +92,14 @@ pub fn dummy_mph() -> DummyMphTy {
   )
 }
 
-pub fn dummy_mph_with_solutions() -> Option<DummyMphTy> {
+pub fn dummy_mph_with_solutions() -> DummyMphTy {
   let mut problem = dummy_mph();
   problem
     .rslts_mut()
     .constructor()
-    .or_hcos_iter([1, 2].iter().cloned(), [4.0, 8.0].iter().cloned(), [2.0, 2.0])?
-    .or_hcos_iter([1, 2].iter().cloned(), [8.0, 8.0].iter().cloned(), [3.0, 3.0])?
-    .or_hcos_iter([1, 2].iter().cloned(), [8.0, 12.0].iter().cloned(), [4.0, 4.0])?
-    .or_hcos_iter([1, 2].iter().cloned(), [12.0, 12.0].iter().cloned(), [5.0, 5.0])?;
-  Some(problem)
+    .or_hcos_iter([1, 2].iter().cloned(), [4.0, 8.0].iter().cloned(), [2.0, 2.0])
+    .or_hcos_iter([1, 2].iter().cloned(), [8.0, 8.0].iter().cloned(), [3.0, 3.0])
+    .or_hcos_iter([1, 2].iter().cloned(), [8.0, 12.0].iter().cloned(), [4.0, 4.0])
+    .or_hcos_iter([1, 2].iter().cloned(), [12.0, 12.0].iter().cloned(), [5.0, 5.0]);
+  problem
 }

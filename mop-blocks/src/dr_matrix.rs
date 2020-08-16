@@ -230,6 +230,19 @@ where
     self.data().get(self.row_range(row_idx)?)
   }
 
+  /// Iterator where each element is a row slice.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use mop_blocks::doc_tests::dr_matrix_array;
+  /// let ddma = dr_matrix_array();
+  /// let mut ri = ddma.row_iter();
+  /// assert_eq!(ri.next(), Some(&[1, 2, 3, 4, 5][..]));
+  /// assert_eq!(ri.next(), Some(&[6, 7, 8, 9, 10][..]));
+  /// assert_eq!(ri.next(), Some(&[11, 12, 13, 14, 15][..]));
+  /// assert_eq!(ri.next(), Some(&[16, 17, 18, 19, 20][..]));
+  /// ```
   pub fn row_iter(&self) -> DrMatrixRowIter<'_, DATA> {
     DrMatrixRowIter::new(self.rows(), self.cols, self.data().as_ref())
   }

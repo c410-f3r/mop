@@ -56,9 +56,3 @@ impl<S> Cstr<S> for (fn(&S) -> String, fn(&S) -> usize) {
     self.1(solution)
   }
 }
-
-//impl<S> Cstr<S> for () {
-//  fn violations(&self, _: &S) -> usize {
-//    usize::MAX
-//  }
-//}

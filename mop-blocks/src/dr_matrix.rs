@@ -85,6 +85,10 @@ impl<DS> DrMatrix<DS> {
 
   /// Keeps the initial `until_row_idx` number of rows, cleaning the remaining data.
   ///
+  /// # Argument
+  ///
+  /// * `until_row_idx` - The number of rows
+  ///
   /// # Example
   ///
   /// ```rust
@@ -125,6 +129,11 @@ where
   ///
   /// The number of columns will be equal `cols` while the number of rows will be
   /// equal to zero.
+  ///
+  /// # Arguments
+  ///
+  /// * `rows` - Number of rows
+  /// * `cols` - Number of columns
   ///
   /// # Example
   ///
@@ -203,7 +212,7 @@ where
   /// If `row_idx` is out of bounds, returns `None`. Otherwise, returns a slice
   /// representing data of the given row index.
   ///
-  /// # Arguments
+  /// # Argument
   ///
   /// * `row_idx`: Row index
   ///
@@ -248,6 +257,19 @@ where
     DrMatrixRowIter::new(self.rows(), self.cols, self.data().as_ref())
   }
 
+  /// Copies the internal data into a heap allocated `Vec` storage and
+  /// returns it as owned value.
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use mop_blocks::doc_tests::dr_matrix_array;
+  /// let ddma = dr_matrix_array();
+  /// assert_eq!(
+  ///   ddma.to_vec(),
+  ///   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].to_vec(),
+  /// );
+  /// ```
   pub fn to_vec(&self) -> DrMatrixVec<DATA>
   where
     DATA: Clone,
@@ -255,6 +277,14 @@ where
     DrMatrixVec { cols: self.cols, data: self.data.as_ref().to_vec(), rows: self.rows }
   }
 
+  /// If `row_idx` and `col_idx` are within bounds, returns a value reference. Otherwise,
+  /// returns None.
+  ///
+  /// # Arguments
+  ///
+  /// * `row_idx` - Row index
+  /// * `col_idx` - Column index
+  ///
   /// # Example
   ///
   /// ```rust

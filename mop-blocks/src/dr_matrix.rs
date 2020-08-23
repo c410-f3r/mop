@@ -307,10 +307,17 @@ impl<DATA, DS> DrMatrix<DS>
 where
   DS: AsMut<[DATA]> + Storage<Item = DATA>,
 {
+  /// Mutable version of [`data`](#method.data).
   pub fn data_mut(&mut self) -> &mut [DATA] {
     self.data.as_mut()
   }
 
+  /// Removes a row of a given `idx` by shifting all posterior rows.
+  ///
+  /// # Arguments
+  ///
+  /// * `idx` - Row index
+  ///
   /// # Example
   ///
   /// ```rust
@@ -335,11 +342,13 @@ where
     self.truncate(self.rows - 1);
   }
 
+  /// Mutable version of [`row`](#method.row).
   pub fn row_mut(&mut self, row_idx: usize) -> Option<&mut [DATA]> {
     let row_range = self.row_range(row_idx)?;
     self.data_mut().get_mut(row_range)
   }
 
+  /// Mutable version of [`row_iter`](#method.row_iter).
   pub fn row_iter_mut(&mut self) -> DrMatrixRowIterMut<'_, DATA> {
     DrMatrixRowIterMut::new(self.rows, self.cols, self.data.as_mut())
   }

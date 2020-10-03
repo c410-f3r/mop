@@ -24,7 +24,9 @@ The definitions and results of `Binh and Korn`, a multi-objective problem with t
 use core::cmp::Ordering;
 use mop::{
   blocks::{
-    gp::{new_defsb_o_ref, GpOperations, MpVec, MphDefinitionsBuilder, MphMpMph, MphOrRef, MphVec},
+    gp::{
+      mp_defs_from_gp_defs, GpOperations, MpVec, MphDefinitionsBuilder, MphMpMph, MphOrRef, MphVec,
+    },
     objs::MinCstrsRslts,
     quality_comparator::ObjsAvg,
     ObjDirection, Pct,
@@ -98,7 +100,7 @@ async fn main() -> Result<(), mop::blocks::Error> {
   //
   // It is possible to define your own converstion procedure with any desired set of objectives.
   let mcr = MinCstrsRslts::from_gp_hcs(mph_defs);
-  let mp_defs_ref = new_defsb_o_ref(mph_defs, mph_rslts).push_obj(&mcr as &_).build()?;
+  let mp_defs_ref = mp_defs_from_gp_defs(mph_defs).push_obj((&mcr).into()).build()?;
   let mut mp_ref = MpVec::with_random_solutions(mp_defs_ref, 100)?;
 
   // SPEA2 and overall genetic algorithm parameters are specified here.

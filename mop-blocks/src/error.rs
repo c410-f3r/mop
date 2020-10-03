@@ -66,13 +66,13 @@ impl std::error::Error for Error {}
 
 impl fmt::Display for Error {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    match self {
+    match *self {
       Self::BadCast => write!(f, "BadCast"),
       #[cfg(feature = "with-ndsparse")]
-      Self::CslError(x) => write!(f, "CslError({})", x),
+      Self::CslError(ref x) => write!(f, "CslError({})", x),
       Self::EmptyElement => write!(f, "EmptyElement"),
-      Self::GDBE(x) => write!(f, "GDBE({})", x),
-      Self::Other(x) => write!(f, "Other({})", x),
+      Self::GDBE(ref x) => write!(f, "GDBE({})", x),
+      Self::Other(ref x) => write!(f, "Other({})", x),
     }
   }
 }

@@ -263,11 +263,15 @@ where
   /// # Example
   ///
   /// ```rust
-  /// use mop_blocks::doc_tests::dr_matrix_array;
+  /// use mop_blocks::{doc_tests::dr_matrix_array, dr_matrix::DrMatrixVec};
   /// let ddma = dr_matrix_array();
   /// assert_eq!(
-  ///   ddma.to_vec(),
-  ///   [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].to_vec(),
+  ///   DrMatrixVec::new(
+  ///     ddma.rows(),
+  ///     ddma.cols(),
+  ///     vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  ///   ),
+  ///   Ok(ddma.to_vec()),
   /// );
   /// ```
   pub fn to_vec(&self) -> DrMatrixVec<DATA>

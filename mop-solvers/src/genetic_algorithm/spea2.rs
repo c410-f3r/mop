@@ -109,7 +109,7 @@ where
   fn copy_less_than_one_to_archive(&mut self) {
     self.arch_rslts.clear();
     let (aup, ar) = (&self.arch_u_popul, &mut self.arch_rslts);
-    for (r, _) in aup.rslts.iter().zip(&aup.props).filter(|(_, prop)| prop.fitness < OR::one()) {
+    for (r, _) in aup.rslts.iter().zip(&aup.props).filter(|&(_, prop)| prop.fitness < OR::one()) {
       ar.constructor().or_ref(r);
     }
   }

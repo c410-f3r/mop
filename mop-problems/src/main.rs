@@ -43,8 +43,12 @@ pub fn manage_plotting<'a, A, B, I, T>(
   iter: I,
 ) -> Result<(), Box<dyn std::error::Error>>
 where
-  A: plotters::coord::AsRangedCoord<Value = T>,
-  B: plotters::coord::AsRangedCoord<Value = T>,
+  A: plotters::coord::ranged1d::AsRangedCoord<Value = T>,
+  <A as plotters::coord::ranged1d::AsRangedCoord>::CoordDescType:
+    plotters::coord::ranged1d::ValueFormatter<T>,
+  B: plotters::coord::ranged1d::AsRangedCoord<Value = T>,
+  <B as plotters::coord::ranged1d::AsRangedCoord>::CoordDescType:
+    plotters::coord::ranged1d::ValueFormatter<T>,
   I: Iterator<Item = (T, T)> + 'a,
   T: core::fmt::Debug + 'static,
 {
@@ -60,7 +64,7 @@ where
     .set_label_area_size(LabelAreaPosition::Left, 40)
     .set_label_area_size(LabelAreaPosition::Bottom, 40)
     .caption(name, ("sans-serif", 40))
-    .build_ranged(x, y)?;
+    .build_cartesian_2d(x, y)?;
 
   ctx.configure_mesh().draw()?;
 
@@ -75,7 +79,7 @@ macro_rules! exec {
     use {
       mop::{
         blocks::{
-          gp::{new_defsb_o_ref, GpOperations, MpVec, MphDefinitionsBuilder, MphMpMph, MphVec},
+          gp::{mp_defs_from_gp_defs, GpOperations, MpVec, MphDefinitionsBuilder, MphMpMph, MphVec},
           objs::MinCstrsRslts,
           quality_comparator::ObjsAvg,
           Pct,
@@ -109,7 +113,7 @@ macro_rules! exec {
         let (mph_defs, mut mph_rslts) = mph.parts_mut();
 
         let mcr = MinCstrsRslts::from_gp_hcs(mph_defs);
-        let mp_defs_ref = new_defsb_o_ref(mph_defs, mph_rslts).push_obj((&mcr).into()).build()?;
+        let mp_defs_ref = mp_defs_from_gp_defs(mph_defs).push_obj((&mcr).into()).build()?;
         let mut mp_ref = MpVec::with_random_solutions(mp_defs_ref, 100)?;
 
         let spea2 = Spea2::new(

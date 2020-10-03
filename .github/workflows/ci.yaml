@@ -10,81 +10,83 @@ jobs:
     name: Cargo fuzz
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-
-    - name: Install Rust toolchain
-      uses: actions-rs/toolchain@v1
-      with:
-        toolchain: nightly-2020-06-30
-        profile: minimal
-        override: true
-
-    - uses: actions-rs/install@v0.1
-      with:
-        crate: cargo-fuzz
-        use-tool-cache: true
-
-    - run: cd mop-blocks/fuzz; cargo fuzz run dr_matrix_fuzz -- -max_len=32 -runs=10000
-    - run: cd mop-blocks/fuzz; cargo fuzz run gp_fuzz -- -max_len=32 -runs=10000
-
-  everything:
-    name: Everything
-    runs-on: ubuntu-latest
-    steps:
       - name: Checkout repository
-        uses: actions/checkout@v1
+        uses: actions/checkout@v2
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly-2020-06-03
+          toolchain: nightly-2020-09-11
           profile: minimal
           override: true
-          components: clippy, rustfmt
 
-      - run: sudo chown -R $(whoami):$(id -ng) ~/.cargo/
-
-      - name: Cache cargo registry
-        uses: actions/cache@v1
+      - uses: actions-rs/install@v0.1
         with:
-          path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('**/Cargo.lock') }}
+          crate: cargo-fuzz
+          use-tool-cache: true
 
-      - name: Cache cargo index
-        uses: actions/cache@v1
+      - run: cd mop-blocks/fuzz; cargo fuzz run dr_matrix_fuzz -- -max_len=32 -runs=10000
+      - run: cd mop-blocks/fuzz; cargo fuzz run gp_fuzz -- -max_len=32 -runs=10000
+
+  tests:
+    name: Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
         with:
-          path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-index-${{ hashFiles('**/Cargo.lock') }}
+          toolchain: nightly-2020-09-11
+          profile: minimal
+          override: true
+
+      - name: Cache cargo directories
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Cache cargo target dir
-        uses: actions/cache@v1
+        uses: actions/cache@v2
         with:
           path: target
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
-      - name: Rustfmt
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+      - name: Tests
+        run: ./scripts/tests.sh
 
-      - name: Clippy
-        uses: actions-rs/cargo@v1
-        with:
-          command: clippy
-          args: |
-            --all-features --lib --
-            -D clippy::restriction
-            -D warnings
-            -A clippy::float_arithmetic
-            -A clippy::implicit_return
-            -A clippy::indexing_slicing
-            -A clippy::integer_arithmetic
-            -A clippy::missing_docs_in_private_items
-            -A clippy::missing_inline_in_public_items
-            -A clippy::panic
-            -A clippy::type_complexity
+  tools:
+    name: Tools
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
 
-      - name: Test
-        run: ./scripts/test.sh
+      - name: Install Rust toolchain
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly-2020-09-11
+          profile: minimal
+          override: true
+
+      - name: Cache cargo directories
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Cache cargo target dir
+        uses: actions/cache@v2
+        with:
+          path: target
+          key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
+
+      - name: Tools
+        run: ./scripts/tools.sh
+

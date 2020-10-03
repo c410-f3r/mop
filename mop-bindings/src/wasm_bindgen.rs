@@ -4,8 +4,8 @@ use mop::{
   blocks::{
     self,
     gp::{
-      new_defsb_o_ref, GpOperations, MpVec, MphDefinitionsBuilderVec, MphDefinitionsVec, MphMpMph,
-      MphOrVec, MphOrsVec, MphVec, NoCstr, NoCstrRslts,
+      mp_defs_from_gp_defs, GpOperations, MpVec, MphDefinitionsBuilderVec, MphDefinitionsVec,
+      MphMpMph, MphOrVec, MphOrsVec, MphVec, NoCstr, NoCstrRslts,
     },
     objs::MinCstrsRslts,
     quality_comparator::ObjsAvg,
@@ -137,7 +137,7 @@ impl OptFacade {
     let (mph_defs, mut mph_rslts) = orig.0.parts_mut();
 
     let mcr = MinCstrsRslts::from_gp_hcs(mph_defs);
-    let mp_defs_ref = js_err(new_defsb_o_ref(mph_defs, mph_rslts).push_obj((&mcr).into()).build())?;
+    let mp_defs_ref = js_err(mp_defs_from_gp_defs(mph_defs).push_obj((&mcr).into()).build())?;
     let mut mp_ref = js_err(MpVec::with_random_solutions(mp_defs_ref, 100))?;
 
     let spea2 = js_err(Spea2::new(

@@ -7,7 +7,7 @@ arrayvec = { default-features = false, version = "0.5" }
 cl-traits = { default-features = false, version = "4.0" }
 mop = { features = ["std", "with-futures", "with-ndsparse"], path = "../mop" }
 ndsparse = { default-features = false, version = "0.7" }
-plotters = { default-features = false, features = ["svg"], optional = true, version = "0.2" }
+plotters = { default-features = false, features = ["svg_backend"], optional = true, version = "0.3" }
 rand = { default-features = false, features = ["getrandom"], version = "0.7" }
 tokio = { default-features = false, features = ["macros", "rt-threaded"], version = "0.2" }
 

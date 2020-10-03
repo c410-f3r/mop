@@ -201,11 +201,7 @@ where
     &mut self,
     problem: &Gp<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS>,
   ) -> Option<()> {
-    let quality_comparator = if let Some(r) = &self.quality_comparator_opt {
-      r
-    } else {
-      return None;
-    };
+    let quality_comparator = self.quality_comparator_opt.as_ref()?;
     let mut best_idx = 0;
     let (defs, rslts) = problem.parts();
     for current_idx in 1..rslts.rslts_num() {

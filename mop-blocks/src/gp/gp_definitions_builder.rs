@@ -88,7 +88,7 @@ where
   where
     HCS: Default + Push<Input = HC>,
   {
-    if let Some(hcs) = &mut self.hard_cstrs {
+    if let Some(hcs) = self.hard_cstrs.as_mut() {
       hcs.push(hard_cstr);
     } else {
       let mut hard_cstrs = HCS::default();
@@ -131,7 +131,7 @@ where
   where
     OS: Default + Push<Input = O>,
   {
-    if let Some(objs) = &mut self.objs {
+    if let Some(objs) = self.objs.as_mut() {
       objs.push(obj);
     } else {
       let mut objs = OS::default();
@@ -168,7 +168,7 @@ where
   where
     SCS: Default + Push<Input = SC>,
   {
-    if let Some(hcs) = &mut self.soft_cstrs {
+    if let Some(hcs) = self.soft_cstrs.as_mut() {
       hcs.push(soft_cstr);
     } else {
       let mut soft_cstrs = SCS::default();
@@ -207,7 +207,7 @@ impl std::error::Error for GpDefinitionsBuilderError {}
 
 impl fmt::Display for GpDefinitionsBuilderError {
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-    let s = match self {
+    let s = match *self {
       Self::NoDomainForDefinitionsBuilder => "NoDomainForDefinitionsBuilder",
       Self::NoObjForDefinitionsBuilder => "NoObjForDefinitionsBuilder",
     };

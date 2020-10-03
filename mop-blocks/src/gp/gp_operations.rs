@@ -2,10 +2,10 @@ pub(crate) mod mph_mp_mph;
 pub(crate) mod mphs_mp_mphs;
 
 use crate::{
-  gp::{GpDefinitions, GpDefinitionsBuilder, GpOrs},
+  gp::{GpDefinitions, MpDefinitionsBuilder},
   Obj,
 };
-use cl_traits::Storage;
+use cl_traits::{Push, Storage};
 use mop_common::SolverFuture;
 
 pub trait GpOperations<AD, AR, B> {
@@ -15,26 +15,28 @@ pub trait GpOperations<AD, AR, B> {
   fn transfer<'a>(a_defs: &'a AD, a_rslts: &'a mut AR, b: &'a B) -> SolverFuture<'a, Self::Error>;
 }
 
-pub fn new_defsb_o_ref<'a, D, HCRS, HCS, NHCS, NOS, NSCS, O, OR, ORS, OS, S, SCRS, SCS, SS>(
+pub fn mp_defs_from_gp_defs<'a, D, HCS, NOS, O, OR, OS, S, SCS>(
   defs: &'a GpDefinitions<D, HCS, OS, SCS>,
-  _: &GpOrs<HCRS, ORS, SCRS, SS>,
-) -> GpDefinitionsBuilder<D, NHCS, NOS, NSCS>
+) -> MpDefinitionsBuilder<D, NOS>
 where
   D: Clone,
-  NHCS: Default,
-  NOS: Default + Storage<Item = &'a dyn Obj<OR, S>>,
-  NSCS: Default,
+  NOS: Default + Push<Input = &'a dyn Obj<OR, S>> + Storage<Item = &'a dyn Obj<OR, S>>,
+  O: Obj<OR, S> + 'a,
   OR: 'a,
-  ORS: Storage<Item = OR>,
-  OS: Storage<Item = O>,
+  OS: AsRef<[O]> + Storage<Item = O>,
   S: 'a,
-  SS: Storage<Item = S>,
 {
-  GpDefinitionsBuilder {
+  MpDefinitionsBuilder {
     domain: Some(defs.domain.clone()),
     hard_cstrs: Some(Default::default()),
     soft_cstrs: Some(Default::default()),
     name: defs.name,
-    objs: Some(Default::default()),
+    objs: {
+      let mut objs: NOS = Default::default();
+      for obj in defs.objs() {
+        objs.push(obj);
+      }
+      Some(objs)
+    },
   }
 }

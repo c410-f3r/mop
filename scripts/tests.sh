@@ -1,21 +1,6 @@
 #!/usr/bin/env bash
 
-set -eux
-
-export RUSTFLAGS='
-    -D bad_style
-    -D future_incompatible
-    -D missing_debug_implementations
-    -D nonstandard_style
-    -D rust_2018_compatibility
-    -D rust_2018_idioms
-    -D trivial_casts
-    -D unsafe_code
-    -D unused_lifetimes
-    -D unused_qualifications
-    -D warnings
-'
-export RUST_BACKTRACE=full
+. "$(dirname "$0")/commons.sh" --source-only
 
 test_package_generic() {
     local package=$1

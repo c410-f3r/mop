@@ -24,15 +24,7 @@ fn f1(s: &Solution) -> f64 {
 #[derive(Debug)]
 pub struct Rastrigin;
 
-impl<'a>
-  Problem<
-    'a,
-    Domain,
-    [&'a (dyn Cstr<Solution> + Send + Sync); 0],
-    [&'a (dyn Obj<f64, Solution> + Send + Sync); 1],
-    Solution,
-  > for Rastrigin
-{
+impl Problem<Domain, Solution, 0, 1> for Rastrigin {
   const GRAPH_RANGES: [Range<f64>; 2] = [-6.0..6.0, -6.0..6.0];
   const NAME: &'static str = "Rastrigin";
 
@@ -40,11 +32,11 @@ impl<'a>
     [-5.12..=5.12, -5.12..=5.12]
   }
 
-  fn hcs() -> [&'a (dyn Cstr<Solution> + Send + Sync); 0] {
+  fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 0] {
     []
   }
 
-  fn objs() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 1] {
+  fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 1] {
     [&(ObjDirection::Min, f1 as fn(&Solution) -> f64)]
   }
 }

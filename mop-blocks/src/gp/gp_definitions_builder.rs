@@ -84,27 +84,29 @@ where
   HCS: Storage<Item = HC>,
 {
   /// Push hard constraint
-  pub fn push_hard_cstr(mut self, hard_cstr: HC) -> Self
+  pub fn push_hard_cstr(mut self, hard_cstr: HC) -> crate::Result<Self>
   where
     HCS: Default + Push<Input = HC>,
   {
     if let Some(hcs) = self.hard_cstrs.as_mut() {
-      hcs.push(hard_cstr);
+      hcs.push(hard_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
     } else {
       let mut hard_cstrs = HCS::default();
-      hard_cstrs.push(hard_cstr);
+      hard_cstrs.push(hard_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
       self.hard_cstrs = Some(hard_cstrs);
     }
-    self
+    Ok(self)
   }
 
   /// Push objectives
-  pub fn push_hard_cstrs<CI>(self, hard_cstrs: CI) -> Self
+  pub fn push_hard_cstrs<CI>(self, hard_cstrs: CI) -> crate::Result<Self>
   where
     CI: IntoIterator<Item = HC>,
     HCS: Default + Push<Input = HC>,
   {
-    hard_cstrs.into_iter().fold(self, |this, c| this.push_hard_cstr(c))
+    hard_cstrs.into_iter().try_fold(self, |this, c| {
+      this.push_hard_cstr(c)
+    })
   }
 }
 
@@ -127,27 +129,27 @@ where
   }
 
   /// Push objective
-  pub fn push_obj(mut self, obj: O) -> Self
+  pub fn push_obj(mut self, obj: O) -> crate::Result<Self>
   where
     OS: Default + Push<Input = O>,
   {
     if let Some(objs) = self.objs.as_mut() {
-      objs.push(obj);
+      objs.push(obj).map_err(|_| crate::Error::InsufficientCapacity)?;
     } else {
       let mut objs = OS::default();
-      objs.push(obj);
+      objs.push(obj).map_err(|_| crate::Error::InsufficientCapacity)?;
       self.objs = Some(objs);
     }
-    self
+    Ok(self)
   }
 
   /// Push objectives
-  pub fn push_objs<OI>(self, objs: OI) -> Self
+  pub fn push_objs<OI>(self, objs: OI) -> crate::Result<Self>
   where
     OI: IntoIterator<Item = O>,
     OS: Default + Push<Input = O>,
   {
-    objs.into_iter().fold(self, |this, o| this.push_obj(o))
+    objs.into_iter().try_fold(self, |this, o| this.push_obj(o))
   }
 }
 
@@ -164,27 +166,27 @@ where
   SCS: Storage<Item = SC>,
 {
   /// Push soft constraint
-  pub fn push_soft_cstr(mut self, soft_cstr: SC) -> Self
+  pub fn push_soft_cstr(mut self, soft_cstr: SC) -> crate::Result<Self>
   where
     SCS: Default + Push<Input = SC>,
   {
     if let Some(hcs) = self.soft_cstrs.as_mut() {
-      hcs.push(soft_cstr);
+      hcs.push(soft_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
     } else {
       let mut soft_cstrs = SCS::default();
-      soft_cstrs.push(soft_cstr);
+      soft_cstrs.push(soft_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
       self.soft_cstrs = Some(soft_cstrs);
     }
-    self
+    Ok(self)
   }
 
   /// Push soft constraints
-  pub fn push_soft_cstrs<CI>(self, soft_cstrs: CI) -> Self
+  pub fn push_soft_cstrs<CI>(self, soft_cstrs: CI) -> crate::Result<Self>
   where
     CI: IntoIterator<Item = SC>,
     SCS: Default + Push<Input = SC>,
   {
-    soft_cstrs.into_iter().fold(self, |this, c| this.push_soft_cstr(c))
+    soft_cstrs.into_iter().try_fold(self, |this, c| this.push_soft_cstr(c))
   }
 }
 

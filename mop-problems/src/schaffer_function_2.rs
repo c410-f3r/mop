@@ -27,15 +27,7 @@ fn f2(s: &Solution) -> f64 {
 #[derive(Debug)]
 pub struct SchafferFunction2;
 
-impl<'a>
-  Problem<
-    'a,
-    Domain,
-    [&'a (dyn Cstr<Solution> + Send + Sync); 0],
-    [&'a (dyn Obj<f64, Solution> + Send + Sync); 2],
-    Solution,
-  > for SchafferFunction2
-{
+impl Problem<Domain, Solution, 0, 2> for SchafferFunction2 {
   const GRAPH_RANGES: [Range<f64>; 2] = [-2.0..10.0, 0.0..30.0];
   const NAME: &'static str = "Schaffer function 2";
 
@@ -43,11 +35,11 @@ impl<'a>
     [-5.0..=10.0]
   }
 
-  fn hcs() -> [&'a (dyn Cstr<Solution> + Send + Sync); 0] {
+  fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 0] {
     []
   }
 
-  fn objs() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
+  fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
     [
       &(ObjDirection::Min, f1 as fn(&Solution) -> f64),
       &(ObjDirection::Min, f2 as fn(&Solution) -> f64),

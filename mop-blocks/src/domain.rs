@@ -1,5 +1,5 @@
 #[cfg(all(feature = "with-ndsparse", feature = "with-rand"))]
-use cl_traits::{Array, ArrayWrapper, Push, Storage};
+use cl_traits::{Push, Storage};
 #[cfg(feature = "with-rand")]
 use {
   cl_traits::create_array,
@@ -93,48 +93,6 @@ macro_rules! array_impls {
           s[idx] = domain_value;
         }
       }
-
-      #[cfg(feature = "with-ndsparse")]
-      impl<DA, DATA, DS, IS, OS> Domain<ndsparse::csl::Csl<DA, DS, IS, OS>> for [RangeInclusive<DATA>; $N]
-      where
-        DA: Array<Item = usize> + Copy + Default,
-        DATA: Copy + SampleUniform,
-        DS: AsMut<[DATA]> + AsRef<[DATA]> + Default + Push<Input = DATA> + Storage<Item = DATA>,
-        IS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<Input = usize>,
-        OS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<Input = usize>,
-        rand::distributions::Standard: Distribution<DATA>
-      {
-        type Error = crate::Error;
-
-        fn len(&self) -> usize {
-          self.as_ref().len()
-        }
-
-        fn new_random_solution<R>(&self, rng: &mut R) -> Result<ndsparse::csl::Csl<DA, DS, IS, OS>, Self::Error>
-        where
-          R: Rng,
-        {
-          let nnz = self.as_ref().len();
-          let dims = ArrayWrapper::default();
-          let mut array: DA = *dims;
-          let iter = array.slice_mut().iter_mut();
-          match nnz {
-            0 => {}
-            1 => iter.for_each(|dim| *dim = 1),
-            _ => iter.for_each(|dim| *dim = rng.gen_range(1, nnz)),
-          }
-          Ok(ndsparse::csl::Csl::new_controlled_random_rand(dims, nnz, rng, |g, _| g.gen()).map_err(|_| crate::Error::Other("Error"))?)
-        }
-
-        fn set_rnd_domain<R>(&self, s: &mut ndsparse::csl::Csl<DA, DS, IS, OS>, idx: usize, rng: &mut R)
-        where
-          R: Rng,
-        {
-          let domain = &self[idx];
-          let domain_value = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
-          s.data_mut()[idx] = domain_value;
-        }
-      }
     )+
   }
 }
@@ -144,3 +102,49 @@ array_impls!(
   1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
   27, 28, 29, 30, 31, 32
 );
+
+#[cfg(all(feature = "with-ndsparse", feature = "with-rand"))]
+impl<DATA, DS, IS, OS, const D: usize, const N: usize> Domain<ndsparse::csl::Csl<DS, IS, OS, D>>
+  for [RangeInclusive<DATA>; N]
+where
+  DATA: Copy + SampleUniform,
+  DS: AsMut<[DATA]> + AsRef<[DATA]> + Default + Push<Input = DATA> + Storage<Item = DATA>,
+  IS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<Input = usize>,
+  OS: AsMut<[usize]> + AsRef<[usize]> + Default + Push<Input = usize>,
+  rand::distributions::Standard: Distribution<DATA>,
+{
+  type Error = crate::Error;
+
+  fn len(&self) -> usize {
+    self.as_ref().len()
+  }
+
+  fn new_random_solution<R>(
+    &self,
+    rng: &mut R,
+  ) -> Result<ndsparse::csl::Csl<DS, IS, OS, D>, Self::Error>
+  where
+    R: Rng,
+  {
+    let nnz = self.as_ref().len();
+    let dims = cl_traits::default_array();
+    let mut array: [usize; D] = dims;
+    let iter = array.iter_mut();
+    match nnz {
+      0 => {}
+      1 => iter.for_each(|dim| *dim = 1),
+      _ => iter.for_each(|dim| *dim = rng.gen_range(1, nnz)),
+    }
+      ndsparse::csl::Csl::new_controlled_random_rand(dims, nnz, rng, |g, _| g.gen())
+        .map_err(|e| crate::Error::NdsparseError(e))
+  }
+
+  fn set_rnd_domain<R>(&self, s: &mut ndsparse::csl::Csl<DS, IS, OS, D>, idx: usize, rng: &mut R)
+  where
+    R: Rng,
+  {
+    let domain = &self[idx];
+    let domain_value = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
+    s.data_mut()[idx] = domain_value;
+  }
+}

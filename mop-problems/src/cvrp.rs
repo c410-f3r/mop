@@ -6,8 +6,8 @@ use crate::Problem;
 use core::ops::{Range, RangeInclusive};
 use mop::blocks::{Cstr, Obj, ObjDirection};
 
-pub type CslArrayVec<DA, DTA, IA, OA> =
-  ndsparse::csl::Csl<DA, arrayvec::ArrayVec<DTA>, arrayvec::ArrayVec<IA>, arrayvec::ArrayVec<OA>>;
+pub type CslArrayVec<DTA, IA, OA, const D: usize> =
+  ndsparse::csl::Csl<arrayvec::ArrayVec<DTA>, arrayvec::ArrayVec<IA>, arrayvec::ArrayVec<OA>, D>;
 
 const DATA: Data = Data {
   capacity: 100,
@@ -50,7 +50,7 @@ const DATA: Data = Data {
 
 type Domain = [RangeInclusive<usize>; 30];
 // A 2-D sparse structure or a sparse matrix or a graph storage
-type Solution = CslArrayVec<[usize; 2], [usize; 30], [usize; 30], [usize; 31]>;
+type Solution = CslArrayVec<[usize; 30], [usize; 30], [usize; 31], 2>;
 
 #[derive(Debug)]
 pub struct Data {
@@ -149,15 +149,7 @@ impl Obj<f64, Solution> for MinCost {
 #[derive(Debug)]
 pub struct Cvrp;
 
-impl<'a>
-  Problem<
-    'a,
-    Domain,
-    [&'a (dyn Cstr<Solution> + Send + Sync); 1],
-    [&'a (dyn Obj<f64, Solution> + Send + Sync); 1],
-    Solution,
-  > for Cvrp
-{
+impl Problem<Domain, Solution, 1, 1> for Cvrp {
   const GRAPH_RANGES: [Range<f64>; 2] = [-3.0..13.0, -8.0..-4.0];
   const NAME: &'static str = "CVRP";
 
@@ -196,11 +188,11 @@ impl<'a>
     ]
   }
 
-  fn hcs() -> [&'a (dyn Cstr<Solution> + Send + Sync); 1] {
+  fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 1] {
     [&RouteCapacityMustNotExceedTruckCapacity { data: &DATA }]
   }
 
-  fn objs() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 1] {
+  fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 1] {
     [&MinCost { data: &DATA }]
   }
 }

@@ -15,8 +15,5 @@ members = [
     "mop-blocks",
     "mop-common",
     "mop-facades",
-    "mop-solvers",
-
-    "mop-bindings",
-    "mop-problems",
+    "mop-solvers"
 ]

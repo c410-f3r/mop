@@ -29,7 +29,7 @@ where
   type Error = crate::Error;
 
   fn convert(_: &MphDefinitions<D, HCS, AOS>) -> Result<Mp<D, BORS, BOS, SS>, Self::Error> {
-    Err(Self::Error::Other("Unsupported conversion"))
+    Err(Self::Error::UnsupportedConversion)
   }
 
   fn transfer<'a>(

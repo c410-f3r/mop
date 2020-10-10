@@ -3,12 +3,12 @@ mod dr_matrix_row_iter_impls;
 mod dr_matrix_rows_constructor;
 
 use alloc::vec::Vec;
-use cl_traits::{ArrayWrapper, Clear, Storage, Truncate, WithCapacity};
+use cl_traits::{Clear, Storage, Truncate, WithCapacity};
 use core::cmp::Ordering;
 pub use {dr_matrix_error::*, dr_matrix_row_iter_impls::*, dr_matrix_rows_constructor::*};
 
-pub type DrMatrixArray<DA> = DrMatrix<ArrayWrapper<DA>>;
-pub type DrMatrixMut<'a, DATA> = DrMatrix<&'a mut [DATA]>;
+pub type DrMatrixArray<DATA, const D: usize> = DrMatrix<[DATA; D]>;
+pub type DrMatrixMut<'a, DATA, const D: usize> = DrMatrix<&'a mut [DATA]>;
 pub type DrMatrixRef<'a, DATA> = DrMatrix<&'a [DATA]>;
 pub type DrMatrixVec<T> = DrMatrix<Vec<T>>;
 pub type Result<T> = core::result::Result<T, DrMatrixError>;
@@ -165,13 +165,13 @@ where
   /// use mop_blocks::dr_matrix::DrMatrixArray;
   /// let _ = DrMatrixArray::new(2, 4, [1, 2, 3, 4, 5, 6, 7, 8]);
   /// ```
-  pub fn new<IDS>(rows: usize, cols: usize, into_data: IDS) -> Result<Self>
+  pub fn new<IDS>(rows: usize, cols: usize, into_data: IDS) -> crate::Result<Self>
   where
     IDS: Into<DS>,
   {
     let data = into_data.into();
     if rows.saturating_mul(cols) != data.as_ref().len() {
-      return Err(DrMatrixError::DataLenDiffColsTimesRows);
+      return Err(DrMatrixError::DataLenDiffColsTimesRows.into());
     }
     Ok(Self { data, rows, cols })
   }
@@ -416,19 +416,22 @@ where
 #[cfg(feature = "with-rand")]
 impl<DATA, DS> DrMatrix<DS>
 where
-  DS: Default + cl_traits::Push<Input = DATA> + Storage<Item = DATA>,
+  DS: Default + Storage<Item = DATA> + cl_traits::Capacity<Output = usize> + cl_traits::Push<Input = DATA>
 {
-  pub fn new_random_with_rand<F, R>(rows: usize, cols: usize, rng: &mut R, mut cb: F) -> Self
+  pub fn new_random_with_rand<F, R>(rows: usize, cols: usize, rng: &mut R, mut cb: F) -> crate::Result<Self>
   where
     F: FnMut(&mut R, usize, usize) -> DATA,
     R: rand::Rng,
   {
     let mut data = DS::default();
+    if rows.saturating_mul(cols) != data.capacity() {
+      return Err(crate::Error::InsufficientCapacity);
+    }
     for row in 0..rows {
       for col in 0..cols {
-        data.push(cb(rng, row, col));
+        let _ = data.push(cb(rng, row, col));
       }
     }
-    DrMatrix { cols, data, rows }
+    Ok(DrMatrix { cols, data, rows })
   }
 }

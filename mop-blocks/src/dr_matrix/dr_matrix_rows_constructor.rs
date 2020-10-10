@@ -61,16 +61,16 @@ where
     Some(self)
   }
 
-  pub fn row_cb<F>(self, mut cb: F) -> Self
+  pub fn row_cb<F>(self, mut cb: F) -> crate::Result<Self>
   where
     DS: Push<Input = DATA>,
     F: FnMut(usize) -> DATA,
   {
     for idx in 0..self.cols {
-      self.data.push(cb(idx));
+      self.data.push(cb(idx)).map_err(|_| crate::Error::InsufficientCapacity)?;
     }
     *self.rows += 1;
-    self
+    Ok(self)
   }
 
   pub fn row_iter<I>(self, i: I) -> Self

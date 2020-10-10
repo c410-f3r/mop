@@ -4,9 +4,9 @@ path = "src/main.rs"
 
 [dependencies]
 arrayvec = { default-features = false, version = "0.5" }
-cl-traits = { default-features = false, version = "4.0" }
+cl-traits = { default-features = false, git = "https://github.com/c410-f3r/cl-traits" }
 mop = { features = ["std", "with-futures", "with-ndsparse"], path = "../mop" }
-ndsparse = { default-features = false, version = "0.7" }
+ndsparse = { default-features = false, git = "https://github.com/c410-f3r/ndsparse"  }
 plotters = { default-features = false, features = ["svg_backend"], optional = true, version = "0.3" }
 rand = { default-features = false, features = ["getrandom"], version = "0.7" }
 tokio = { default-features = false, features = ["macros", "rt-threaded"], version = "0.2" }
@@ -31,3 +31,4 @@ edition = "2018"
 name = "mop-problems"
 publish = false
 version = "0.0.0"
+

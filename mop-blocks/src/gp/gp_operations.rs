@@ -17,7 +17,7 @@ pub trait GpOperations<AD, AR, B> {
 
 pub fn mp_defs_from_gp_defs<'a, D, HCS, NOS, O, OR, OS, S, SCS>(
   defs: &'a GpDefinitions<D, HCS, OS, SCS>,
-) -> MpDefinitionsBuilder<D, NOS>
+) -> crate::Result<MpDefinitionsBuilder<D, NOS>>
 where
   D: Clone,
   NOS: Default + Push<Input = &'a dyn Obj<OR, S>> + Storage<Item = &'a dyn Obj<OR, S>>,
@@ -26,7 +26,7 @@ where
   OS: AsRef<[O]> + Storage<Item = O>,
   S: 'a,
 {
-  MpDefinitionsBuilder {
+  Ok(MpDefinitionsBuilder {
     domain: Some(defs.domain.clone()),
     hard_cstrs: Some(Default::default()),
     soft_cstrs: Some(Default::default()),
@@ -34,9 +34,9 @@ where
     objs: {
       let mut objs: NOS = Default::default();
       for obj in defs.objs() {
-        objs.push(obj);
+        objs.push(obj).map_err(|_| crate::Error::InsufficientCapacity)?;
       }
       Some(objs)
     },
-  }
+  })
 }

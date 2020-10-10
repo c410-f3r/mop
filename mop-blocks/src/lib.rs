@@ -1,13 +1,7 @@
 //! Mop (Many Optimizations)
 
 #![cfg_attr(not(feature = "std"), no_std)]
-#![doc(test(attr(forbid(
-  unused_variables,
-  unused_assignments,
-  unused_mut,
-  unused_attributes,
-  dead_code
-))))]
+#![feature(min_const_generics)]
 
 extern crate alloc;
 
@@ -32,3 +26,5 @@ pub use crate::{
   pct::*,
   solution::*,
 };
+
+pub type Result<T> = core::result::Result<T, error::Error>;

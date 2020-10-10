@@ -39,15 +39,7 @@ fn g2(s: &Solution) -> usize {
 #[derive(Debug)]
 pub struct Constr;
 
-impl<'a>
-  Problem<
-    'a,
-    Domain,
-    [&'a (dyn Cstr<Solution> + Send + Sync); 2],
-    [&'a (dyn Obj<f64, Solution> + Send + Sync); 2],
-    Solution,
-  > for Constr
-{
+impl Problem<Domain, Solution, 2, 2> for Constr {
   const GRAPH_RANGES: [Range<f64>; 2] = [0.0..2.0, 0.0..12.0];
   const NAME: &'static str = "Constr";
 
@@ -55,11 +47,11 @@ impl<'a>
     [0.1..=1.0, 0.0..=5.0]
   }
 
-  fn hcs() -> [&'a (dyn Cstr<Solution> + Send + Sync); 2] {
+  fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 2] {
     [&(g1 as fn(&Solution) -> usize), &(g2 as fn(&Solution) -> usize)]
   }
 
-  fn objs() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
+  fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
     [
       &(ObjDirection::Min, f1 as fn(&Solution) -> f64),
       &(ObjDirection::Min, f2 as fn(&Solution) -> f64),

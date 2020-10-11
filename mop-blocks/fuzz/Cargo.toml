@@ -1,10 +1,10 @@
 [[bin]]
-name = "dr_matrix_fuzz"
-path = "fuzz_targets/dr_matrix_fuzz.rs"
+name = "dr_matrix"
+path = "dr_matrix.rs"
 
 [[bin]]
-name = "gp_fuzz"
-path = "fuzz_targets/gp_fuzz.rs"
+name = "gp"
+path = "gp.rs"
 
 [dependencies]
 arbitrary = { default-features = false, features = ["derive"], version = "0.4" }

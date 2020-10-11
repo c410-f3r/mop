@@ -18,6 +18,7 @@ fuzz_target!(|data: Data| {
   let mdb_rslt = MpDefinitionsBuilderVec::<_, (ObjDirection, fn(&[f64; 2]) -> f64)>::default()
     .domain(data.domain)
     .push_obj((ObjDirection::Min, obj as fn(&[f64; 2]) -> f64))
+    .unwrap()
     .build();
 
   let mdb = if let Ok(r) = mdb_rslt {

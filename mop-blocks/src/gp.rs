@@ -117,7 +117,6 @@ where
     rslts_num: usize,
   ) -> crate::Result<Self>
   where
-    crate::Error: From<D::Error>,
     D: crate::Domain<S>,
     HCR: Clone + Default,
     OR: Clone + Default,

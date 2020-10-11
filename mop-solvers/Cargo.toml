@@ -6,9 +6,6 @@ num-integer = { default-features = false, version = "0.1" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, version = "0.7" }
 
-[dev-dependencies]
-mop-problems = { path = "../mop-problems" }
-
 [features]
 default = []
 std = ["mop-blocks/std", "mop-common/std", "num-traits/std", "rand/std"]

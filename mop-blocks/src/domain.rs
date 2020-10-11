@@ -135,8 +135,8 @@ where
       1 => iter.for_each(|dim| *dim = 1),
       _ => iter.for_each(|dim| *dim = rng.gen_range(1, nnz)),
     }
-      ndsparse::csl::Csl::new_controlled_random_rand(dims, nnz, rng, |g, _| g.gen())
-        .map_err(|e| crate::Error::NdsparseError(e))
+    ndsparse::csl::Csl::new_controlled_random_rand(dims, nnz, rng, |g, _| g.gen())
+      .map_err(crate::Error::NdsparseError)
   }
 
   fn set_rnd_domain<R>(&self, s: &mut ndsparse::csl::Csl<DS, IS, OS, D>, idx: usize, rng: &mut R)

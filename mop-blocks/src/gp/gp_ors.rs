@@ -173,7 +173,7 @@ where
     self.hard_cstr_rslts.remove_row(idx);
     self.obj_rslts.remove_row(idx);
     self.soft_cstr_rslts.remove_row(idx);
-    self.solutions.remove(idx);
+    let _ = self.solutions.remove(idx);
   }
 
   pub fn swap(&mut self, a: usize, b: usize) {

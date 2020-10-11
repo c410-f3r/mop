@@ -137,7 +137,11 @@ impl OptFacade {
     let (mph_defs, mut mph_rslts) = orig.0.parts_mut();
 
     let mcr = MinCstrsRslts::from_gp_hcs(mph_defs);
-    let mp_defs_ref = js_err(mp_defs_from_gp_defs(mph_defs).push_obj((&mcr).into()).build())?;
+    let mp_defs_ref = js_err({
+      let mut mdfgd = js_err(mp_defs_from_gp_defs(mph_defs))?;
+      mdfgd = js_err(mdfgd.push_obj((&mcr).into()))?;
+      mdfgd.build()
+    })?;
     let mut mp_ref = js_err(MpVec::with_random_solutions(mp_defs_ref, 100))?;
 
     let spea2 = js_err(Spea2::new(
@@ -205,24 +209,23 @@ pub struct OptProblemDefinitionsBuilder(MphDefinitionsBuilderVec<Domain, HardCst
 impl OptProblemDefinitionsBuilder {
   #[wasm_bindgen(constructor)]
   pub fn new() -> Self {
-    OptProblemDefinitionsBuilder(MphDefinitionsBuilderVec::default())
+    Self(MphDefinitionsBuilderVec::default())
   }
 
   pub fn build(self) -> Result<OptProblemDefinitions, JsValue> {
-    let op = js_err(self.0.build())?;
-    Ok(OptProblemDefinitions(op))
+    Ok(OptProblemDefinitions(js_err(self.0.build())?))
   }
 
   pub fn domain(self, domain: Domain) -> Self {
-    OptProblemDefinitionsBuilder(self.0.domain(domain))
+    Self(self.0.domain(domain))
   }
 
-  pub fn push_hard_cstr(self, hard_cstr: HardCstr) -> Self {
-    OptProblemDefinitionsBuilder(self.0.push_hard_cstr(hard_cstr))
+  pub fn push_hard_cstr(self, hard_cstr: HardCstr) -> Result<OptProblemDefinitionsBuilder, JsValue> {
+    Ok(Self(js_err(self.0.push_hard_cstr(hard_cstr))?))
   }
 
-  pub fn push_obj(self, obj: Obj) -> Self {
-    OptProblemDefinitionsBuilder(self.0.push_obj(obj))
+  pub fn push_obj(self, obj: Obj) -> Result<OptProblemDefinitionsBuilder, JsValue> {
+    Ok(Self(js_err(self.0.push_obj(obj))?))
   }
 }
 
@@ -388,11 +391,13 @@ mod tests {
         "let x = solution[0]; let y = solution[1]; \
         return (Math.pow(x, 2) - 10 * x + 25) + Math.pow(y, 2) > 25 | 0;",
       )))
+      .unwrap()
       .push_hard_cstr(HardCstr::new(Function::new_with_args(
         "solution, value",
         "let x = solution[0]; let y = solution[1]; \
         return (Math.pow(x, 2) - 16 * x + 64) + (Math.pow(y, 2) + 6 * y + 9) < 7.7 | 0;",
       )))
+      .unwrap()
       .push_obj(Obj::new(
         ObjDirection::Min,
         Function::new_with_args(
@@ -400,6 +405,7 @@ mod tests {
           "return 4 * Math.pow(solution[0], 2) + 4 * Math.pow(solution[1], 2);",
         ),
       ))
+      .unwrap()
       .push_obj(Obj::new(
         ObjDirection::Min,
         Function::new_with_args(
@@ -407,7 +413,8 @@ mod tests {
           "let x = solution[0]; let y = solution[1]; \
           return (Math.pow(x, 2) - 10 * x + 25) + (Math.pow(y, 2) - 10 * y + 25);",
         ),
-      ));
+      ))
+      .unwrap();
 
     let problem = OptProblem::with_capacity(opdb.build().unwrap(), 100);
     let facade = OptFacade::new(50).set_stagnation(Pct::from_percent(1), 10).unwrap();

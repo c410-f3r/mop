@@ -11,6 +11,7 @@ cargo clippy --all-features --lib -- \
     -A clippy::implicit_return \
     -A clippy::indexing_slicing \
     -A clippy::integer_arithmetic \
+    -A clippy::let_underscore_must_use \
     -A clippy::missing_docs_in_private_items \
     -A clippy::missing_inline_in_public_items \
     -A clippy::panic \

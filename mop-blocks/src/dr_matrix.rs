@@ -357,6 +357,21 @@ where
     DrMatrixRowIterMut::new(self.rows, self.cols, self.data.as_mut())
   }
 
+  /// Swaps a single value given the two provided indices.
+  ///
+  /// # Arguments
+  ///
+  /// * `a: [usize]` - First pair of indices
+  /// * `b: [usize]` - Second pair of indices
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use mop_blocks::doc_tests::dr_matrix_vec;
+  /// let mut ddma = dr_matrix_vec();
+  /// let _ = ddma.swap([0, 0], [3, 1]);
+  /// assert_eq!(ddma.data(), &[17, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 18, 19, 20]);
+  /// ```
   pub fn swap(&mut self, a: [usize; 2], b: [usize; 2]) -> bool
   where
     DS: AsRef<[DATA]>,
@@ -407,6 +422,7 @@ where
     Some([first.get_mut(first_range)?, second.get_mut(second_range)?])
   }
 
+  /// Mutable version of [`value`](#method.value).
   pub fn value_mut(&mut self, row_idx: usize, col_idx: usize) -> Option<&mut DATA> {
     let data_idx = self.stride(row_idx).saturating_add(col_idx);
     self.data_mut().get_mut(data_idx)
@@ -416,9 +432,17 @@ where
 #[cfg(feature = "with-rand")]
 impl<DATA, DS> DrMatrix<DS>
 where
-  DS: Default + Storage<Item = DATA> + cl_traits::Capacity<Output = usize> + cl_traits::Push<Input = DATA>
+  DS: Default
+    + Storage<Item = DATA>
+    + cl_traits::Capacity<Output = usize>
+    + cl_traits::Push<Input = DATA>,
 {
-  pub fn new_random_with_rand<F, R>(rows: usize, cols: usize, rng: &mut R, mut cb: F) -> crate::Result<Self>
+  pub fn new_random_with_rand<F, R>(
+    rows: usize,
+    cols: usize,
+    rng: &mut R,
+    mut cb: F,
+  ) -> crate::Result<Self>
   where
     F: FnMut(&mut R, usize, usize) -> DATA,
     R: rand::Rng,

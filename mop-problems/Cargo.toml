@@ -32,3 +32,4 @@ name = "mop-problems"
 publish = false
 version = "0.0.0"
 
+[workspace]

@@ -27,4 +27,4 @@ pub use crate::{
   solution::*,
 };
 
-pub type Result<T> = core::result::Result<T, error::Error>;
+pub type Result<T> = core::result::Result<T, Error>;

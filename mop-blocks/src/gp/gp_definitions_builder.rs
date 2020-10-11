@@ -104,9 +104,7 @@ where
     CI: IntoIterator<Item = HC>,
     HCS: Default + Push<Input = HC>,
   {
-    hard_cstrs.into_iter().try_fold(self, |this, c| {
-      this.push_hard_cstr(c)
-    })
+    hard_cstrs.into_iter().try_fold(self, |this, c| this.push_hard_cstr(c))
   }
 }
 
@@ -196,7 +194,7 @@ impl<D, HCS, OS, SCS> Default for GpDefinitionsBuilder<D, HCS, OS, SCS> {
   }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum GpDefinitionsBuilderError {
   /// A domain must be included
   NoDomainForDefinitionsBuilder,

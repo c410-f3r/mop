@@ -42,7 +42,7 @@ where
     self.hard_cstr_rslts = self.hard_cstr_rslts.row_slice(from.hard_cstr_rslts)?;
     self.obj_rslts = self.obj_rslts.row_slice(from.obj_rslts)?;
     self.soft_cstr_rslts = self.soft_cstr_rslts.row_slice(from.soft_cstr_rslts)?;
-    self.solutions.push(from.solution.clone());
+    let _ = self.solutions.push(from.solution.clone());
     Some(self)
   }
 
@@ -70,7 +70,7 @@ where
       self.hard_cstr_rslts = self.hard_cstr_rslts.fill_row(HCR::default());
       self.obj_rslts = self.obj_rslts.fill_row(OR::default());
       self.soft_cstr_rslts = self.soft_cstr_rslts.fill_row(SCR::default());
-      self.solutions.push(solution.ok()?);
+      let _ = self.solutions.push(solution.ok()?);
     }
     Some(self)
   }
@@ -104,7 +104,7 @@ where
     self.hard_cstr_rslts = self.hard_cstr_rslts.row_iter(hcri);
     self.obj_rslts = self.obj_rslts.row_iter(ori);
     self.soft_cstr_rslts = self.soft_cstr_rslts.row_iter(scri);
-    self.solutions.push(s);
+    let _ = self.solutions.push(s);
     self
   }
 

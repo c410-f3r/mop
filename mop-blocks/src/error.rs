@@ -1,11 +1,8 @@
-use crate::{
-  gp::GpDefinitionsBuilderError,
-  dr_matrix::DrMatrixError
-};
+use crate::{dr_matrix::DrMatrixError, gp::GpDefinitionsBuilderError};
 use core::fmt;
 use num_traits::{NumCast, ToPrimitive};
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Error {
   /// It wasn't possible to cast a value
   BadCast,
@@ -23,7 +20,7 @@ pub enum Error {
   /// An unspecified error occurred
   Other(&'static str),
   /// Unsupported conversion
-  UnsupportedConversion
+  UnsupportedConversion,
 }
 
 impl Error {
@@ -60,7 +57,6 @@ impl From<GpDefinitionsBuilderError> for Error {
     Self::GDBE(from)
   }
 }
-
 
 impl From<DrMatrixError> for Error {
   fn from(from: DrMatrixError) -> Self {

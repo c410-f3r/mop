@@ -17,7 +17,7 @@ use crate::dr_matrix::{DrMatrixArray, DrMatrixVec};
 pub fn dr_matrix_array() -> DrMatrixArray<i32, 20> {
   DrMatrixArray {
     cols: 5,
-    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].into(),
+    data: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
     rows: 4,
   }
 }

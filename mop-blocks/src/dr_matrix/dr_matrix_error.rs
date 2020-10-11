@@ -1,5 +1,6 @@
 use core::fmt;
 
+/// Errors related to the DrMatrix module.
 #[derive(Debug, PartialEq)]
 pub enum DrMatrixError {
   /// The length of `data` isn't equal the number of rows times the number of columns.
@@ -16,7 +17,7 @@ pub enum DrMatrixError {
   /// use mop_blocks::dr_matrix::DrMatrixVec;
   /// let _ = DrMatrixVec::new(999, 999, vec![1, 2, 3]);
   /// ```
-  NotEnoughCapacity
+  NotEnoughCapacity,
 }
 
 impl fmt::Display for DrMatrixError {

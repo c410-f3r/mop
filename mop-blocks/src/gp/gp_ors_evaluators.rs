@@ -88,7 +88,7 @@ where
   {
     let cols = rslts.hard_cstr_rslts.cols();
     let rows = rslts.hard_cstr_rslts.rows();
-    Self::eval_cstrs_reasons(rows, cols, defs.hard_cstrs(), rslts).await
+    Self::eval_cstrs_reasons([rows, cols], defs.hard_cstrs(), rslts).await
   }
 
   pub async fn eval_soft_cstrs_reasons<SC>(
@@ -101,12 +101,11 @@ where
   {
     let cols = rslts.soft_cstr_rslts.cols();
     let rows = rslts.soft_cstr_rslts.rows();
-    Self::eval_cstrs_reasons(rows, cols, defs.soft_cstrs(), rslts).await
+    Self::eval_cstrs_reasons([rows, cols], defs.soft_cstrs(), rslts).await
   }
 
   async fn eval_cstrs_reasons<C>(
-    rows: usize,
-    cols: usize,
+    [rows, cols]: [usize; 2],
     cstrs: &[C],
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,
   ) -> DrMatrixVec<String>

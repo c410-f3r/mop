@@ -96,7 +96,7 @@ where
   /// use mop_blocks::{doc_tests::capacited_dr_matrix_vec, dr_matrix::DrMatrixRef};
   /// let mut a = capacited_dr_matrix_vec();
   /// a.constructor().row_slice(&[1, 2, 3, 4, 5]);
-  /// assert_eq!(Ok(a.as_ref()), DrMatrixRef::new(1, 5, &[1, 2, 3, 4, 5][..]));
+  /// assert_eq!(Ok(a.as_ref()), DrMatrixRef::new([1, 5], &[1, 2, 3, 4, 5][..]));
   /// ```
   pub fn row_slice(self, row: &[DS::Item]) -> Option<Self>
   where

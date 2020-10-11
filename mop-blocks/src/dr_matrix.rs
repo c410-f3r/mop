@@ -156,20 +156,17 @@ where
   ///
   /// # Arguments
   ///
-  /// * `shape` - An array containing the number of rows and columns.
+  /// * `[rows, cols]` - An array containing the number of rows and columns.
   /// * `data` - The matrix data.
   ///
   /// # Example
   ///
   /// ```rust
   /// use mop_blocks::dr_matrix::DrMatrixArray;
-  /// let _ = DrMatrixArray::new(2, 4, [1, 2, 3, 4, 5, 6, 7, 8]);
+  /// let _ = DrMatrixArray::new([2, 4], [1, 2, 3, 4, 5, 6, 7, 8]);
   /// ```
-  pub fn new<IDS>(rows: usize, cols: usize, into_data: IDS) -> crate::Result<Self>
-  where
-    IDS: Into<DS>,
+  pub fn new([rows, cols]: [usize; 2], data: DS) -> crate::Result<Self>
   {
-    let data = into_data.into();
     if rows.saturating_mul(cols) != data.as_ref().len() {
       return Err(DrMatrixError::DataLenDiffColsTimesRows.into());
     }
@@ -185,7 +182,7 @@ where
   /// assert_eq!(
   ///   Ok(dr_matrix_array().as_ref()),
   ///   DrMatrixRef::new(
-  ///     4, 5,
+  ///     [4, 5],
   ///     &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20][..],
   ///   )
   /// );
@@ -254,7 +251,7 @@ where
   /// assert_eq!(ri.next(), None);
   /// ```
   pub fn row_iter(&self) -> DrMatrixRowIter<'_, DATA> {
-    DrMatrixRowIter::new(self.rows(), self.cols, self.data().as_ref())
+    DrMatrixRowIter::new([self.rows(), self.cols], self.data().as_ref())
   }
 
   /// Copies the internal data into a heap allocated `Vec` storage and
@@ -267,8 +264,7 @@ where
   /// let ddma = dr_matrix_array();
   /// assert_eq!(
   ///   DrMatrixVec::new(
-  ///     ddma.rows(),
-  ///     ddma.cols(),
+  ///     [ddma.rows(), ddma.cols()],
   ///     vec![1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
   ///   ),
   ///   Ok(ddma.to_vec()),
@@ -354,15 +350,15 @@ where
 
   /// Mutable version of [`row_iter`](#method.row_iter).
   pub fn row_iter_mut(&mut self) -> DrMatrixRowIterMut<'_, DATA> {
-    DrMatrixRowIterMut::new(self.rows, self.cols, self.data.as_mut())
+    DrMatrixRowIterMut::new([self.rows, self.cols], self.data.as_mut())
   }
 
   /// Swaps a single value given the two provided indices.
   ///
   /// # Arguments
   ///
-  /// * `a: [usize]` - First pair of indices
-  /// * `b: [usize]` - Second pair of indices
+  /// * `a` - First pair of indices
+  /// * `b` - Second pair of indices
   ///
   /// # Example
   ///
@@ -388,6 +384,13 @@ where
     true
   }
 
+  /// Swaps two entire rows.
+  ///
+  /// # Arguments
+  ///
+  /// * `a` - First row index
+  /// * `b` - Second row index
+  ///
   /// # Example
   ///
   /// ```rust
@@ -408,6 +411,24 @@ where
     }
   }
 
+  /// Returns two mutable slices that represent two different rows.
+  ///
+  /// # Arguments
+  ///
+  /// * `a` - First row index
+  /// * `b` - Second row index
+  ///
+  /// # Example
+  ///
+  /// ```rust
+  /// use mop_blocks::doc_tests::dr_matrix_array;
+  /// let mut matrix = dr_matrix_array();
+  /// let [a, b] = matrix.two_rows_mut(0, 1).unwrap();
+  /// a.iter_mut().for_each(|elem| *elem += 1);
+  /// b.iter_mut().for_each(|elem| *elem += 2);
+  /// assert_eq!(matrix.row(0), Some(&[2, 3, 4, 5, 6][..]));
+  /// assert_eq!(matrix.row(1), Some(&[8, 9, 10, 11, 12][..]));
+  /// ```
   pub fn two_rows_mut(&mut self, a: usize, b: usize) -> Option<[&mut [DATA]; 2]> {
     let [max, min] = match a.cmp(&b) {
       Ordering::Equal => return None,
@@ -437,14 +458,20 @@ where
     + cl_traits::Capacity<Output = usize>
     + cl_traits::Push<Input = DATA>,
 {
+  /// Creates a new random and valid instance delimited by the passed arguments.
+  ///
+  /// # Arguments
+  ///
+  /// * `[rows, cols]` - Pair indices.
+  /// * `rng` - `rand::Rng` trait.
+  /// * `cb` - Function that returns a new `DATA`.
   pub fn new_random_with_rand<F, R>(
-    rows: usize,
-    cols: usize,
+    [rows, cols]: [usize; 2],
     rng: &mut R,
     mut cb: F,
   ) -> crate::Result<Self>
   where
-    F: FnMut(&mut R, usize, usize) -> DATA,
+    F: FnMut(&mut R, [usize; 2]) -> DATA,
     R: rand::Rng,
   {
     let mut data = DS::default();
@@ -453,7 +480,7 @@ where
     }
     for row in 0..rows {
       for col in 0..cols {
-        let _ = data.push(cb(rng, row, col));
+        let _ = data.push(cb(rng, [row, col]));
       }
     }
     Ok(DrMatrix { cols, data, rows })

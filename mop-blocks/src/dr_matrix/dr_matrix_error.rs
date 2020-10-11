@@ -7,7 +7,7 @@ pub enum DrMatrixError {
   ///
   /// ```rust
   /// use mop_blocks::dr_matrix::DrMatrixRef;
-  /// let _ = DrMatrixRef::new(2, 4, &[1, 2, 3][..]);
+  /// let _ = DrMatrixRef::new([2, 4], &[1, 2, 3][..]);
   /// ```
   DataLenDiffColsTimesRows,
 
@@ -15,7 +15,7 @@ pub enum DrMatrixError {
   ///
   /// ```rust
   /// use mop_blocks::dr_matrix::DrMatrixVec;
-  /// let _ = DrMatrixVec::new(999, 999, vec![1, 2, 3]);
+  /// let _ = DrMatrixVec::new([999, 999], vec![1, 2, 3]);
   /// ```
   NotEnoughCapacity,
 }

@@ -13,8 +13,7 @@ pub struct $dr_matrix_iter<'a, T> {
 
 impl<'a, T> $dr_matrix_iter<'a, T> {
     pub(crate) fn new(
-        rows: usize,
-        cols: usize,
+        [rows, cols]: [usize; 2],
         data: $data_type,
     ) -> Self {
         Self {

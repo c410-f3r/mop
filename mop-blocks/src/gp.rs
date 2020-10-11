@@ -115,7 +115,7 @@ where
   pub fn with_random_solutions(
     defs: GpDefinitions<D, HCS, OS, SCS>,
     rslts_num: usize,
-  ) -> Result<Self, crate::Error>
+  ) -> crate::Result<Self>
   where
     crate::Error: From<D::Error>,
     D: crate::Domain<S>,

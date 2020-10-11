@@ -36,7 +36,7 @@ pub struct GpDefinitionsBuilder<D, HCS, OS, SCS> {
 }
 
 impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
-  pub fn build(self) -> Result<GpDefinitions<D, HCS, OS, SCS>, GpDefinitionsBuilderError>
+  pub fn build(self) -> crate::Result<GpDefinitions<D, HCS, OS, SCS>>
   where
     HCS: Default,
     SCS: Default,
@@ -44,12 +44,12 @@ impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
     let domain = if let Some(r) = self.domain {
       r
     } else {
-      return Err(GpDefinitionsBuilderError::NoDomainForDefinitionsBuilder);
+      return Err(GpDefinitionsBuilderError::NoDomainForDefinitionsBuilder.into());
     };
     let objs = if let Some(r) = self.objs {
       r
     } else {
-      return Err(GpDefinitionsBuilderError::NoObjForDefinitionsBuilder);
+      return Err(GpDefinitionsBuilderError::NoObjForDefinitionsBuilder.into());
     };
     Ok(GpDefinitions {
       domain,

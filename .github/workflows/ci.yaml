@@ -25,8 +25,8 @@ jobs:
           crate: cargo-fuzz
           use-tool-cache: true
 
-      - run: cd mop-blocks/fuzz; cargo fuzz run dr_matrix_fuzz -- -max_len=32 -runs=10000
-      - run: cd mop-blocks/fuzz; cargo fuzz run gp_fuzz -- -max_len=32 -runs=10000
+      - run: cd mop-blocks/fuzz; cargo fuzz run dr_matrix -- -max_len=32 -runs=10000
+      - run: cd mop-blocks/fuzz; cargo fuzz run gp -- -max_len=32 -runs=10000
 
   tests:
     name: Tests

@@ -4,7 +4,7 @@ mop-facades = { default-features = false, path = "../mop-facades", version = "0.
 mop-solvers = { default-features = false, optional = true, path = "../mop-solvers", version = "0.5.0" }
 
 [features]
-default = ["with-mop-solvers"]
+default = []
 std = ["mop-blocks/std", "mop-facades/std", "mop-solvers/std"]
 with-futures = ["mop-blocks/with-futures"]
 with-mop-solvers = ["mop-solvers"]

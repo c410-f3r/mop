@@ -5,7 +5,7 @@ path = "src/main.rs"
 [dependencies]
 arrayvec = { default-features = false, version = "0.5" }
 cl-traits = { default-features = false, git = "https://github.com/c410-f3r/cl-traits" }
-mop = { features = ["std", "with-futures", "with-ndsparse"], path = "../mop" }
+mop = { features = ["std", "with-futures", "with-mop-solvers", "with-ndsparse"], path = "../mop" }
 ndsparse = { default-features = false, git = "https://github.com/c410-f3r/ndsparse"  }
 plotters = { default-features = false, features = ["svg_backend"], optional = true, version = "0.3" }
 rand = { default-features = false, features = ["getrandom"], version = "0.7" }

@@ -16,18 +16,18 @@ impl<AORS, AOS, ASS, BORS, BOS, D, HC, HCRS, HCS, OR, S, SCRS, SCS, SS>
     Mp<D, BORS, BOS, SS>,
   > for MphsMpMphs
 where
-  AORS: AsMut<[OR]> + Extend<OR> + Length<Output = usize> + Storage<Item = OR> + TraitCfg,
+  AORS: AsMut<[OR]> + Extend<OR> + Length + Storage<Item = OR> + TraitCfg,
   AOS: TraitCfg,
   ASS: AsMut<[S]> + Push<Input = S> + Storage<Item = S> + TraitCfg,
-  BORS: AsRef<[OR]> + Length<Output = usize> + Storage<Item = OR> + TraitCfg,
+  BORS: AsRef<[OR]> + Length + Storage<Item = OR> + TraitCfg,
   BOS: TraitCfg,
   D: TraitCfg,
   HC: Cstr<S> + TraitCfg,
-  HCRS: AsMut<[usize]> + Extend<usize> + Length<Output = usize> + Storage<Item = usize> + TraitCfg,
+  HCRS: AsMut<[usize]> + Extend<usize> + Length + Storage<Item = usize> + TraitCfg,
   HCS: AsRef<[HC]> + Storage<Item = HC> + TraitCfg,
   OR: Clone + Default + TraitCfg,
   S: Clone + TraitCfg,
-  SCRS: AsMut<[usize]> + Extend<usize> + Length<Output = usize> + Storage<Item = usize> + TraitCfg,
+  SCRS: AsMut<[usize]> + Extend<usize> + Length + Storage<Item = usize> + TraitCfg,
   SCS: AsRef<[HC]> + Storage<Item = HC> + TraitCfg,
   SS: AsRef<[S]> + Storage<Item = S> + TraitCfg,
 {

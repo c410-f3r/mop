@@ -6,7 +6,7 @@ mop-common = { default-features = false, path = "../mop-common", version = "0.5.
 ndsparse = { default-features = false, features = ["with-rand"], optional = true, git = "https://github.com/c410-f3r/ndsparse" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.7" }
-serde = { default-features = false, features = ["derive"], optional = true, version = "1.0" }
+serde = { branch = "const-gen", default-features = false, features = ["const-generics", "derive"], optional = true, git = "https://github.com/c410-f3r/serde" }
 
 [features]
 default = []

@@ -16,7 +16,9 @@ pub trait Solver<P> {
   /// Do solving work before stoping criteria verification.
   fn before_iter<'a>(&'a mut self, p: &'a mut P) -> SolverFuture<'a, Self::Error>;
 
+  /// Verifies or modifies `P` when solving was completed
   fn finished(&mut self, _: &mut P) {}
 
+  /// Verifies or modifies `P` when solving is starting
   fn init(&mut self, _: &mut P) {}
 }

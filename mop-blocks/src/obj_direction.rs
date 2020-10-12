@@ -10,6 +10,7 @@ pub enum ObjDirection {
 }
 
 impl ObjDirection {
+  #[inline]
   pub fn is_better<T>(self, a: &T, b: &T) -> Option<Ordering>
   where
     T: PartialOrd,

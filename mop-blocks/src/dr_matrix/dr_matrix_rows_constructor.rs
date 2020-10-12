@@ -76,7 +76,7 @@ where
   pub fn row_iter<I>(self, i: I) -> Self
   where
     DATA: Default,
-    DS: Extend<DATA> + Length<Output = usize>,
+    DS: Extend<DATA> + Length,
     I: Iterator<Item = DATA>,
   {
     let old_len = self.data.length();

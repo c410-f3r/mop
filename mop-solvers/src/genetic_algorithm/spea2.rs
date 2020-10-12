@@ -85,7 +85,7 @@ where
     population_size: usize,
   ) -> Result<Self, mop_blocks::Error> {
     let defs = problem.defs();
-    let archive_size = archive_size_pct * population_size;
+    let archive_size = archive_size_pct.saturating_mul(population_size);
     let arch_u_popul_len = archive_size.saturating_add(population_size);
     Ok(Spea2 {
       arch_rslts: MpOrs::with_capacity(defs, archive_size),
@@ -314,7 +314,10 @@ where
   }
 }
 
-#[allow(clippy::unwrap_used)]
+#[allow(
+  // Floats are non-deterministic
+  clippy::unwrap_used
+)]
 fn sort_partial_by<F, T>(slice: &mut [T], f: F)
 where
   F: Fn(&T, &T) -> Option<Ordering>,

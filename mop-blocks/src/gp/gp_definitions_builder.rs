@@ -36,6 +36,7 @@ pub struct GpDefinitionsBuilder<D, HCS, OS, SCS> {
 }
 
 impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
+  #[inline]
   pub fn build(self) -> crate::Result<GpDefinitions<D, HCS, OS, SCS>>
   where
     HCS: Default,
@@ -60,11 +61,13 @@ impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
     })
   }
 
+  #[inline]
   pub fn domain(mut self, domain: D) -> Self {
     self.domain = Some(domain);
     self
   }
 
+  #[inline]
   pub fn name(mut self, name: &'static str) -> Self {
     self.name = name;
     self
@@ -73,6 +76,7 @@ impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
 
 impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
   /// Hard constraints
+  #[inline]
   pub fn hard_cstrs(mut self, hard_cstrs: HCS) -> Self {
     self.hard_cstrs = Some(hard_cstrs);
     self
@@ -84,6 +88,7 @@ where
   HCS: Storage<Item = HC>,
 {
   /// Push hard constraint
+  #[inline]
   pub fn push_hard_cstr(mut self, hard_cstr: HC) -> crate::Result<Self>
   where
     HCS: Default + Push<Input = HC>,
@@ -99,6 +104,7 @@ where
   }
 
   /// Push objectives
+  #[inline]
   pub fn push_hard_cstrs<CI>(self, hard_cstrs: CI) -> crate::Result<Self>
   where
     CI: IntoIterator<Item = HC>,
@@ -110,6 +116,7 @@ where
 
 impl<D, HC, O, SC> GpDefinitionsBuilder<D, HC, [O; 1], SC> {
   /// Objective
+  #[inline]
   pub fn obj(mut self, obj: O) -> Self {
     self.objs = Some([obj]);
     self
@@ -121,12 +128,14 @@ where
   OS: Storage<Item = O>,
 {
   /// Objectives
+  #[inline]
   pub fn objs(mut self, objs: OS) -> Self {
     self.objs = Some(objs);
     self
   }
 
   /// Push objective
+  #[inline]
   pub fn push_obj(mut self, obj: O) -> crate::Result<Self>
   where
     OS: Default + Push<Input = O>,
@@ -142,6 +151,7 @@ where
   }
 
   /// Push objectives
+  #[inline]
   pub fn push_objs<OI>(self, objs: OI) -> crate::Result<Self>
   where
     OI: IntoIterator<Item = O>,
@@ -153,6 +163,7 @@ where
 
 impl<D, HCS, OS, SCS> GpDefinitionsBuilder<D, HCS, OS, SCS> {
   /// Soft constraints
+  #[inline]
   pub fn soft_cstrs(mut self, soft_cstrs: SCS) -> Self {
     self.soft_cstrs = Some(soft_cstrs);
     self
@@ -164,6 +175,7 @@ where
   SCS: Storage<Item = SC>,
 {
   /// Push soft constraint
+  #[inline]
   pub fn push_soft_cstr(mut self, soft_cstr: SC) -> crate::Result<Self>
   where
     SCS: Default + Push<Input = SC>,
@@ -179,6 +191,7 @@ where
   }
 
   /// Push soft constraints
+  #[inline]
   pub fn push_soft_cstrs<CI>(self, soft_cstrs: CI) -> crate::Result<Self>
   where
     CI: IntoIterator<Item = SC>,
@@ -189,6 +202,7 @@ where
 }
 
 impl<D, HCS, OS, SCS> Default for GpDefinitionsBuilder<D, HCS, OS, SCS> {
+  #[inline]
   fn default() -> Self {
     Self { domain: None, hard_cstrs: None, name: "Unknown problem", objs: None, soft_cstrs: None }
   }
@@ -206,6 +220,7 @@ pub enum GpDefinitionsBuilderError {
 impl std::error::Error for GpDefinitionsBuilderError {}
 
 impl fmt::Display for GpDefinitionsBuilderError {
+  #[inline]
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     let s = match *self {
       Self::NoDomainForDefinitionsBuilder => "NoDomainForDefinitionsBuilder",

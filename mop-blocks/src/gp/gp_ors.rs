@@ -50,6 +50,7 @@ pub struct GpOrs<HCRS, ORS, SCRS, SS> {
 }
 
 impl<HCRS, ORS, SCRS, SS> GpOrs<HCRS, ORS, SCRS, SS> {
+  #[inline]
   pub fn clear(&mut self)
   where
     HCRS: Clear,
@@ -63,6 +64,7 @@ impl<HCRS, ORS, SCRS, SS> GpOrs<HCRS, ORS, SCRS, SS> {
     self.solutions.clear();
   }
 
+  #[inline]
   pub fn truncate(&mut self, until_idx: usize)
   where
     HCRS: Truncate<Input = usize>,
@@ -89,6 +91,7 @@ where
   SCRS: Storage<Item = SCR>,
   SS: Storage<Item = S>,
 {
+  #[inline]
   pub fn constructor(&mut self) -> GpOrsConstructor<'_, HCRS, ORS, SCRS, SS> {
     GpOrsConstructor {
       hard_cstr_rslts: self.hard_cstr_rslts.constructor(),
@@ -106,6 +109,7 @@ where
   SCRS: AsMut<[SCR]> + Storage<Item = SCR>,
   SS: AsMut<[S]> + Storage<Item = S>,
 {
+  #[inline]
   pub fn get_mut(&mut self, idx: usize) -> Option<GpOrMut<'_, HCR, OR, S, SCR>> {
     Some(GpOrMut {
       hard_cstr_rslts: self.hard_cstr_rslts.row_mut(idx)?,
@@ -163,24 +167,36 @@ where
       })
   }
 
-  pub fn remove(&mut self, idx: usize)
+  #[inline]
+  #[must_use]
+  pub fn remove(&mut self, idx: usize) -> bool
   where
     HCRS: Truncate<Input = usize>,
     SCRS: Truncate<Input = usize>,
     ORS: Truncate<Input = usize>,
     SS: Remove<Input = usize>,
   {
-    self.hard_cstr_rslts.remove_row(idx);
-    self.obj_rslts.remove_row(idx);
-    self.soft_cstr_rslts.remove_row(idx);
+    if idx >= self.rslts_num() {
+      return false;
+    }
+    let _ = self.hard_cstr_rslts.remove_row(idx);
+    let _ = self.obj_rslts.remove_row(idx);
+    let _ = self.soft_cstr_rslts.remove_row(idx);
     let _ = self.solutions.remove(idx);
+    true
   }
 
-  pub fn swap(&mut self, a: usize, b: usize) {
-    self.hard_cstr_rslts.swap_rows(a, b);
-    self.obj_rslts.swap_rows(a, b);
-    self.soft_cstr_rslts.swap_rows(a, b);
-    self.solutions.as_mut().swap(a, b);
+  #[inline]
+  #[must_use]
+  pub fn swap(&mut self, a: usize, b: usize) -> bool {
+    if a >= self.rslts_num() || b >= self.rslts_num() {
+      return false;
+    }
+    let _ = self.hard_cstr_rslts.swap_rows(a, b);
+    let _ = self.obj_rslts.swap_rows(a, b);
+    let _ = self.soft_cstr_rslts.swap_rows(a, b);
+    let _ = self.solutions.as_mut().swap(a, b);
+    true
   }
 }
 
@@ -191,6 +207,7 @@ where
   SCRS: AsRef<[SCR]> + Storage<Item = SCR>,
   SS: AsRef<[S]> + Storage<Item = S>,
 {
+  #[inline]
   pub fn as_ref(&self) -> GpOrsRef<'_, HCR, OR, S, SCR> {
     GpOrsRef {
       hard_cstr_rslts: self.hard_cstr_rslts.as_ref(),
@@ -200,6 +217,7 @@ where
     }
   }
 
+  #[inline]
   pub fn get(&self, idx: usize) -> Option<GpOrRef<'_, HCR, OR, S, SCR>> {
     Some(GpOrRef {
       hard_cstr_rslts: self.hard_cstr_rslts.row(idx)?,
@@ -241,6 +259,7 @@ where
   SCRS: Storage<Item = SCR> + WithCapacity<Input = usize>,
   SS: Storage<Item = S> + WithCapacity<Input = usize>,
 {
+  #[inline]
   pub fn with_capacity<HC, HCS, D, O, OS, SC, SCS>(
     defs: &GpDefinitions<D, HCS, OS, SCS>,
     rslts_num: usize,

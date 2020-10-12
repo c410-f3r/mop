@@ -51,7 +51,7 @@ where
   OS: AsMut<[O]> + AsRef<[O]> + Storage<Item = O>,
   QC: for<'a> QualityComparator<[O], GpOrRef<'a, HCR, OR, S, SCR>>,
   S: Solution,
-  SS: AsMut<[S]> + AsRef<[S]> + Length<Output = usize> + Storage<Item = S>,
+  SS: AsMut<[S]> + AsRef<[S]> + Length + Storage<Item = S>,
 {
   pub fn new(max_iterations: usize) -> Self {
     OptFacade {

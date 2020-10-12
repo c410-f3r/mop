@@ -15,6 +15,7 @@ pub trait GpOperations<AD, AR, B> {
   fn transfer<'a>(a_defs: &'a AD, a_rslts: &'a mut AR, b: &'a B) -> SolverFuture<'a, Self::Error>;
 }
 
+#[inline]
 pub fn mp_defs_from_gp_defs<'a, D, HCS, NOS, O, OR, OS, S, SCS>(
   defs: &'a GpDefinitions<D, HCS, OS, SCS>,
 ) -> crate::Result<MpDefinitionsBuilder<D, NOS>>

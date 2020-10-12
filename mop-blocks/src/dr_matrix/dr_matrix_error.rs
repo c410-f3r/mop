@@ -21,6 +21,7 @@ pub enum DrMatrixError {
 }
 
 impl fmt::Display for DrMatrixError {
+  #[inline]
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match *self {
       Self::DataLenDiffColsTimesRows => write!(f, "Data length differs from columns times rows"),

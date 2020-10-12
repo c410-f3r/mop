@@ -47,18 +47,21 @@ impl Error {
 
 // Theoretically, it doesn't matter which Error is given for Infallible
 impl From<core::convert::Infallible> for Error {
+  #[inline]
   fn from(_: core::convert::Infallible) -> Self {
     Self::BadCast
   }
 }
 
 impl From<GpDefinitionsBuilderError> for Error {
+  #[inline]
   fn from(from: GpDefinitionsBuilderError) -> Self {
     Self::GDBE(from)
   }
 }
 
 impl From<DrMatrixError> for Error {
+  #[inline]
   fn from(from: DrMatrixError) -> Self {
     Self::DrMatrixError(from)
   }
@@ -66,6 +69,7 @@ impl From<DrMatrixError> for Error {
 
 #[cfg(feature = "with-ndsparse")]
 impl From<ndsparse::Error> for Error {
+  #[inline]
   fn from(from: ndsparse::Error) -> Self {
     Self::NdsparseError(from)
   }
@@ -75,6 +79,7 @@ impl From<ndsparse::Error> for Error {
 impl std::error::Error for Error {}
 
 impl fmt::Display for Error {
+  #[inline]
   fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     match *self {
       Self::BadCast => write!(f, "BadCast"),

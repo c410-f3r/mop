@@ -46,14 +46,7 @@ where
   }
 }
 
-fn obj(_: &[f64; 2]) -> f64 {
-  0.0
-}
-
-fn hc(_: &[f64; 2]) -> usize {
-  0
-}
-
+#[inline]
 pub fn dummy_mp() -> DummyMpTy {
   MpVec::with_capacity(
     MpDefinitions {
@@ -67,6 +60,7 @@ pub fn dummy_mp() -> DummyMpTy {
   )
 }
 
+#[inline]
 pub fn dummy_mp_with_solutions() -> DummyMpTy {
   let mut problem = dummy_mp();
   problem
@@ -79,6 +73,7 @@ pub fn dummy_mp_with_solutions() -> DummyMpTy {
   problem
 }
 
+#[inline]
 pub fn dummy_mph() -> DummyMphTy {
   MphVec::with_capacity(
     MphDefinitions {
@@ -92,6 +87,7 @@ pub fn dummy_mph() -> DummyMphTy {
   )
 }
 
+#[inline]
 pub fn dummy_mph_with_solutions() -> DummyMphTy {
   let mut problem = dummy_mph();
   problem
@@ -102,4 +98,14 @@ pub fn dummy_mph_with_solutions() -> DummyMphTy {
     .or_hcos_iter([1, 2].iter().cloned(), [8.0, 12.0].iter().cloned(), [4.0, 4.0])
     .or_hcos_iter([1, 2].iter().cloned(), [12.0, 12.0].iter().cloned(), [5.0, 5.0]);
   problem
+}
+
+#[inline]
+fn obj(_: &[f64; 2]) -> f64 {
+  0.0
+}
+
+#[inline]
+fn hc(_: &[f64; 2]) -> usize {
+  0
 }

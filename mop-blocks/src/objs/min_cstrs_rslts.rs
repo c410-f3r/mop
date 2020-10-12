@@ -9,12 +9,14 @@ pub struct MinCstrsRslts<CI> {
 }
 
 impl<CI> MinCstrsRslts<CI> {
+  #[inline]
   pub fn new(cstrs: CI) -> Self {
     Self { cstrs }
   }
 }
 
 impl<'a, C> MinCstrsRslts<Iter<'a, C>> {
+  #[inline]
   pub fn from_gp_hcs<D, HCS, OS, SCS>(defs: &'a GpDefinitions<D, HCS, OS, SCS>) -> Self
   where
     HCS: AsRef<[C]>,
@@ -24,6 +26,7 @@ impl<'a, C> MinCstrsRslts<Iter<'a, C>> {
 }
 
 impl<'a, C> MinCstrsRslts<Chain<Iter<'a, C>, Iter<'a, C>>> {
+  #[inline]
   pub fn from_gp_hcs_and_scs<D, HCS, OS, SCS>(defs: &'a GpDefinitions<D, HCS, OS, SCS>) -> Self
   where
     HCS: AsRef<[C]>,
@@ -41,10 +44,12 @@ where
   CI: Clone + Iterator<Item = C> + TraitCfg,
   OR: Bounded + NumCast,
 {
+  #[inline]
   fn obj_direction(&self) -> ObjDirection {
     ObjDirection::Min
   }
 
+  #[inline]
   fn result(&self, s: &S) -> OR {
     let sum: usize = self.cstrs.clone().map(|cstr| cstr.violations(s)).sum();
     OR::from(sum).unwrap_or_else(OR::max_value)
@@ -57,6 +62,7 @@ where
   CI: Clone + Iterator<Item = C> + TraitCfg,
   OR: Bounded + NumCast,
 {
+  #[inline]
   fn from(f: &'a MinCstrsRslts<CI>) -> Self {
     f
   }

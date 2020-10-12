@@ -1,4 +1,8 @@
-#![allow(clippy::as_conversions, trivial_casts)]
+#![allow(
+  // Function pointers
+  clippy::as_conversions,
+  trivial_casts
+)]
 #![feature(min_const_generics)]
 
 pub mod binh_and_korn;

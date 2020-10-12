@@ -1,6 +1,5 @@
 [features]
 default = []
-std = []
 with-futures = []
 
 [package]

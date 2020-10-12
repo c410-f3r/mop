@@ -46,7 +46,23 @@ impl Cstr<Solution> for HardCstr {
       let jv = JsValue::from_f64(x);
       array.push(&jv);
     });
-    self.0.call1(&JsValue::NULL, &JsValue::from(array)).unwrap().as_f64().unwrap() as usize
+    let fn_ret_rslt = self.0.call1(&JsValue::NULL, &JsValue::from(array));
+    let fn_ret = if let Ok(rslt) = fn_ret_rslt {
+      rslt.as_f64()
+    }
+    else {
+      return usize::MAX;
+    };
+    #[allow(
+      // There is no `as_usize`
+      clippy::as_conversions
+    )]
+    if let Some(rslt) = fn_ret {
+      rslt as usize
+    }
+    else {
+      usize::MAX
+    }
   }
 }
 
@@ -75,7 +91,19 @@ impl blocks::Obj<f64, Solution> for Obj {
       let jv = JsValue::from_f64(x);
       array.push(&jv);
     });
-    self.1.call1(&JsValue::NULL, &JsValue::from(array)).unwrap().as_f64().unwrap()
+    let fn_ret_rslt = self.1.call1(&JsValue::NULL, &JsValue::from(array));
+    let fn_ret = if let Ok(rslt) = fn_ret_rslt {
+      rslt.as_f64()
+    }
+    else {
+      return f64::MAX;
+    };
+    if let Some(rslt) = fn_ret {
+      rslt
+    }
+    else {
+      f64::MAX
+    }
   }
 }
 
@@ -90,7 +118,7 @@ pub enum ObjDirection {
 
 impl ObjDirection {
   fn to_original(&self) -> blocks::ObjDirection {
-    match self {
+    match *self {
       ObjDirection::Max => blocks::ObjDirection::Max,
       ObjDirection::Min => blocks::ObjDirection::Min,
     }
@@ -255,8 +283,8 @@ pub struct OptProblemResult(MphOrVec<f64, Solution>);
 
 #[wasm_bindgen]
 impl OptProblemResult {
-  pub fn hard_cstr_rslts(&self) -> Vec<u32> {
-    self.0.hard_cstr_rslts().iter().map(|&x| x as u32).collect()
+  pub fn hard_cstr_rslts(&self) -> Vec<usize> {
+    self.0.hard_cstr_rslts().iter().copied().collect()
   }
 
   pub fn obj_rslts(&self) -> Vec<f64> {

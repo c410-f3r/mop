@@ -11,6 +11,7 @@ use core::cmp::Ordering;
 pub struct Nsga2;
 
 impl Nsga2 {
+  #[inline]
   fn do_is_best<F, OR, S>(
     a: &MphOrRef<'_, OR, S>,
     b: &MphOrRef<'_, OR, S>,

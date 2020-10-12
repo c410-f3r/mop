@@ -34,6 +34,7 @@ pub struct GpDefinitions<D, HCS, OS, SCS> {
 }
 
 impl<D, HCS, OS, SCS> GpDefinitions<D, HCS, OS, SCS> {
+  #[inline]
   pub fn into_builder(self) -> GpDefinitionsBuilder<D, HCS, OS, SCS> {
     GpDefinitionsBuilder {
       domain: Some(self.domain),
@@ -44,10 +45,12 @@ impl<D, HCS, OS, SCS> GpDefinitions<D, HCS, OS, SCS> {
     }
   }
 
+  #[inline]
   pub fn domain(&self) -> &D {
     &self.domain
   }
 
+  #[inline]
   pub fn name(&self) -> &str {
     self.name
   }
@@ -58,6 +61,7 @@ where
   HCS: AsRef<[HC]> + Storage<Item = HC>,
 {
   /// Hard constraints
+  #[inline]
   pub fn hard_cstrs(&self) -> &[HC] {
     self.hard_cstrs.as_ref()
   }
@@ -65,6 +69,7 @@ where
 
 impl<D, HCS, O, SCS> GpDefinitions<D, HCS, [O; 1], SCS> {
   /// Objective
+  #[inline]
   pub fn obj(&self) -> &O {
     &self.objs[0]
   }
@@ -75,6 +80,7 @@ where
   OS: AsRef<[O]> + Storage<Item = O>,
 {
   /// Objectives
+  #[inline]
   pub fn objs(&self) -> &[O] {
     self.objs.as_ref()
   }
@@ -85,6 +91,7 @@ where
   SCS: AsRef<[SC]> + Storage<Item = SC>,
 {
   /// Soft constraints
+  #[inline]
   pub fn soft_cstrs(&self) -> &[SC] {
     self.soft_cstrs.as_ref()
   }
@@ -97,6 +104,7 @@ where
   SCS: Default,
   OS: Default,
 {
+  #[inline]
   fn default() -> Self {
     Self {
       domain: D::default(),

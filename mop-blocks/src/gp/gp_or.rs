@@ -44,14 +44,17 @@ pub struct GpOr<HCRS, ORS, S, SCRS> {
 }
 
 impl<HCRS, ORS, S, SCRS> GpOr<HCRS, ORS, S, SCRS> {
+  #[inline]
   pub fn new(hard_cstr_rslts: HCRS, obj_rslts: ORS, soft_cstr_rslts: SCRS, solution: S) -> Self {
     Self { hard_cstr_rslts, obj_rslts, soft_cstr_rslts, solution }
   }
 
+  #[inline]
   pub fn solution(&self) -> &S {
     &self.solution
   }
 
+  #[inline]
   pub fn solution_mut(&mut self) -> &mut S {
     &mut self.solution
   }
@@ -61,12 +64,14 @@ impl<HCRS, ORS, S, SCRS> GpOr<HCRS, ORS, S, SCRS>
 where
   HCRS: AsRef<[usize]>,
 {
+  #[inline]
   pub fn hard_cstr_rslts(&self) -> &[usize] {
     self.hard_cstr_rslts.as_ref()
   }
 }
 
 impl<HCRS, OR, S, SCRS> GpOr<HCRS, [OR; 1], S, SCRS> {
+  #[inline]
   pub fn obj_rslt(&self) -> &OR {
     &self.obj_rslts[0]
   }
@@ -76,6 +81,7 @@ impl<HCRS, OR, ORS, S, SCRS> GpOr<HCRS, ORS, S, SCRS>
 where
   ORS: AsRef<[OR]> + Storage<Item = OR>,
 {
+  #[inline]
   pub fn obj_rslts(&self) -> &[OR] {
     self.obj_rslts.as_ref()
   }
@@ -85,6 +91,7 @@ impl<HCRS, ORS, S, SCRS> GpOr<HCRS, ORS, S, SCRS>
 where
   SCRS: AsRef<[usize]>,
 {
+  #[inline]
   pub fn soft_cstr_rslts(&self) -> &[usize] {
     self.soft_cstr_rslts.as_ref()
   }
@@ -95,6 +102,7 @@ where
   OR: Clone,
   S: Clone,
 {
+  #[inline]
   pub fn to_mph_vec(&self) -> MphOrVec<OR, S> {
     GpOr {
       hard_cstr_rslts: self.hard_cstr_rslts.to_vec(),
@@ -110,6 +118,7 @@ where
   OR: Clone,
   S: Clone,
 {
+  #[inline]
   pub fn to_mphs_vec(&self) -> MphsOrVec<OR, S> {
     GpOr {
       hard_cstr_rslts: self.hard_cstr_rslts.to_vec(),

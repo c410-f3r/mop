@@ -67,28 +67,34 @@ pub struct Gp<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS> {
 }
 
 impl<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS> Gp<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS> {
+  #[inline]
   pub fn defs(&self) -> &GpDefinitions<D, HCS, OS, SCS> {
     &self.defs
   }
 
+  #[inline]
   pub fn into_parts(self) -> (GpDefinitions<D, HCS, OS, SCS>, GpOrs<HCRS, ORS, SCRS, SS>) {
     (self.defs, self.ors)
   }
 
+  #[inline]
   pub fn parts(&self) -> (&GpDefinitions<D, HCS, OS, SCS>, &GpOrs<HCRS, ORS, SCRS, SS>) {
     (&self.defs, &self.ors)
   }
 
+  #[inline]
   pub fn parts_mut(
     &mut self,
   ) -> (&GpDefinitions<D, HCS, OS, SCS>, &mut GpOrs<HCRS, ORS, SCRS, SS>) {
     (&mut self.defs, &mut self.ors)
   }
 
+  #[inline]
   pub fn rslts(&self) -> &GpOrs<HCRS, ORS, SCRS, SS> {
     &self.ors
   }
 
+  #[inline]
   pub fn rslts_mut(&mut self) -> &mut GpOrs<HCRS, ORS, SCRS, SS> {
     &mut self.ors
   }
@@ -106,12 +112,14 @@ where
   SCS: AsRef<[SC]> + Storage<Item = SC>,
   SS: Push<Input = S> + Storage<Item = S> + WithCapacity<Input = usize>,
 {
+  #[inline]
   pub fn with_capacity(defs: GpDefinitions<D, HCS, OS, SCS>, rslts_num: usize) -> Self {
     let ors = GpOrs::with_capacity(&defs, rslts_num);
     Self { defs, ors }
   }
 
   #[cfg(feature = "with-rand")]
+  #[inline]
   pub fn with_random_solutions(
     defs: GpDefinitions<D, HCS, OS, SCS>,
     rslts_num: usize,
@@ -129,6 +137,7 @@ where
     Ok(Self { defs, ors })
   }
 
+  #[inline]
   pub fn with_user_solutions<F>(
     defs: GpDefinitions<D, HCS, OS, SCS>,
     rslts_num: usize,

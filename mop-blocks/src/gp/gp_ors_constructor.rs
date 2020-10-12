@@ -79,12 +79,12 @@ where
 impl<'a, HCR, HCRS, OR, ORS, S, SCR, SCRS, SS> GpOrsConstructor<'a, HCRS, ORS, SCRS, SS>
 where
   OR: Default,
-  ORS: Extend<OR> + Length<Output = usize> + Storage<Item = OR>,
+  ORS: Extend<OR> + Length + Storage<Item = OR>,
   SS: Push<Input = S> + Storage<Item = S>,
   HCR: Default,
-  HCRS: Extend<HCR> + Length<Output = usize> + Storage<Item = HCR>,
+  HCRS: Extend<HCR> + Length + Storage<Item = HCR>,
   SCR: Default,
-  SCRS: Extend<SCR> + Length<Output = usize> + Storage<Item = SCR>,
+  SCRS: Extend<SCR> + Length + Storage<Item = SCR>,
 {
   pub fn or_hcos_iter<HCRI, ORI>(self, hcri: HCRI, ori: ORI, solution: S) -> Self
   where

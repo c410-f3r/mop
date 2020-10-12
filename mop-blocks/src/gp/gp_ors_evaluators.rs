@@ -47,6 +47,7 @@ where
     Self::eval_cstrs_rslts(soft_cstrs, rslts, |rslt| (rslt.soft_cstr_rslts, rslt.solution)).await
   }
 
+  #[inline]
   async fn eval_cstrs_rslts<C, HCR, SCR, F>(
     cstrs: &[C],
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,
@@ -104,6 +105,7 @@ where
     Self::eval_cstrs_reasons([rows, cols], defs.soft_cstrs(), rslts).await
   }
 
+  #[inline]
   async fn eval_cstrs_reasons<C>(
     [rows, cols]: [usize; 2],
     cstrs: &[C],
@@ -153,6 +155,7 @@ where
     stream::iter(rslts.iter_mut()).for_each_concurrent(None, |r| async { func(r) }).await;
   }
 
+  #[inline]
   fn eval_objs_for_solution(objs: &[O], rslt: GpOrMut<'_, HCR, OR, S, SCR>) {
     for (obj, obj_rslts) in objs.iter().zip(rslt.obj_rslts.iter_mut()) {
       let rslt = obj.result(&rslt.solution);

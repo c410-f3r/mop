@@ -79,6 +79,7 @@ where
 {
   const MAX_LEN: usize = D;
 
+  #[inline]
   fn has_var(&self, idx: usize) -> bool {
     idx < self.len()
   }
@@ -88,10 +89,12 @@ where
     swap(&mut self.data_mut()[idx], &mut other.data_mut()[idx]);
   }
 
+  #[inline]
   fn intra_swap(&mut self, a: usize, b: usize) {
     self.data_mut().swap(a, b);
   }
 
+  #[inline]
   fn len(&self) -> usize {
     self.data().len()
   }

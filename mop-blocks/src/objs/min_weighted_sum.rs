@@ -15,12 +15,14 @@ pub struct MinWeightedSum<OI, WI> {
 }
 
 impl<OI, WI> MinWeightedSum<OI, WI> {
+  #[inline]
   pub fn new<CS, D, OR, S>(objs: OI, weights: WI) -> Self {
     Self { objs, weights }
   }
 }
 
 impl<'a, O, WI> MinWeightedSum<Iter<'a, O>, WI> {
+  #[inline]
   pub fn from_gp<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS>(
     mp: &'a Gp<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS>,
     weights: WI,
@@ -39,10 +41,12 @@ where
   OI: Clone + Iterator<Item = O> + TraitCfg,
   WI: Clone + Iterator<Item = OR> + TraitCfg,
 {
+  #[inline]
   fn obj_direction(&self) -> ObjDirection {
     ObjDirection::Min
   }
 
+  #[inline]
   fn result(&self, s: &S) -> OR {
     self
       .objs
@@ -67,6 +71,7 @@ where
   OI: Clone + Iterator<Item = O> + TraitCfg,
   WI: Clone + Iterator<Item = OR> + TraitCfg,
 {
+  #[inline]
   fn from(f: &'a MinWeightedSum<OI, WI>) -> Self {
     f
   }

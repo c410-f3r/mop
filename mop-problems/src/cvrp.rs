@@ -1,7 +1,5 @@
 //! http://vrp.galgos.inf.puc-rio.br/index.php/en/plotted-instances?data=B-n31-k5
 
-#![allow(clippy::unwrap_used)]
-
 use crate::Problem;
 use core::ops::{Range, RangeInclusive};
 use mop::blocks::{Cstr, Obj, ObjDirection};
@@ -79,6 +77,10 @@ impl RouteCapacityMustNotExceedTruckCapacity {
   where
     F: FnMut(usize, usize),
   {
+    #[allow(
+      // Dimension is greater than 0
+      clippy::unwrap_used
+    )]
     for (route_idx, route) in solution.outermost_line_iter().unwrap().enumerate() {
       let mut route_capacity = 0;
       for place_idx in route.data().iter().copied() {
@@ -129,6 +131,10 @@ impl Obj<f64, Solution> for MinCost {
 
   fn result(&self, solution: &Solution) -> f64 {
     let mut cost = 0.0;
+    #[allow(
+      // Dimension is greater than 0
+      clippy::unwrap_used
+    )]
     for route in solution.outermost_line_iter().unwrap() {
       let mut last_place = &DATA.depot;
       for place_idx in route.data().iter().copied() {

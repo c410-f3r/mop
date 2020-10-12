@@ -49,6 +49,7 @@ impl<DS> DrMatrix<DS> {
   /// assert_eq!(dcca.data(), &[]);
   /// assert_eq!(dcca.rows(), 0);
   /// ```
+  #[inline]
   pub fn clear(&mut self)
   where
     DS: Clear,
@@ -66,7 +67,7 @@ impl<DS> DrMatrix<DS> {
   /// assert_eq!(dr_matrix_array().cols(), 5);
   /// ```
   #[inline]
-  pub fn cols(&self) -> usize {
+  pub const fn cols(&self) -> usize {
     self.cols
   }
 
@@ -79,7 +80,7 @@ impl<DS> DrMatrix<DS> {
   /// assert_eq!(dr_matrix_array().rows(), 4);
   /// ```
   #[inline]
-  pub fn rows(&self) -> usize {
+  pub const fn rows(&self) -> usize {
     self.rows
   }
 
@@ -87,7 +88,7 @@ impl<DS> DrMatrix<DS> {
   ///
   /// # Argument
   ///
-  /// * `until_row_idx` - The number of rows
+  /// * `rows` - The number of rows
   ///
   /// # Example
   ///
@@ -99,15 +100,20 @@ impl<DS> DrMatrix<DS> {
   /// assert_eq!(ddma.data(), &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10]);
   /// assert_eq!(ddma.rows(), 2);
   /// ```
-  pub fn truncate(&mut self, until_row_idx: usize)
+  #[inline]
+  pub fn truncate(&mut self, rows: usize)
   where
     DS: Truncate<Input = usize>,
   {
-    self.data.truncate(self.cols.saturating_mul(until_row_idx));
-    self.rows = until_row_idx;
+    if rows >= self.rows {
+      return;
+    }
+    self.data.truncate(self.cols.saturating_mul(rows));
+    self.rows = rows;
   }
 
-  fn row_range(&self, row_idx: usize) -> Option<core::ops::Range<usize>> {
+  #[inline]
+  const fn row_range(&self, row_idx: usize) -> Option<core::ops::Range<usize>> {
     let stride = self.stride(row_idx);
     if stride == usize::MAX {
       return None;
@@ -116,7 +122,7 @@ impl<DS> DrMatrix<DS> {
   }
 
   #[inline]
-  fn stride(&self, row_idx: usize) -> usize {
+  const fn stride(&self, row_idx: usize) -> usize {
     self.cols.saturating_mul(row_idx)
   }
 }
@@ -165,12 +171,12 @@ where
   /// use mop_blocks::dr_matrix::DrMatrixArray;
   /// let _ = DrMatrixArray::new([2, 4], [1, 2, 3, 4, 5, 6, 7, 8]);
   /// ```
-  pub fn new([rows, cols]: [usize; 2], data: DS) -> crate::Result<Self>
-  {
+  #[inline]
+  pub fn new([rows, cols]: [usize; 2], data: DS) -> crate::Result<Self> {
     if rows.saturating_mul(cols) != data.as_ref().len() {
       return Err(DrMatrixError::DataLenDiffColsTimesRows.into());
     }
-    Ok(Self { data, rows, cols })
+    Ok(Self { cols, data, rows })
   }
 
   /// Converts the inner storage to a generic immutable slice storage.
@@ -187,6 +193,7 @@ where
   ///   )
   /// );
   /// ```
+  #[inline]
   pub fn as_ref(&self) -> DrMatrixRef<'_, DATA> {
     DrMatrixRef { cols: self.cols, data: self.data.as_ref(), rows: self.rows }
   }
@@ -202,6 +209,7 @@ where
   ///   &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
   /// );
   /// ```
+  #[inline]
   pub fn data(&self) -> &[DATA] {
     &self.data.as_ref()
   }
@@ -232,6 +240,7 @@ where
   ///   );
   /// }
   /// ```
+  #[inline]
   pub fn row(&self, row_idx: usize) -> Option<&[DATA]> {
     self.data().get(self.row_range(row_idx)?)
   }
@@ -250,8 +259,9 @@ where
   /// assert_eq!(ri.next(), Some(&[16, 17, 18, 19, 20][..]));
   /// assert_eq!(ri.next(), None);
   /// ```
+  #[inline]
   pub fn row_iter(&self) -> DrMatrixRowIter<'_, DATA> {
-    DrMatrixRowIter::new([self.rows(), self.cols], self.data().as_ref())
+    DrMatrixRowIter::new([self.rows, self.cols], self.data().as_ref())
   }
 
   /// Copies the internal data into a heap allocated `Vec` storage and
@@ -270,6 +280,7 @@ where
   ///   Ok(ddma.to_vec()),
   /// );
   /// ```
+  #[inline]
   pub fn to_vec(&self) -> DrMatrixVec<DATA>
   where
     DATA: Clone,
@@ -294,11 +305,12 @@ where
   ///   let starting_row_value = row_idx * 5 + 1;
   ///   for col_idx in 0..5 {
   ///     let value = (starting_row_value + col_idx) as i32;
-  ///     assert_eq!(ddma.value(row_idx, col_idx).copied(), Some(value));
+  ///     assert_eq!(ddma.value([row_idx, col_idx]).copied(), Some(value));
   ///   }
   /// }
   /// ```
-  pub fn value(&self, row_idx: usize, col_idx: usize) -> Option<&DATA> {
+  #[inline]
+  pub fn value(&self, [row_idx, col_idx]: [usize; 2]) -> Option<&DATA> {
     self.data().get(self.stride(row_idx).saturating_add(col_idx))
   }
 }
@@ -308,6 +320,7 @@ where
   DS: AsMut<[DATA]> + Storage<Item = DATA>,
 {
   /// Mutable version of [`data`](#method.data).
+  #[inline]
   pub fn data_mut(&mut self) -> &mut [DATA] {
     self.data.as_mut()
   }
@@ -327,28 +340,34 @@ where
   /// assert_eq!(ddma.data(), &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 17, 18, 19, 20]);
   /// assert_eq!(ddma.rows(), 3);
   /// ```
-  pub fn remove_row(&mut self, idx: usize)
+  #[must_use]
+  pub fn remove_row(&mut self, idx: usize) -> bool
   where
     DS: Truncate<Input = usize>,
   {
-    assert!(idx < self.rows);
+    if idx >= self.rows {
+      return false;
+    }
     let mut from_row_idx = idx;
     let mut to_row_idx = idx + 1;
     while to_row_idx < self.rows {
-      self.swap_rows(from_row_idx, to_row_idx);
+      let _ = self.swap_rows(from_row_idx, to_row_idx);
       from_row_idx += 1;
       to_row_idx += 1;
     }
     self.truncate(self.rows - 1);
+    true
   }
 
   /// Mutable version of [`row`](#method.row).
+  #[inline]
   pub fn row_mut(&mut self, row_idx: usize) -> Option<&mut [DATA]> {
     let row_range = self.row_range(row_idx)?;
     self.data_mut().get_mut(row_range)
   }
 
   /// Mutable version of [`row_iter`](#method.row_iter).
+  #[inline]
   pub fn row_iter_mut(&mut self) -> DrMatrixRowIterMut<'_, DATA> {
     DrMatrixRowIterMut::new([self.rows, self.cols], self.data.as_mut())
   }
@@ -368,6 +387,8 @@ where
   /// let _ = ddma.swap([0, 0], [3, 1]);
   /// assert_eq!(ddma.data(), &[17, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 1, 18, 19, 20]);
   /// ```
+  #[inline]
+  #[must_use]
   pub fn swap(&mut self, a: [usize; 2], b: [usize; 2]) -> bool
   where
     DS: AsRef<[DATA]>,
@@ -402,6 +423,8 @@ where
   /// assert_eq!(matrix.row(0), Some(&original_3_row[..]));
   /// assert_eq!(matrix.row(3), Some(&original_0_row[..]));
   /// ```
+  #[inline]
+  #[must_use]
   pub fn swap_rows(&mut self, a: usize, b: usize) -> bool {
     if let Some([first_row, second_row]) = self.two_rows_mut(a, b) {
       first_row.swap_with_slice(second_row);
@@ -444,6 +467,7 @@ where
   }
 
   /// Mutable version of [`value`](#method.value).
+  #[inline]
   pub fn value_mut(&mut self, row_idx: usize, col_idx: usize) -> Option<&mut DATA> {
     let data_idx = self.stride(row_idx).saturating_add(col_idx);
     self.data_mut().get_mut(data_idx)
@@ -453,10 +477,7 @@ where
 #[cfg(feature = "with-rand")]
 impl<DATA, DS> DrMatrix<DS>
 where
-  DS: Default
-    + Storage<Item = DATA>
-    + cl_traits::Capacity<Output = usize>
-    + cl_traits::Push<Input = DATA>,
+  DS: Default + Storage<Item = DATA> + cl_traits::Capacity + cl_traits::Push<Input = DATA>,
 {
   /// Creates a new random and valid instance delimited by the passed arguments.
   ///

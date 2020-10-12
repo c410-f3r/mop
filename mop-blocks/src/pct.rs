@@ -1,7 +1,4 @@
-use core::{
-  ops::Deref,
-  ops::{Div, Mul},
-};
+use core::ops::{Deref, Div};
 use num_traits::SaturatingMul;
 
 /// A percent from 0u16 to 100u16.
@@ -21,12 +18,14 @@ impl Pct {
   /// use mop_blocks::Pct;
   /// assert_eq!(*Pct::from_percent(40), 40);
   /// ```
-  pub fn from_percent(pct: u16) -> Self {
+  #[inline]
+  pub const fn from_percent(pct: u16) -> Self {
     Pct(pct)
   }
 
   /// Is In Random Probability?
   #[cfg(feature = "with-rand")]
+  #[inline]
   pub fn is_in_rnd_pbty<R>(self, rng: &mut R) -> bool
   where
     R: rand::Rng,
@@ -34,9 +33,19 @@ impl Pct {
     let random = rng.gen::<u16>() % 100;
     random < self.0
   }
+
+  #[inline]
+  pub fn saturating_mul<T>(self, rhs: T) -> T
+  where
+    T: Div<T, Output = T> + From<u16> + SaturatingMul,
+  {
+    let t: T = self.0.into();
+    t.saturating_mul(&rhs).div(100.into())
+  }
 }
 
 impl AsRef<u16> for Pct {
+  #[inline]
   fn as_ref(&self) -> &u16 {
     &self.0
   }
@@ -44,25 +53,9 @@ impl AsRef<u16> for Pct {
 
 impl Deref for Pct {
   type Target = u16;
+
+  #[inline]
   fn deref(&self) -> &u16 {
     &self.0
-  }
-}
-
-/// # Example
-///
-/// ```rust
-/// use mop_blocks::Pct;
-/// assert_eq!(Pct::from_percent(20) * 10, 2);
-/// ```
-impl<T> Mul<T> for Pct
-where
-  T: Div<T, Output = T> + From<u16> + SaturatingMul,
-{
-  type Output = T;
-
-  fn mul(self, rhs: T) -> T {
-    let t: T = self.0.into();
-    t.saturating_mul(&rhs).div(100.into())
   }
 }

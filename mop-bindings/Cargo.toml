@@ -2,7 +2,7 @@
 arrayvec = { default-features = false, optional = true, version = "0.5" }
 getrandom = { default-features = false, features = ["wasm-bindgen"], optional = true, version = "0.1" }
 js-sys = { default-features = false, optional = true, version = "0.3" }
-mop = { path = "../mop" }
+mop = { features = ["with-mop-solvers"], path = "../mop" }
 rand = { default-features = false, optional = true, version = "0.7" }
 wasm-bindgen = { default-features = false, features = ["std", "spans"], optional = true, version = "0.2" }
 wasm-bindgen-futures = { default-features = false, optional = true, version = "0.4" }

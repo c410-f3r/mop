@@ -13,10 +13,10 @@ struct Data {
 }
 
 fuzz_target!(|data: Data| {
-  let m = if let Ok(r) = DrMatrixVec::new(data.rows, data.cols, data.data) { r } else { return };
+  let m = if let Ok(r) = DrMatrixVec::new([data.rows, data.cols], data.data) { r } else { return };
 
   let _ = m.row(data.row);
-  let _ = m.value(data.value[0], data.value[1]);
+  let _ = m.value([data.value[0], data.value[1]]);
 
   //_row_iter_next(&m);
   //_row_iter_next_back(&m);

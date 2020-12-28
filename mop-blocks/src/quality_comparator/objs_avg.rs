@@ -9,6 +9,7 @@ where
   O: Obj<OR, S>,
   OR: PartialOrd,
 {
+  #[inline]
   fn is_better(&self, objs: &[O], a: &MpOrRef<'_, OR, S>, b: &MpOrRef<'_, OR, S>) -> bool {
     let mut times_a_is_better_than_b = 0;
     let mut times_b_is_better_than_a = 0;

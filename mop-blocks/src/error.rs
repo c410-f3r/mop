@@ -24,6 +24,7 @@ pub enum Error {
 }
 
 impl Error {
+  #[inline]
   pub fn cast_rslt<T, U>(value: T) -> Result<U, Error>
   where
     T: ToPrimitive,
@@ -36,6 +37,7 @@ impl Error {
     }
   }
 
+  #[inline]
   pub fn opt_rslt<T>(opt: Option<T>) -> Result<T, Error> {
     if let Some(r) = opt {
       Ok(r)

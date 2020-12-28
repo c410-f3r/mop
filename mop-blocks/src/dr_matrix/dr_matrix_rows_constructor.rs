@@ -28,6 +28,7 @@ impl<'a, DATA, DS> DrMatrixRowsConstructor<'a, DS>
 where
   DS: Storage<Item = DATA>,
 {
+  #[inline]
   pub fn fill_row(self, elem: DATA) -> Self
   where
     DATA: Clone,
@@ -38,6 +39,7 @@ where
     self
   }
 
+  #[inline]
   pub fn fill_rows(self, rows: usize, elem: DATA) -> Self
   where
     DATA: Clone,
@@ -48,6 +50,7 @@ where
     self
   }
 
+  #[inline]
   pub fn matrix_ref(self, other: DrMatrixRef<'_, DATA>) -> Option<Self>
   where
     DATA: Clone,
@@ -61,18 +64,20 @@ where
     Some(self)
   }
 
+  #[inline]
   pub fn row_cb<F>(self, mut cb: F) -> crate::Result<Self>
   where
     DS: Push<Input = DATA>,
     F: FnMut(usize) -> DATA,
   {
     for idx in 0..self.cols {
-      self.data.push(cb(idx)).map_err(|_| crate::Error::InsufficientCapacity)?;
+      self.data.push(cb(idx)).map_err(|_e| crate::Error::InsufficientCapacity)?;
     }
     *self.rows += 1;
     Ok(self)
   }
 
+  #[inline]
   pub fn row_iter<I>(self, i: I) -> Self
   where
     DATA: Default,
@@ -98,6 +103,7 @@ where
   /// a.constructor().row_slice(&[1, 2, 3, 4, 5]);
   /// assert_eq!(Ok(a.as_ref()), DrMatrixRef::new([1, 5], &[1, 2, 3, 4, 5][..]));
   /// ```
+  #[inline]
   pub fn row_slice(self, row: &[DS::Item]) -> Option<Self>
   where
     DS::Item: Clone,

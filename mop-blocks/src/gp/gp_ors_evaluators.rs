@@ -21,6 +21,7 @@ where
   ORS: AsMut<[OR]> + Storage<Item = OR>,
   SS: AsMut<[S]> + Storage<Item = S>,
 {
+  #[inline]
   pub async fn eval_hard_cstrs_violations<HC, SCR>(
     defs: &GpDefinitions<D, HCS, OS, SCS>,
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,
@@ -34,6 +35,7 @@ where
     Self::eval_cstrs_rslts(hard_cstrs, rslts, |rslt| (rslt.hard_cstr_rslts, rslt.solution)).await
   }
 
+  #[inline]
   pub async fn eval_soft_cstrs_violations<HCR, SC>(
     defs: &GpDefinitions<D, HCS, OS, SCS>,
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,
@@ -79,6 +81,7 @@ where
   SCRS: AsRef<[SCR]> + Storage<Item = SCR>,
   SS: AsRef<[S]> + Storage<Item = S>,
 {
+  #[inline]
   pub async fn eval_hard_cstrs_reasons<HC>(
     defs: &GpDefinitions<D, HCS, OS, SCS>,
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,
@@ -92,6 +95,7 @@ where
     Self::eval_cstrs_reasons([rows, cols], defs.hard_cstrs(), rslts).await
   }
 
+  #[inline]
   pub async fn eval_soft_cstrs_reasons<SC>(
     defs: &GpDefinitions<D, HCS, OS, SCS>,
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,
@@ -144,6 +148,7 @@ where
   SCRS: AsMut<[SCR]> + Storage<Item = SCR>,
   SS: AsMut<[S]> + Storage<Item = S>,
 {
+  #[inline]
   pub async fn eval_objs(
     defs: &GpDefinitions<D, HCS, OS, SCS>,
     rslts: &mut GpOrs<HCRS, ORS, SCRS, SS>,

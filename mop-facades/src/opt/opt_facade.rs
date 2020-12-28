@@ -53,6 +53,7 @@ where
   S: Solution,
   SS: AsMut<[S]> + AsRef<[S]> + Length + Storage<Item = S>,
 {
+  #[inline]
   pub fn new(max_iterations: usize) -> Self {
     OptFacade {
       best_idx_opt: None,
@@ -68,58 +69,70 @@ where
     }
   }
 
+  #[inline]
   pub fn curr_best_idx(&self) -> Option<usize> {
     self.best_idx_opt
   }
 
   #[cfg(feature = "std")]
+  #[inline]
   pub fn max_duration(&self) -> Option<Duration> {
     self.time_opt.as_ref().map(|t| t.max_duration)
   }
 
+  #[inline]
   pub fn max_iterations(&self) -> usize {
     self.max_iterations
   }
 
+  #[inline]
   pub fn objs_goals(&self) -> &[OR] {
     &self.objs_goals
   }
 
+  #[inline]
   pub fn opt_hooks(&self) -> &Option<OH> {
     &self.opt_hooks_opt
   }
 
+  #[inline]
   pub fn quality_comparator(&self) -> &Option<QC> {
     &self.quality_comparator_opt
   }
 
+  #[inline]
   pub fn stagnation(&self) -> Option<(Pct, usize)> {
     self.stagnation_opt.as_ref().map(|s| (s.percentage, s.threshold))
   }
 
   #[cfg(feature = "std")]
+  #[inline]
   pub fn set_max_duration(mut self, max_duration: Duration) -> Self {
     self.time_opt = Some(Time { current_duration: Instant::now(), max_duration });
     self
   }
 
   /// The maximum number of times the solver will process the solution
+  #[inline]
   pub fn set_max_iterations(mut self, max_iterations: usize) -> Self {
     self.max_iterations = max_iterations;
     self
   }
 
+  #[inline]
   pub fn set_objs_goals(mut self, objs_goals: Vec<OR>) -> Self {
     self.objs_goals = objs_goals;
     self
   }
 
+  #[inline]
   pub fn set_opt_hooks(mut self, opt_hooks: OH) -> Self {
     self.opt_hooks_opt = Some(opt_hooks);
     self
   }
 
   /// The maximum number of times the solver will process the solution
+  #[inline]
   pub fn set_quality_comparator(mut self, quality_comparator: QC) -> Self {
     self.quality_comparator_opt = Some(quality_comparator);
     self
@@ -133,6 +146,7 @@ where
   /// is not converging.
   /// * `threshold`: Will stop processing if the solution is not converging for a certain
   /// number of times
+  #[inline]
   pub fn set_stagnation(
     mut self,
     percentage: Pct,
@@ -150,6 +164,7 @@ where
     Ok(self)
   }
 
+  #[inline]
   pub async fn solve_problem_with<SOLVER>(
     mut self,
     problem: &mut Gp<D, HCRS, HCS, ORS, OS, SCRS, SCS, SS>,

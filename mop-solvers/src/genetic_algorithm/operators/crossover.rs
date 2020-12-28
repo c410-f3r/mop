@@ -16,6 +16,7 @@ pub trait Crossover<T> {
 impl<T> Crossover<T> for () {
   type Error = core::convert::Infallible;
 
+  #[inline]
   fn crossover(&self, _: &mut T, _: &mut T, _: usize) -> Result<(), Self::Error> {
     Ok(())
   }

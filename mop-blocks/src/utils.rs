@@ -15,6 +15,7 @@ type DummyMphTy = MphVec<
 >;
 
 /// Verifies if the set of the first values dominates the set of the second values.
+#[inline]
 pub fn verify_pareto_dominance<O, OR, S, T>(
   objs_defs: &[O],
   first_values: &[T],

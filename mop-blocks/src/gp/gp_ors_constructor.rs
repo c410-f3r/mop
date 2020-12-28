@@ -34,6 +34,7 @@ where
   SCRS: Extend<SCR> + Storage<Item = SCR>,
   SS: Storage<Item = S>,
 {
+  #[inline]
   pub fn or_ref(mut self, from: GpOrRef<'_, HCR, OR, S, SCR>) -> Option<Self>
   where
     S: Clone,
@@ -46,6 +47,7 @@ where
     Some(self)
   }
 
+  #[inline]
   pub fn ors_ref(mut self, other: GpOrsRef<'_, HCR, OR, S, SCR>) -> Option<Self>
   where
     S: Clone,
@@ -58,6 +60,7 @@ where
     Some(self)
   }
 
+  #[inline]
   pub fn ors_s_iter<E, SI>(mut self, si: SI) -> Option<Self>
   where
     HCR: Default,
@@ -86,6 +89,7 @@ where
   SCR: Default,
   SCRS: Extend<SCR> + Length + Storage<Item = SCR>,
 {
+  #[inline]
   pub fn or_hcos_iter<HCRI, ORI>(self, hcri: HCRI, ori: ORI, solution: S) -> Self
   where
     HCRI: Iterator<Item = HCR>,
@@ -95,6 +99,7 @@ where
     self.or_hcossc_iter(hcri, ori, solution, scri)
   }
 
+  #[inline]
   pub fn or_hcossc_iter<HCRI, ORI, SCRI>(mut self, hcri: HCRI, ori: ORI, s: S, scri: SCRI) -> Self
   where
     HCRI: Iterator<Item = HCR>,
@@ -108,6 +113,7 @@ where
     self
   }
 
+  #[inline]
   pub fn or_os_iter<ORI>(self, ori: ORI, solution: S) -> Self
   where
     ORI: Iterator<Item = OR>,

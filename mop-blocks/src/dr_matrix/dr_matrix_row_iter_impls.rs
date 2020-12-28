@@ -25,6 +25,7 @@ impl<'a, T> $dr_matrix_iter<'a, T> {
         }
     }
 
+    #[inline]
     pub fn split_at(self, idx: usize) -> (Self, Self) {
         let current_len = self.rows - self.curr_row;
         assert!(idx <= current_len);
@@ -50,6 +51,7 @@ impl<'a, T> $dr_matrix_iter<'a, T> {
 }
 
 impl<'a, T> DoubleEndedIterator for $dr_matrix_iter<'a, T> {
+    #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         if self.curr_row >= self.rows {
             return None;
@@ -68,6 +70,7 @@ impl<'a, T> ExactSizeIterator for $dr_matrix_iter<'a, T> {
 impl<'a, T> Iterator for $dr_matrix_iter<'a, T> {
     type Item = $data_type;
 
+    #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         if self.curr_row >= self.rows {
             return None;
@@ -79,6 +82,7 @@ impl<'a, T> Iterator for $dr_matrix_iter<'a, T> {
         Some(data_head)
     }
 
+    #[inline]
     fn size_hint(&self) -> (usize, Option<usize>) {
         (self.rows, Some(self.rows))
     }

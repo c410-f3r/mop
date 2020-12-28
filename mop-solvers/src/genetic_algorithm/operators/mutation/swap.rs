@@ -10,6 +10,7 @@ pub struct Swap {
 }
 
 impl Swap {
+  #[inline]
   pub fn new(times: usize, probability: Pct) -> Self {
     Swap { times, probability }
   }
@@ -23,6 +24,7 @@ where
 {
   type Error = core::convert::Infallible;
 
+  #[inline]
   fn mutation(&self, _: &M, source: &mut MpOrs<ORS, SS>) -> Result<(), Self::Error> {
     let mut rng = StdRng::from_entropy();
     for mut individual in source.iter_mut() {

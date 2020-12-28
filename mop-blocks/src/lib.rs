@@ -1,7 +1,6 @@
 //! Mop (Many Optimizations)
 
 #![cfg_attr(not(feature = "std"), no_std)]
-#![feature(min_const_generics)]
 
 extern crate alloc;
 

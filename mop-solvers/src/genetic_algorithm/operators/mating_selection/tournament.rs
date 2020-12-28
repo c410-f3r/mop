@@ -13,6 +13,7 @@ pub struct Tournament<QC> {
 }
 
 impl<QC> Tournament<QC> {
+  #[inline]
   pub fn new(n: usize, quality_comparator: QC) -> Self {
     assert!(n > 0);
     Tournament { n, quality_comparator }
@@ -28,6 +29,7 @@ where
 {
   type Error = mop_blocks::Error;
 
+  #[inline]
   fn mating_selection(
     &self,
     objs: &[O],

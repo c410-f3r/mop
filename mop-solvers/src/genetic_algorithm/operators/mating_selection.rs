@@ -20,6 +20,7 @@ where
 impl<M, T> MatingSelection<M, T> for () {
   type Error = core::convert::Infallible;
 
+  #[inline]
   fn mating_selection(&self, _: &M, _: &mut T, _: &mut T, _: usize) -> Result<(), Self::Error> {
     Ok(())
   }

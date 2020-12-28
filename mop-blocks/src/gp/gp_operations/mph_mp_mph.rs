@@ -28,10 +28,12 @@ where
 {
   type Error = crate::Error;
 
+  #[inline]
   fn convert(_: &MphDefinitions<D, HCS, AOS>) -> Result<Mp<D, BORS, BOS, SS>, Self::Error> {
     Err(Self::Error::UnsupportedConversion)
   }
 
+  #[inline]
   fn transfer<'a>(
     a_defs: &'a MphDefinitions<D, HCS, AOS>,
     a_rslts: &'a mut MphOrs<HCRS, AORS, ASS>,

@@ -78,6 +78,7 @@ where
     + Storage<Item = S>
     + WithCapacity<Input = usize>,
 {
+  #[inline]
   pub fn new(
     archive_size_pct: Pct,
     gap: GeneticAlgorithmParams<CO, M, MS>,
@@ -277,6 +278,7 @@ where
 {
   type Error = mop_blocks::Error;
 
+  #[inline]
   fn after_iter<'a>(&'a mut self, p: &'a mut Mp<D, ORS, OS, SS>) -> SolverFuture<'a, Self::Error> {
     Box::pin(async move {
       let filling_num = self.population_size;
@@ -295,6 +297,7 @@ where
     })
   }
 
+  #[inline]
   fn before_iter<'a>(&'a mut self, p: &'a mut Mp<D, ORS, OS, SS>) -> SolverFuture<'a, Self::Error> {
     Box::pin(async move {
       let (defs, rslts) = p.parts_mut();

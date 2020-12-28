@@ -33,10 +33,12 @@ where
 {
   type Error = crate::Error;
 
+  #[inline]
   fn convert(_: &MphsDefinitions<D, HCS, AOS, SCS>) -> Result<Mp<D, BORS, BOS, SS>, Self::Error> {
     Err(Self::Error::UnsupportedConversion)
   }
 
+  #[inline]
   fn transfer<'a>(
     a_defs: &'a MphsDefinitions<D, HCS, AOS, SCS>,
     a_rslts: &'a mut MphsOrs<HCRS, AORS, SCRS, ASS>,

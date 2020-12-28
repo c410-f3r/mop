@@ -94,10 +94,10 @@ where
     HCS: Default + Push<Input = HC>,
   {
     if let Some(hcs) = self.hard_cstrs.as_mut() {
-      hcs.push(hard_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
+      hcs.push(hard_cstr).map_err(|_e| crate::Error::InsufficientCapacity)?;
     } else {
       let mut hard_cstrs = HCS::default();
-      hard_cstrs.push(hard_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
+      hard_cstrs.push(hard_cstr).map_err(|_e| crate::Error::InsufficientCapacity)?;
       self.hard_cstrs = Some(hard_cstrs);
     }
     Ok(self)
@@ -141,10 +141,10 @@ where
     OS: Default + Push<Input = O>,
   {
     if let Some(objs) = self.objs.as_mut() {
-      objs.push(obj).map_err(|_| crate::Error::InsufficientCapacity)?;
+      objs.push(obj).map_err(|_e| crate::Error::InsufficientCapacity)?;
     } else {
       let mut objs = OS::default();
-      objs.push(obj).map_err(|_| crate::Error::InsufficientCapacity)?;
+      objs.push(obj).map_err(|_e| crate::Error::InsufficientCapacity)?;
       self.objs = Some(objs);
     }
     Ok(self)
@@ -181,10 +181,10 @@ where
     SCS: Default + Push<Input = SC>,
   {
     if let Some(hcs) = self.soft_cstrs.as_mut() {
-      hcs.push(soft_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
+      hcs.push(soft_cstr).map_err(|_e| crate::Error::InsufficientCapacity)?;
     } else {
       let mut soft_cstrs = SCS::default();
-      soft_cstrs.push(soft_cstr).map_err(|_| crate::Error::InsufficientCapacity)?;
+      soft_cstrs.push(soft_cstr).map_err(|_e| crate::Error::InsufficientCapacity)?;
       self.soft_cstrs = Some(soft_cstrs);
     }
     Ok(self)

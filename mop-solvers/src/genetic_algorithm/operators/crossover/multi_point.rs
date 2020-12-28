@@ -11,6 +11,7 @@ pub struct MultiPoint {
 }
 
 impl MultiPoint {
+  #[inline]
   pub fn new(points: usize, probability: Pct) -> Self {
     MultiPoint { divisor: points.saturating_add(1), probability }
   }
@@ -41,6 +42,7 @@ where
 {
   type Error = mop_blocks::Error;
 
+  #[inline]
   fn crossover(
     &self,
     source: &mut MpOrs<ORS, SS>,

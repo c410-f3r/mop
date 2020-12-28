@@ -119,6 +119,7 @@ where
     })
   }
 
+  #[inline]
   pub fn get_two_mut(&mut self, a: usize, b: usize) -> Option<[GpOrMut<'_, HCR, OR, S, SCR>; 2]> {
     let [first_os, second_os] = self.obj_rslts.two_rows_mut(a, b)?;
     let [first_hcs, second_hcs] = self.hard_cstr_rslts.two_rows_mut(a, b)?;
@@ -143,6 +144,7 @@ where
     ])
   }
 
+  #[inline]
   pub fn iter_mut<'a>(&'a mut self) -> impl Iterator<Item = GpOrMut<'a, HCR, OR, S, SCR>>
   where
     HCR: 'a,
@@ -227,6 +229,7 @@ where
     })
   }
 
+  #[inline]
   pub fn iter<'a>(&'a self) -> impl Iterator<Item = GpOrRef<'a, HCR, OR, S, SCR>>
   where
     HCR: 'a,

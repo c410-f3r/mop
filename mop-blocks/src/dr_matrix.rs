@@ -33,6 +33,7 @@ pub struct DrMatrix<DS> {
 
 impl<DS> DrMatrix<DS> {
   /// See [`DrMatrixRowsConstructor`](struct.DrMatrixRowsConstructor.html) for more information.
+  #[inline]
   pub fn constructor(&mut self) -> DrMatrixRowsConstructor<'_, DS> {
     DrMatrixRowsConstructor::new(&mut self.rows, self.cols, &mut self.data)
   }
@@ -149,6 +150,7 @@ where
   /// assert_eq!(matrix.cols(), 3);
   /// assert_eq!(matrix.rows(), 0);
   /// ```
+  #[inline]
   pub fn with_capacity(rows: usize, cols: usize) -> Self {
     DrMatrix { data: DS::with_capacity(rows * cols), cols, rows: 0 }
   }
@@ -340,6 +342,7 @@ where
   /// assert_eq!(ddma.data(), &[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 16, 17, 18, 19, 20]);
   /// assert_eq!(ddma.rows(), 3);
   /// ```
+  #[inline]
   #[must_use]
   pub fn remove_row(&mut self, idx: usize) -> bool
   where
@@ -452,6 +455,7 @@ where
   /// assert_eq!(matrix.row(0), Some(&[2, 3, 4, 5, 6][..]));
   /// assert_eq!(matrix.row(1), Some(&[8, 9, 10, 11, 12][..]));
   /// ```
+  #[inline]
   pub fn two_rows_mut(&mut self, a: usize, b: usize) -> Option<[&mut [DATA]; 2]> {
     let [max, min] = match a.cmp(&b) {
       Ordering::Equal => return None,
@@ -486,6 +490,7 @@ where
   /// * `[rows, cols]` - Pair indices.
   /// * `rng` - `rand::Rng` trait.
   /// * `cb` - Function that returns a new `DATA`.
+  #[inline]
   pub fn new_random_with_rand<F, R>(
     [rows, cols]: [usize; 2],
     rng: &mut R,

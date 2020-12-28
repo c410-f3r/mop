@@ -10,6 +10,7 @@ pub trait Solution {
 
   fn intra_swap(&mut self, a: usize, b: usize);
 
+  #[inline]
   fn is_empty(&self) -> bool {
     self.len() == 0
   }
@@ -23,19 +24,23 @@ macro_rules! array_impls {
       impl<T> Solution for [T; $N] {
         const MAX_LEN: usize = $N;
 
+        #[inline]
         fn has_var(&self, idx: usize) -> bool {
           idx < self.len()
         }
 
+        #[inline]
         fn inter_swap(&mut self, other: &mut Self, idx: usize) {
           assert!(idx < self.len());
           swap(&mut self[idx], &mut other[idx]);
         }
 
+        #[inline]
         fn intra_swap(&mut self, a: usize, b: usize) {
           self.swap(a, b);
         }
 
+        #[inline]
         fn len(&self) -> usize {
           $N
         }
@@ -44,19 +49,23 @@ macro_rules! array_impls {
       impl<T> Solution for arrayvec::ArrayVec<[T; $N]> {
         const MAX_LEN: usize = $N;
 
+        #[inline]
         fn has_var(&self, idx: usize) -> bool {
           idx < self.len()
         }
 
+        #[inline]
         fn inter_swap(&mut self, other: &mut Self, idx: usize) {
           assert!(idx < self.len());
           swap(&mut self[idx], &mut other[idx]);
         }
 
+        #[inline]
         fn intra_swap(&mut self, a: usize, b: usize) {
           self.swap(a, b);
         }
 
+        #[inline]
         fn len(&self) -> usize {
           self.len()
         }
@@ -84,6 +93,7 @@ where
     idx < self.len()
   }
 
+  #[inline]
   fn inter_swap(&mut self, other: &mut Self, idx: usize) {
     assert!(idx < self.len());
     swap(&mut self.data_mut()[idx], &mut other.data_mut()[idx]);

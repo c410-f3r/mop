@@ -12,6 +12,7 @@ pub trait Mutation<M, T> {
 impl<M, T> Mutation<M, T> for () {
   type Error = core::convert::Infallible;
 
+  #[inline]
   fn mutation(&self, _: &M, _: &mut T) -> Result<(), Self::Error> {
     Ok(())
   }

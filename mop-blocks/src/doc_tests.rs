@@ -14,6 +14,7 @@ use crate::dr_matrix::{DrMatrixArray, DrMatrixVec};
 /// // |   |   |   |   |   |
 /// //  ‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾‾
 /// ```
+#[inline]
 pub fn dr_matrix_array() -> DrMatrixArray<i32, 20> {
   DrMatrixArray {
     cols: 5,
@@ -23,6 +24,7 @@ pub fn dr_matrix_array() -> DrMatrixArray<i32, 20> {
 }
 
 /// `Vec` version of `dr_matrix_array`.
+#[inline]
 pub fn dr_matrix_vec() -> DrMatrixVec<i32> {
   let dr_matrix_array = dr_matrix_array();
   DrMatrixVec {
@@ -33,6 +35,7 @@ pub fn dr_matrix_vec() -> DrMatrixVec<i32> {
 }
 
 /// Empty `Vec` version of `dr_matrix_array`.
+#[inline]
 pub fn capacited_dr_matrix_vec() -> DrMatrixVec<i32> {
   let dr_matrix_array = dr_matrix_array();
   DrMatrixVec::with_capacity(dr_matrix_array.rows(), dr_matrix_array.cols())

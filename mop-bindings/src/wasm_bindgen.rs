@@ -49,8 +49,7 @@ impl Cstr<Solution> for HardCstr {
     let fn_ret_rslt = self.0.call1(&JsValue::NULL, &JsValue::from(array));
     let fn_ret = if let Ok(rslt) = fn_ret_rslt {
       rslt.as_f64()
-    }
-    else {
+    } else {
       return usize::MAX;
     };
     #[allow(
@@ -59,8 +58,7 @@ impl Cstr<Solution> for HardCstr {
     )]
     if let Some(rslt) = fn_ret {
       rslt as usize
-    }
-    else {
+    } else {
       usize::MAX
     }
   }
@@ -94,14 +92,12 @@ impl blocks::Obj<f64, Solution> for Obj {
     let fn_ret_rslt = self.1.call1(&JsValue::NULL, &JsValue::from(array));
     let fn_ret = if let Ok(rslt) = fn_ret_rslt {
       rslt.as_f64()
-    }
-    else {
+    } else {
       return f64::MAX;
     };
     if let Some(rslt) = fn_ret {
       rslt
-    }
-    else {
+    } else {
       f64::MAX
     }
   }
@@ -248,7 +244,10 @@ impl OptProblemDefinitionsBuilder {
     Self(self.0.domain(domain))
   }
 
-  pub fn push_hard_cstr(self, hard_cstr: HardCstr) -> Result<OptProblemDefinitionsBuilder, JsValue> {
+  pub fn push_hard_cstr(
+    self,
+    hard_cstr: HardCstr,
+  ) -> Result<OptProblemDefinitionsBuilder, JsValue> {
     Ok(Self(js_err(self.0.push_hard_cstr(hard_cstr))?))
   }
 

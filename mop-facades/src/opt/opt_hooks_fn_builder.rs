@@ -11,6 +11,7 @@ pub struct OptHooksFnBuilder<P> {
 }
 
 impl<P> OptHooksFnBuilder<P> {
+  #[inline]
   pub fn build(self) -> OptHooksFn<P> {
     (
       self.after_opt_move.unwrap_or_default().0,
@@ -20,21 +21,25 @@ impl<P> OptHooksFnBuilder<P> {
     )
   }
 
+  #[inline]
   pub fn after_iter(mut self, after_opt_move: fn(&mut P)) -> Self {
     self.after_opt_move = Some(FnWrapper(after_opt_move));
     self
   }
 
+  #[inline]
   pub fn before_iter(mut self, before_opt_move: fn(&mut P)) -> Self {
     self.before_opt_move = Some(FnWrapper(before_opt_move));
     self
   }
 
+  #[inline]
   pub fn finished(mut self, finished: fn()) -> Self {
     self.finished = Some(finished);
     self
   }
 
+  #[inline]
   pub fn init(mut self, init: fn()) -> Self {
     self.init = Some(init);
     self
@@ -42,6 +47,7 @@ impl<P> OptHooksFnBuilder<P> {
 }
 
 impl<P> Default for OptHooksFnBuilder<P> {
+  #[inline]
   fn default() -> Self {
     Self { after_opt_move: None, before_opt_move: None, finished: None, init: None }
   }

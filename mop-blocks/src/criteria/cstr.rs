@@ -8,6 +8,7 @@ use alloc::{boxed::Box, string::String};
 ///
 /// * `S`: Solution
 pub trait Cstr<S> {
+  #[inline]
   fn reasons(&self, _: &S) -> String {
     String::new()
   }

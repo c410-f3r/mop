@@ -10,6 +10,7 @@ pub struct RandomDomainAssignments {
 }
 
 impl RandomDomainAssignments {
+  #[inline]
   pub fn new(times: usize, probability: Pct) -> Self {
     RandomDomainAssignments { times, probability }
   }
@@ -24,6 +25,7 @@ where
 {
   type Error = core::convert::Infallible;
 
+  #[inline]
   fn mutation(&self, sd: &D, source: &mut MpOrs<ORS, SS>) -> Result<(), Self::Error> {
     let mut rng = StdRng::from_entropy();
     for mut result in source.iter_mut() {

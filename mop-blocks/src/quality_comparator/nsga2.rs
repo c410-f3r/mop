@@ -42,6 +42,7 @@ where
   O: Obj<OR, S>,
   OR: PartialOrd,
 {
+  #[inline]
   fn is_better(&self, objs: &[O], a: &MphOrRef<'_, OR, S>, b: &MphOrRef<'_, OR, S>) -> bool {
     Self::do_is_best(&a, &b, |a, b| {
       verify_pareto_dominance(objs, a.obj_rslts(), b.obj_rslts()) == Ordering::Greater

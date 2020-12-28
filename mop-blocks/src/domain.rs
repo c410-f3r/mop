@@ -13,6 +13,7 @@ use {
 pub trait Domain<S> {
   type Error;
 
+  #[inline]
   fn is_empty(&self) -> bool {
     self.len() == 0
   }
@@ -40,10 +41,12 @@ macro_rules! array_impls {
       {
         type Error = core::convert::Infallible;
 
+        #[inline]
         fn len(&self) -> usize {
           $N
         }
 
+        #[inline]
         fn new_random_solution<R>(&self, rng: &mut R) -> Result<[T; $N], Self::Error>
         where
           R: Rng,
@@ -53,6 +56,7 @@ macro_rules! array_impls {
           }))
         }
 
+        #[inline]
         fn set_rnd_domain<R>(&self, s: &mut [T; $N], idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -69,10 +73,12 @@ macro_rules! array_impls {
       {
         type Error = core::convert::Infallible;
 
+        #[inline]
         fn len(&self) -> usize {
           self.len()
         }
 
+        #[inline]
         fn new_random_solution<R>(&self, rng: &mut R) -> Result<arrayvec::ArrayVec<[T; $N]>, Self::Error>
         where
           R: Rng,
@@ -84,6 +90,7 @@ macro_rules! array_impls {
           Ok(s)
         }
 
+        #[inline]
         fn set_rnd_domain<R>(&self, s: &mut arrayvec::ArrayVec<[T; $N]>, idx: usize, rng: &mut R)
         where
           R: Rng,
@@ -115,10 +122,12 @@ where
 {
   type Error = crate::Error;
 
+  #[inline]
   fn len(&self) -> usize {
     self.as_ref().len()
   }
 
+  #[inline]
   fn new_random_solution<R>(
     &self,
     rng: &mut R,
@@ -139,6 +148,7 @@ where
       .map_err(crate::Error::NdsparseError)
   }
 
+  #[inline]
   fn set_rnd_domain<R>(&self, s: &mut ndsparse::csl::Csl<DS, IS, OS, D>, idx: usize, rng: &mut R)
   where
     R: Rng,

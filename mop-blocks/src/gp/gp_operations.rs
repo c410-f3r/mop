@@ -35,7 +35,7 @@ where
     objs: {
       let mut objs: NOS = Default::default();
       for obj in defs.objs() {
-        objs.push(obj).map_err(|_| crate::Error::InsufficientCapacity)?;
+        objs.push(obj).map_err(|_e| crate::Error::InsufficientCapacity)?;
       }
       Some(objs)
     },

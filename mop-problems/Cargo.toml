@@ -4,12 +4,12 @@ path = "src/main.rs"
 
 [dependencies]
 arrayvec = { default-features = false, version = "0.5" }
-cl-traits = { default-features = false, git = "https://github.com/c410-f3r/cl-traits" }
+cl-traits = { default-features = false, version = "5.0" }
 mop = { features = ["std", "with-futures", "with-mop-solvers", "with-ndsparse"], path = "../mop" }
 ndsparse = { default-features = false, git = "https://github.com/c410-f3r/ndsparse"  }
 plotters = { default-features = false, features = ["svg_backend"], optional = true, version = "0.3" }
-rand = { default-features = false, features = ["getrandom"], version = "0.7" }
-tokio = { default-features = false, features = ["macros", "rt-threaded"], version = "0.2" }
+rand = { default-features = false, features = ["getrandom"], version = "0.8" }
+tokio = { default-features = false, features = ["macros", "rt-multi-thread"], version = "1.0" }
 
 [features]
 binh-and-korn = []

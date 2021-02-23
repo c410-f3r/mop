@@ -1,11 +1,11 @@
 [dependencies]
 arrayvec = { default-features = false, version = "0.5" }
-cl-traits = { default-features = false, features = ["alloc", "with-arrayvec"], git = "https://github.com/c410-f3r/cl-traits" }
+cl-traits = { default-features = false, features = ["alloc", "with-arrayvec"], version = "5.0" }
 futures = { default-features = false, features = ["alloc"], optional = true, version = "0.3" }
 mop-common = { default-features = false, path = "../mop-common", version = "0.5.0" }
 ndsparse = { default-features = false, features = ["with-rand"], optional = true, git = "https://github.com/c410-f3r/ndsparse" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
-rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.7" }
+rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.8" }
 serde = { branch = "const-gen", default-features = false, features = ["const-generics", "derive"], optional = true, git = "https://github.com/c410-f3r/serde" }
 
 [features]

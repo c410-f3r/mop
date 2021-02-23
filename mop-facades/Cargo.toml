@@ -1,9 +1,9 @@
 [dependencies]
-cl-traits = { default-features = false, git = "https://github.com/c410-f3r/cl-traits" }
+cl-traits = { default-features = false, version = "5.0" }
 mop-blocks = { default-features = false, features = ["with-rand"], path = "../mop-blocks", version = "0.5.0" }
 mop-common = { default-features = false, path = "../mop-common", version = "0.5.0" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
-rand = { default-features = false, version = "0.7" }
+rand = { default-features = false, version = "0.8" }
 
 [features]
 default = []

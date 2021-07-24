@@ -19,8 +19,9 @@ pub struct DrMatrixRowsConstructor<'a, DS> {
 }
 
 impl<'a, DS> DrMatrixRowsConstructor<'a, DS> {
+  #[inline]
   pub(crate) fn new(rows: &'a mut usize, cols: usize, data: &'a mut DS) -> Self {
-    DrMatrixRowsConstructor { data, rows, cols }
+    DrMatrixRowsConstructor { data, cols, rows }
   }
 }
 
@@ -71,14 +72,14 @@ where
     F: FnMut(usize) -> DATA,
   {
     for idx in 0..self.cols {
-      self.data.push(cb(idx)).map_err(|_e| crate::Error::InsufficientCapacity)?;
+      let _ = self.data.push(cb(idx)).map_err(|_e| crate::Error::InsufficientCapacity)?;
     }
     *self.rows += 1;
     Ok(self)
   }
 
   #[inline]
-  pub fn row_iter<I>(self, i: I) -> Self
+  pub fn row_iter<I>(&mut self, i: I) -> &mut Self
   where
     DATA: Default,
     DS: Extend<DATA> + Length,

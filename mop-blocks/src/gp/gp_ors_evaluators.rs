@@ -32,7 +32,7 @@ where
     SCRS: AsMut<[SCR]> + Storage<Item = SCR>,
   {
     let hard_cstrs = defs.hard_cstrs();
-    Self::eval_cstrs_rslts(hard_cstrs, rslts, |rslt| (rslt.hard_cstr_rslts, rslt.solution)).await
+    Self::eval_cstrs_rslts(hard_cstrs, rslts, |rslt| (rslt.hard_cstr_rslts, rslt.solution)).await;
   }
 
   #[inline]
@@ -46,7 +46,7 @@ where
     SCS: AsRef<[SC]> + Storage<Item = SC>,
   {
     let soft_cstrs = defs.soft_cstrs();
-    Self::eval_cstrs_rslts(soft_cstrs, rslts, |rslt| (rslt.soft_cstr_rslts, rslt.solution)).await
+    Self::eval_cstrs_rslts(soft_cstrs, rslts, |rslt| (rslt.soft_cstr_rslts, rslt.solution)).await;
   }
 
   #[inline]
@@ -69,7 +69,11 @@ where
     #[cfg(not(feature = "with-futures"))]
     rslts.iter_mut().for_each(func);
     #[cfg(feature = "with-futures")]
-    stream::iter(rslts.iter_mut()).for_each_concurrent(None, |rslt| async { func(rslt) }).await;
+    stream::iter(rslts.iter_mut())
+      .for_each_concurrent(None, |rslt| async {
+        func(rslt);
+      })
+      .await;
   }
 }
 
@@ -119,7 +123,7 @@ where
     C: Cstr<S>,
   {
     let mut reasons = DrMatrixVec::with_capacity(rows, cols);
-    reasons.constructor().fill_rows(rows, String::with_capacity(256));
+    let _ = reasons.constructor().fill_rows(rows, String::with_capacity(256));
     let iter = reasons.row_iter_mut().zip(rslts.iter());
     let func = |(reasons, rslt): (&mut [String], GpOrRef<'_, _, _, _, _>)| {
       for (c, r) in cstrs.iter().zip(reasons.iter_mut()) {
@@ -157,13 +161,17 @@ where
     #[cfg(not(feature = "with-futures"))]
     rslts.iter_mut().for_each(func);
     #[cfg(feature = "with-futures")]
-    stream::iter(rslts.iter_mut()).for_each_concurrent(None, |r| async { func(r) }).await;
+    stream::iter(rslts.iter_mut())
+      .for_each_concurrent(None, |r| async {
+        func(r);
+      })
+      .await;
   }
 
   #[inline]
   fn eval_objs_for_solution(objs: &[O], rslt: GpOrMut<'_, HCR, OR, S, SCR>) {
     for (obj, obj_rslts) in objs.iter().zip(rslt.obj_rslts.iter_mut()) {
-      let rslt = obj.result(&rslt.solution);
+      let rslt = obj.result(rslt.solution);
       *obj_rslts = rslt;
     }
   }

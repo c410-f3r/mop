@@ -49,7 +49,7 @@ where
       for rslt in b.rslts().iter() {
         let ori = rslt.obj_rslts().iter().cloned().rev().skip(1).rev();
         let s = (*rslt.solution()).clone();
-        c = c.or_os_iter(ori, s);
+        let _ = c.or_os_iter(ori, s);
       }
       GpOrsEvaluators::eval_hard_cstrs_violations(a_defs, a_rslts).await;
       GpOrsEvaluators::eval_soft_cstrs_violations(a_defs, a_rslts).await;

@@ -14,7 +14,7 @@ with-serde = ["mop-blocks/with-serde"]
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
 categories = ["algorithms", "concurrency"]
-description = "Flexible and modular single or multi-objective solver for contiguous and discrete problems"
+description = "Flexible and modular single or multi-objective framework for contiguous and discrete problems"
 edition = "2018"
 keywords = ["solver", "performance", "metaheuristic", "optimization"]
 license = "Apache-2.0"

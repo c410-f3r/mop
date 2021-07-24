@@ -28,14 +28,17 @@ impl Problem<Domain, Solution, 0, 1> for Rastrigin {
   const GRAPH_RANGES: [Range<f64>; 2] = [-6.0..6.0, -6.0..6.0];
   const NAME: &'static str = "Rastrigin";
 
+  #[inline]
   fn domain() -> Domain {
     [-5.12..=5.12, -5.12..=5.12]
   }
 
+  #[inline]
   fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 0] {
     []
   }
 
+  #[inline]
   fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 1] {
     [&(ObjDirection::Min, f1 as fn(&Solution) -> f64)]
   }

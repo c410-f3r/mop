@@ -1,5 +1,5 @@
 #[derive(Debug)]
-pub struct EnvironmentSelectionTruncationResult<T> {
-  pub archive_idx: usize,
-  pub distance: T,
+pub(crate) struct EnvironmentSelectionTruncationResult<T> {
+  pub(crate) archive_idx: usize,
+  pub(crate) distance: T,
 }

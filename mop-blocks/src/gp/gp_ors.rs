@@ -75,7 +75,7 @@ impl<HCRS, ORS, SCRS, SS> GpOrs<HCRS, ORS, SCRS, SS> {
     self.hard_cstr_rslts.truncate(until_idx);
     self.obj_rslts.truncate(until_idx);
     self.soft_cstr_rslts.truncate(until_idx);
-    self.solutions.truncate(until_idx);
+    let _ = self.solutions.truncate(until_idx);
   }
 
   #[inline]

@@ -16,7 +16,7 @@ jobs:
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: beta
+          toolchain: nightly
           profile: minimal
           override: true
 
@@ -25,8 +25,7 @@ jobs:
           crate: cargo-fuzz
           use-tool-cache: true
 
-      - run: cd mop-blocks/fuzz; cargo fuzz run dr_matrix -- -max_len=32 -runs=10000
-      - run: cd mop-blocks/fuzz; cargo fuzz run gp -- -max_len=32 -runs=10000
+      - run: ./scripts/fuzz.sh
 
   tests:
     name: Tests
@@ -39,7 +38,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           components: clippy, rustfmt
-          toolchain: beta
+          toolchain: stable
           profile: minimal
           override: true
 

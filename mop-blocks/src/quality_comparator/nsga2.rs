@@ -44,7 +44,7 @@ where
 {
   #[inline]
   fn is_better(&self, objs: &[O], a: &MphOrRef<'_, OR, S>, b: &MphOrRef<'_, OR, S>) -> bool {
-    Self::do_is_best(&a, &b, |a, b| {
+    Self::do_is_best(a, b, |a, b| {
       verify_pareto_dominance(objs, a.obj_rslts(), b.obj_rslts()) == Ordering::Greater
     })
   }
@@ -61,7 +61,8 @@ mod tests {
   fn nsga2_a_is_feasible_and_b_is_not() {
     let mut problem = dummy_mph();
     let (defs, a) = problem.parts_mut();
-    a.constructor()
+    let _ = a
+      .constructor()
       .or_hcos_iter([0, 0].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
       .or_hcos_iter([0, 1].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(Nsga2.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);
@@ -71,7 +72,8 @@ mod tests {
   fn nsga2_both_are_infeasible_and_a_has_less_violations() {
     let mut problem = dummy_mph();
     let (defs, a) = problem.parts_mut();
-    a.constructor()
+    let _ = a
+      .constructor()
       .or_hcos_iter([1, 1].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
       .or_hcos_iter([2, 2].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(Nsga2.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);
@@ -81,7 +83,8 @@ mod tests {
   fn nsga2_both_are_feasible_and_a_dominates_b() {
     let mut problem = dummy_mph();
     let (defs, a) = problem.parts_mut();
-    a.constructor()
+    let _ = a
+      .constructor()
       .or_hcos_iter([0, 0].iter().cloned(), [0.0, 0.0].iter().cloned(), [10.0, 20.0])
       .or_hcos_iter([0, 0].iter().cloned(), [0.0, 2.0].iter().cloned(), [10.0, 20.0]);
     assert_eq!(Nsga2.is_better(defs.objs(), &a.get(0).unwrap(), &a.get(1).unwrap()), true);

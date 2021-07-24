@@ -44,7 +44,7 @@ impl Cstr<Solution> for HardCstr {
     let array: Array = Array::new();
     solution.0.iter().for_each(|&x| {
       let jv = JsValue::from_f64(x);
-      array.push(&jv);
+      let _ = array.push(&jv);
     });
     let fn_ret_rslt = self.0.call1(&JsValue::NULL, &JsValue::from(array));
     let fn_ret = if let Ok(rslt) = fn_ret_rslt {
@@ -87,7 +87,7 @@ impl blocks::Obj<f64, Solution> for Obj {
     let array: Array = Array::new();
     solution.0.iter().for_each(|&x| {
       let jv = JsValue::from_f64(x);
-      array.push(&jv);
+      let _ = array.push(&jv);
     });
     let fn_ret_rslt = self.1.call1(&JsValue::NULL, &JsValue::from(array));
     let fn_ret = if let Ok(rslt) = fn_ret_rslt {
@@ -188,9 +188,9 @@ impl OptFacade {
     } else {
       facade
     };
-    js_err(facade.solve_problem_with(&mut mp_ref, spea2).await)?;
+    let _ = js_err(facade.solve_problem_with(&mut mp_ref, spea2).await)?;
 
-    js_err(MphMpMph::transfer(&mph_defs, &mut mph_rslts, &mp_ref).await)?;
+    let _ = js_err(MphMpMph::transfer(&mph_defs, &mut mph_rslts, &mp_ref).await)?;
 
     Ok(orig)
   }
@@ -312,7 +312,7 @@ impl Pct {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Default)]
-pub struct Solution(ArrayVec<[f64; 16]>);
+pub struct Solution(ArrayVec<f64, 16>);
 
 #[wasm_bindgen]
 impl Solution {
@@ -345,7 +345,7 @@ impl blocks::Solution for Solution {
 
 #[wasm_bindgen]
 #[derive(Clone, Debug, Default)]
-pub struct Domain(ArrayVec<[RangeInclusive<f64>; 16]>);
+pub struct Domain(ArrayVec<RangeInclusive<f64>, 16>);
 
 #[wasm_bindgen]
 impl Domain {
@@ -447,7 +447,7 @@ mod tests {
     let facade = OptFacade::new(50).set_stagnation(Pct::from_percent(1), 10).unwrap();
 
     wasm_bindgen_futures::spawn_local(async {
-      facade.solve(problem, 100).await.unwrap();
+      let _ = facade.solve(problem, 100).await;
     });
   }
 }

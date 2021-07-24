@@ -3,13 +3,13 @@ name = "mop_problems"
 path = "src/main.rs"
 
 [dependencies]
-arrayvec = { default-features = false, version = "0.5" }
-cl-traits = { default-features = false, version = "5.0" }
+arrayvec = { default-features = false, version = "0.7" }
+cl-traits = { default-features = false, version = "6.0" }
 mop = { features = ["std", "with-futures", "with-mop-solvers", "with-ndsparse"], path = "../mop" }
-ndsparse = { default-features = false, git = "https://github.com/c410-f3r/ndsparse"  }
+ndsparse = { default-features = false, version = "0.8" }
 plotters = { default-features = false, features = ["svg_backend"], optional = true, version = "0.3" }
 rand = { default-features = false, features = ["getrandom"], version = "0.8" }
-tokio = { default-features = false, features = ["macros", "rt-multi-thread"], version = "1.0" }
+tokio = { default-features = false, features = ["rt-multi-thread"], version = "1.0" }
 
 [features]
 binh-and-korn = []
@@ -18,7 +18,6 @@ cvrp = []
 default = []
 rastrigin = []
 schaffer-function-2 = []
-stdout = []
 test-function-4 = []
 with-plotters = ["plotters"]
 
@@ -31,5 +30,3 @@ edition = "2018"
 name = "mop-problems"
 publish = false
 version = "0.0.0"
-
-[workspace]

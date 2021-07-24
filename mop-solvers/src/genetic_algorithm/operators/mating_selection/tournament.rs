@@ -4,7 +4,7 @@ use mop_blocks::{
   gp::{MpOrRef, MpOrs},
   quality_comparator::QualityComparator,
 };
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::{rngs::OsRng, Rng};
 
 #[derive(Clone, Debug, Default)]
 pub struct Tournament<QC> {
@@ -38,18 +38,18 @@ where
     filling_num: usize,
   ) -> Result<(), Self::Error> {
     destination.clear();
-    let mut rng = StdRng::from_entropy();
+    let mut rng = OsRng;
     while destination.rslts_num() < filling_num {
-      let winner_opt = source.get(rng.gen_range(0, source.rslts_num()));
+      let winner_opt = source.get(rng.gen_range(0..source.rslts_num()));
       let mut winner = mop_blocks::Error::opt_rslt(winner_opt)?;
       for _ in 0..self.n {
-        let current_opt = source.get(rng.gen_range(0, source.rslts_num()));
+        let current_opt = source.get(rng.gen_range(0..source.rslts_num()));
         let current = mop_blocks::Error::opt_rslt(current_opt)?;
         if self.quality_comparator.is_better(objs, &current, &winner) {
           winner = current;
         }
       }
-      destination.constructor().or_ref(winner);
+      let _ = destination.constructor().or_ref(winner);
     }
     Ok(())
   }
@@ -65,8 +65,8 @@ mod tests {
     let mut problem = dummy_mp();
     let (defs, source) = problem.parts_mut();
     let mut destination = source.clone();
-    source.constructor().or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 3.0]);
-    source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [1.0, 2.0]);
+    let _ = source.constructor().or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 3.0]);
+    let _ = source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [1.0, 2.0]);
     let mp = Tournament::new(999, ObjsAvg);
     mp.mating_selection(defs.objs(), source, &mut destination, 1).unwrap();
     assert_eq!(destination.get(0), source.get(1));

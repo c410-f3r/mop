@@ -1,39 +1,7 @@
-//! Run any problem by typing `cargo run --features "stdout with-plotters ANY_SUPPORTED_PROBLEM" --release`
+//! Run any problem by typing `cargo run --features "with-plotters,ANY_SUPPORTED_PROBLEM" --release`
 
 #[cfg(feature = "with-plotters")]
 use plotters::prelude::*;
-
-#[cfg(feature = "stdout")]
-fn print_result<OR, S>(
-  result: mop::blocks::gp::MphOrRef<OR, S>,
-) -> Result<(), Box<dyn std::error::Error>>
-where
-  OR: core::fmt::Debug,
-  S: core::fmt::Debug,
-{
-  use std::fmt::Write;
-  let mut objs = String::new();
-  for (idx, obj) in result.obj_rslts().iter().enumerate() {
-    objs.push('o');
-    objs.write_fmt(format_args!("{}", idx))?;
-    objs.push_str(": ");
-    objs.write_fmt(format_args!("{:?}", obj))?;
-    objs.push(' ');
-  }
-  let mut hcs = String::new();
-  for (idx, hc) in result.hard_cstr_rslts().iter().enumerate() {
-    hcs.push_str("hc");
-    hcs.write_fmt(format_args!("{}", idx))?;
-    hcs.push_str(": ");
-    hcs.write_fmt(format_args!("{:?}", hc))?;
-    hcs.push(' ');
-  }
-  println!("{:?}", result.solution());
-  println!("{}", objs);
-  println!("{}", hcs);
-  println!();
-  Ok(())
-}
 
 #[cfg(feature = "with-plotters")]
 pub fn manage_plotting<'a, A, B, I, T>(
@@ -69,7 +37,7 @@ where
   ctx.configure_mesh().draw()?;
 
   let data = iter.map(|p| TriangleMarker::new(p, 5, &BLUE));
-  ctx.draw_series(data)?;
+  let _ = ctx.draw_series(data)?;
   Ok(())
 }
 
@@ -135,19 +103,6 @@ macro_rules! exec {
 
         MphMpMph::transfer(&mph_defs, &mut mph_rslts, &mp_ref).await?;
 
-        #[cfg(feature = "stdout")]
-        for (result_idx, result) in mph_rslts.iter().enumerate() {
-          println!("***** Result #{} *****", result_idx + 1);
-          print_result(result)?;
-        }
-        #[cfg(feature = "stdout")]
-        if let Some(curr_best_idx) = _facade.curr_best_idx() {
-          if let Some(solution) = mph_rslts.get(curr_best_idx) {
-            println!("***** Best result *****");
-            print_result(solution)?;
-          }
-        }
-
         #[cfg(feature = "with-plotters")]
         if <$problem>::hcs().len() == 2 {
           let [x, y] = <$problem>::GRAPH_RANGES;
@@ -163,15 +118,16 @@ macro_rules! exec {
   };
 }
 
-#[tokio::main]
-async fn main() -> Result<(), Box<dyn std::error::Error>> {
-  exec!(
-    "binh-and-korn", mop_problems::binh_and_korn::BinhAndKorn
-    "constr", mop_problems::constr::Constr
-    "cvrp", mop_problems::cvrp::Cvrp
-    "rastrigin", mop_problems::rastrigin::Rastrigin
-    "schaffer-function-2", mop_problems::schaffer_function_2::SchafferFunction2
-    "test-function-4", mop_problems::test_function_4::TestFunction4
-  );
-  Ok(())
+fn main() -> Result<(), Box<dyn std::error::Error>> {
+  tokio::runtime::Builder::new_multi_thread().enable_all().build()?.block_on(async {
+    exec!(
+      "binh-and-korn", mop_problems::binh_and_korn::BinhAndKorn
+      "constr", mop_problems::constr::Constr
+      "cvrp", mop_problems::cvrp::Cvrp
+      "rastrigin", mop_problems::rastrigin::Rastrigin
+      "schaffer-function-2", mop_problems::schaffer_function_2::SchafferFunction2
+      "test-function-4", mop_problems::test_function_4::TestFunction4
+    );
+    Ok(())
+  })
 }

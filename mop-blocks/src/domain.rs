@@ -32,83 +32,71 @@ pub trait Domain<S> {
 }
 
 #[cfg(feature = "with-rand")]
-macro_rules! array_impls {
-  ($($N:expr),+) => {
-    $(
-      impl<T> Domain<[T; $N]> for [RangeInclusive<T>; $N]
-      where
-        T: Copy + SampleUniform,
-      {
-        type Error = core::convert::Infallible;
+impl<T, const N: usize> Domain<[T; N]> for [RangeInclusive<T>; N]
+where
+  T: Copy + SampleUniform,
+{
+  type Error = core::convert::Infallible;
 
-        #[inline]
-        fn len(&self) -> usize {
-          $N
-        }
+  #[inline]
+  fn len(&self) -> usize {
+    N
+  }
 
-        #[inline]
-        fn new_random_solution<R>(&self, rng: &mut R) -> Result<[T; $N], Self::Error>
-        where
-          R: Rng,
-        {
-          Ok(create_array(|idx| {
-            Uniform::from(*self[idx].start()..=*self[idx].end()).sample(rng)
-          }))
-        }
+  #[inline]
+  fn new_random_solution<R>(&self, rng: &mut R) -> Result<[T; N], Self::Error>
+  where
+    R: Rng,
+  {
+    Ok(create_array(|idx| Uniform::from(*self[idx].start()..=*self[idx].end()).sample(rng)))
+  }
 
-        #[inline]
-        fn set_rnd_domain<R>(&self, s: &mut [T; $N], idx: usize, rng: &mut R)
-        where
-          R: Rng,
-        {
-          let domain = &self[idx];
-          let domain_value = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
-          s[idx] = domain_value;
-        }
-      }
-
-      impl<T> Domain<arrayvec::ArrayVec<[T; $N]>> for arrayvec::ArrayVec<[RangeInclusive<T>; $N]>
-      where
-        T: Copy + SampleUniform,
-      {
-        type Error = core::convert::Infallible;
-
-        #[inline]
-        fn len(&self) -> usize {
-          self.len()
-        }
-
-        #[inline]
-        fn new_random_solution<R>(&self, rng: &mut R) -> Result<arrayvec::ArrayVec<[T; $N]>, Self::Error>
-        where
-          R: Rng,
-        {
-          let mut s = arrayvec::ArrayVec::new();
-          for domain in self.iter() {
-            s.push(Uniform::from(*domain.start()..=*domain.end()).sample(rng));
-          }
-          Ok(s)
-        }
-
-        #[inline]
-        fn set_rnd_domain<R>(&self, s: &mut arrayvec::ArrayVec<[T; $N]>, idx: usize, rng: &mut R)
-        where
-          R: Rng,
-        {
-          let domain = &self[idx];
-          let domain_value = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
-          s[idx] = domain_value;
-        }
-      }
-    )+
+  #[inline]
+  fn set_rnd_domain<R>(&self, s: &mut [T; N], idx: usize, rng: &mut R)
+  where
+    R: Rng,
+  {
+    let domain = &self[idx];
+    let domain_value = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
+    s[idx] = domain_value;
   }
 }
 
 #[cfg(feature = "with-rand")]
-array_impls!(
-  1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26,
-  27, 28, 29, 30, 31, 32
-);
+impl<T, const N: usize> Domain<arrayvec::ArrayVec<T, N>>
+  for arrayvec::ArrayVec<RangeInclusive<T>, N>
+where
+  T: Copy + SampleUniform,
+{
+  type Error = core::convert::Infallible;
+
+  #[inline]
+  fn len(&self) -> usize {
+    self.len()
+  }
+
+  #[inline]
+  fn new_random_solution<R>(&self, rng: &mut R) -> Result<arrayvec::ArrayVec<T, N>, Self::Error>
+  where
+    R: Rng,
+  {
+    let mut s = arrayvec::ArrayVec::new();
+    for domain in self.iter() {
+      s.push(Uniform::from(*domain.start()..=*domain.end()).sample(rng));
+    }
+    Ok(s)
+  }
+
+  #[inline]
+  fn set_rnd_domain<R>(&self, s: &mut arrayvec::ArrayVec<T, N>, idx: usize, rng: &mut R)
+  where
+    R: Rng,
+  {
+    let domain = &self[idx];
+    let domain_value = Uniform::from(*domain.start()..=*domain.end()).sample(rng);
+    s[idx] = domain_value;
+  }
+}
 
 #[cfg(all(feature = "with-ndsparse", feature = "with-rand"))]
 impl<DATA, DS, IS, OS, const D: usize, const N: usize> Domain<ndsparse::csl::Csl<DS, IS, OS, D>>
@@ -142,7 +130,7 @@ where
     match nnz {
       0 => {}
       1 => iter.for_each(|dim| *dim = 1),
-      _ => iter.for_each(|dim| *dim = rng.gen_range(1, nnz)),
+      _ => iter.for_each(|dim| *dim = rng.gen_range(1..nnz)),
     }
     ndsparse::csl::Csl::new_controlled_random_rand(dims, nnz, rng, |g, _| g.gen())
       .map_err(crate::Error::NdsparseError)

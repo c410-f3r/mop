@@ -1,5 +1,5 @@
 [dependencies]
-arrayvec = { default-features = false, optional = true, version = "0.5" }
+arrayvec = { default-features = false, optional = true, version = "0.7" }
 getrandom = { default-features = false, features = ["wasm-bindgen"], optional = true, version = "0.2" }
 js-sys = { default-features = false, optional = true, version = "0.3" }
 mop = { features = ["with-mop-solvers"], path = "../mop" }
@@ -23,5 +23,3 @@ edition = "2018"
 name = "mop-bindings"
 publish = false
 version = "0.0.0"
-
-[workspace]

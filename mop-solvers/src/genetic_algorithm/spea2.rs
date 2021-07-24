@@ -111,7 +111,7 @@ where
     self.arch_rslts.clear();
     let (aup, ar) = (&self.arch_u_popul, &mut self.arch_rslts);
     for (r, _) in aup.rslts.iter().zip(&aup.props).filter(|&(_, prop)| prop.fitness < OR::one()) {
-      ar.constructor().or_ref(r);
+      let _ = ar.constructor().or_ref(r);
     }
   }
 
@@ -129,7 +129,7 @@ where
           .take(self.archive_size - ar.rslts_num())
         {
           let r = aup.rslts.get(prop.result_idx)?;
-          ar.constructor().or_ref(r);
+          let _ = ar.constructor().or_ref(r);
         }
       }
     }
@@ -157,7 +157,7 @@ where
     self.intermediary_arch_rslts.clear();
     for archive_idx in self.estr.iter().map(|estr| estr.archive_idx) {
       let r = ar.get(archive_idx)?;
-      self.intermediary_arch_rslts.constructor().or_ref(r);
+      let _ = self.intermediary_arch_rslts.constructor().or_ref(r);
     }
     swap(&mut self.intermediary_arch_rslts, ar);
     Some(())
@@ -165,8 +165,8 @@ where
 
   fn fill_arch_u_popul(&mut self, p: &Mp<D, ORS, OS, SS>) {
     self.arch_u_popul.rslts.clear();
-    self.arch_u_popul.rslts.constructor().ors_ref(self.arch_rslts.as_ref());
-    self.arch_u_popul.rslts.constructor().ors_ref(p.rslts().as_ref());
+    let _ = self.arch_u_popul.rslts.constructor().ors_ref(self.arch_rslts.as_ref());
+    let _ = self.arch_u_popul.rslts.constructor().ors_ref(p.rslts().as_ref());
     self.arch_u_popul.props.clear();
     self.arch_u_popul.props.extend(
       (0..self.arch_u_popul.rslts.rslts_num()).map(|idx| Properties {
@@ -188,7 +188,7 @@ where
       }
       k_buffer.push(OR::one());
       for sec_ind in rslts.iter().skip(idx + 1) {
-        k_buffer.push(distance(sec_ind.obj_rslts())?)
+        k_buffer.push(distance(sec_ind.obj_rslts())?);
       }
       sort_partial_by(k_buffer, |a, b| a.partial_cmp(b));
       let density = OR::one() / (k_buffer[self.k] + self.two);
@@ -372,7 +372,7 @@ mod tests {
     assert!(is_equal(spea2.arch_u_popul.props[2].fitness, 5.0));
     assert!(is_equal(spea2.arch_u_popul.props[3].fitness, 6.0));
 
-    spea2.set_density();
+    spea2.set_density().unwrap();
 
     assert!(is_equal(spea2.arch_u_popul.props[0].fitness, 0.130_601_937_481_87));
     assert!(is_equal(spea2.arch_u_popul.props[1].fitness, 3.166_666_666_666_66));
@@ -384,7 +384,7 @@ mod tests {
     assert_eq!(spea2.arch_rslts.rslts_num(), 1);
     assert_eq!(spea2.arch_rslts.get(0), problem.rslts().get(0));
 
-    spea2.manage_environment_selection_diff();
+    spea2.manage_environment_selection_diff().unwrap();
 
     assert_eq!(spea2.arch_rslts.get(0), problem.rslts().get(0));
     assert_eq!(spea2.arch_rslts.get(1), problem.rslts().get(1));

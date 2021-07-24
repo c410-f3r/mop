@@ -177,14 +177,15 @@ where
     self.reset_aux_params();
     solver.init(problem);
     if let Some(oh) = self.opt_hooks_opt.as_mut() {
-      oh.init()
+      oh.init();
     }
     loop {
       if let Some(oh) = self.opt_hooks_opt.as_mut() {
-        oh.before_iter(problem)
+        oh.before_iter(problem);
       }
       solver.before_iter(problem).await?;
-      self.manage_best_result(problem);
+      // Ignore if best result couldn't be found
+      let _ = self.manage_best_result(problem);
       let should_stop_partial = self.iterations_number_has_extrapolated()
         || mop_blocks::Error::opt_rslt(self.objs_are_not_converging(problem))?
         || mop_blocks::Error::opt_rslt(self.were_all_specified_goals_achieved(problem))?;
@@ -196,13 +197,13 @@ where
         break;
       }
       if let Some(oh) = self.opt_hooks_opt.as_mut() {
-        oh.after_iter(problem)
+        oh.after_iter(problem);
       }
       solver.after_iter(problem).await?;
     }
     solver.finished(problem);
     if let Some(oh) = self.opt_hooks_opt.as_mut() {
-      oh.finished()
+      oh.finished();
     }
     Ok(self)
   }

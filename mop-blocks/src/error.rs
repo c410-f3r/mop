@@ -3,6 +3,7 @@ use core::fmt;
 use num_traits::{NumCast, ToPrimitive};
 
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub enum Error {
   /// It wasn't possible to cast a value
   BadCast,
@@ -13,7 +14,7 @@ pub enum Error {
   /// Insufficient capacity
   InsufficientCapacity,
   /// GpDefinitionsBuilder error
-  GDBE(GpDefinitionsBuilderError),
+  Gdbe(GpDefinitionsBuilderError),
   /// Error from external ndsparse dependency
   #[cfg(feature = "with-ndsparse")]
   NdsparseError(ndsparse::Error),
@@ -58,7 +59,7 @@ impl From<core::convert::Infallible> for Error {
 impl From<GpDefinitionsBuilderError> for Error {
   #[inline]
   fn from(from: GpDefinitionsBuilderError) -> Self {
-    Self::GDBE(from)
+    Self::Gdbe(from)
   }
 }
 
@@ -88,7 +89,7 @@ impl fmt::Display for Error {
       Self::DrMatrixError(ref x) => write!(f, "DrMatrixError({})", x),
       Self::EmptyElement => write!(f, "EmptyElement"),
       Self::InsufficientCapacity => write!(f, "Insufficient capacity"),
-      Self::GDBE(ref x) => write!(f, "GDBE({})", x),
+      Self::Gdbe(ref x) => write!(f, "GDBE({})", x),
       #[cfg(feature = "with-ndsparse")]
       Self::NdsparseError(ref x) => write!(f, "NdsparseError({})", x),
       Self::Other(ref x) => write!(f, "Other({})", x),

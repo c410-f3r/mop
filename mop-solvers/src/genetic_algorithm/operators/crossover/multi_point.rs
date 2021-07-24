@@ -2,7 +2,7 @@ use crate::{genetic_algorithm::operators::crossover::Crossover, utils::two_asc_r
 use cl_traits::{Clear, Push, Storage, Truncate};
 use core::ops::Div;
 use mop_blocks::{gp::MpOrs, Pct, Solution};
-use rand::{rngs::StdRng, SeedableRng};
+use rand::rngs::OsRng;
 
 #[derive(Clone, Debug)]
 pub struct MultiPoint {
@@ -50,13 +50,13 @@ where
     filling_num: usize,
   ) -> Result<(), Self::Error> {
     destination.clear();
-    let mut rng = StdRng::from_entropy();
+    let mut rng = OsRng;
     while destination.rslts_num() < filling_num {
       let [a, b] = two_asc_rnd_num(&mut rng, 0..source.rslts_num());
       let first = mop_blocks::Error::opt_rslt(source.get(a))?;
       let second = mop_blocks::Error::opt_rslt(source.get(b))?;
-      destination.constructor().or_ref(first);
-      destination.constructor().or_ref(second);
+      let _ = destination.constructor().or_ref(first);
+      let _ = destination.constructor().or_ref(second);
       if self.probability.is_in_rnd_pbty(&mut rng) {
         let a = destination.rslts_num() - 2;
         let b = destination.rslts_num() - 1;
@@ -79,8 +79,8 @@ mod tests {
     let mut problem = dummy_mp();
     let mut destination = problem.rslts_mut().clone();
     let source = problem.rslts_mut();
-    source.constructor().or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 3.0]);
-    source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [1.0, 2.0]);
+    let _ = source.constructor().or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 3.0]);
+    let _ = source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [1.0, 2.0]);
     let mp = MultiPoint::new(1, Pct::from_percent(100));
     mp.crossover(source, &mut destination, 2).unwrap();
     assert_eq!(destination.get(0).unwrap(), MpOrRef::new(&[], &[4.0, 8.0], &[], &[1.0, 3.0]));

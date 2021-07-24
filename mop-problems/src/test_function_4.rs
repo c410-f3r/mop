@@ -49,10 +49,12 @@ impl Problem<Domain, Solution, 3, 2> for TestFunction4 {
   const GRAPH_RANGES: [Range<f64>; 2] = [-3.0..13.0, -8.0..-4.0];
   const NAME: &'static str = "Test Function 4";
 
+  #[inline]
   fn domain() -> Domain {
     [-7.0..=4.0, -7.0..=4.0]
   }
 
+  #[inline]
   fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 3] {
     [
       &(g1 as fn(&Solution) -> usize),
@@ -61,6 +63,7 @@ impl Problem<Domain, Solution, 3, 2> for TestFunction4 {
     ]
   }
 
+  #[inline]
   fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
     [
       &(ObjDirection::Min, f1 as fn(&Solution) -> f64),

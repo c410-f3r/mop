@@ -2,6 +2,7 @@ use core::fmt;
 
 /// Errors related to the DrMatrix module.
 #[derive(Debug, PartialEq)]
+#[non_exhaustive]
 pub enum DrMatrixError {
   /// The length of `data` isn't equal the number of rows times the number of columns.
   ///

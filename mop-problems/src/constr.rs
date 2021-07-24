@@ -43,14 +43,17 @@ impl Problem<Domain, Solution, 2, 2> for Constr {
   const GRAPH_RANGES: [Range<f64>; 2] = [0.0..2.0, 0.0..12.0];
   const NAME: &'static str = "Constr";
 
+  #[inline]
   fn domain() -> Domain {
     [0.1..=1.0, 0.0..=5.0]
   }
 
+  #[inline]
   fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 2] {
     [&(g1 as fn(&Solution) -> usize), &(g2 as fn(&Solution) -> usize)]
   }
 
+  #[inline]
   fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
     [
       &(ObjDirection::Min, f1 as fn(&Solution) -> f64),

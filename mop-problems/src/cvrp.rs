@@ -4,8 +4,13 @@ use crate::Problem;
 use core::ops::{Range, RangeInclusive};
 use mop::blocks::{Cstr, Obj, ObjDirection};
 
-pub type CslArrayVec<DTA, IA, OA, const D: usize> =
-  ndsparse::csl::Csl<arrayvec::ArrayVec<DTA>, arrayvec::ArrayVec<IA>, arrayvec::ArrayVec<OA>, D>;
+pub type CslArrayVec<DATA, const D: usize, const NNZ: usize, const OFFS: usize> =
+  ndsparse::csl::Csl<
+    arrayvec::ArrayVec<DATA, NNZ>,
+    arrayvec::ArrayVec<usize, NNZ>,
+    arrayvec::ArrayVec<usize, OFFS>,
+    D,
+  >;
 
 const DATA: Data = Data {
   capacity: 100,
@@ -48,7 +53,7 @@ const DATA: Data = Data {
 
 type Domain = [RangeInclusive<usize>; 30];
 // A 2-D sparse structure or a sparse matrix or a graph storage
-type Solution = CslArrayVec<[usize; 30], [usize; 30], [usize; 31], 2>;
+type Solution = CslArrayVec<usize, 2, 30, 31>;
 
 #[derive(Debug)]
 pub struct Data {
@@ -94,6 +99,7 @@ impl RouteCapacityMustNotExceedTruckCapacity {
 }
 
 impl Cstr<Solution> for RouteCapacityMustNotExceedTruckCapacity {
+  #[inline]
   fn reasons(&self, solution: &Solution) -> String {
     let mut reasons = String::new();
     self.func(solution, |route_idx, surplus| {
@@ -101,11 +107,12 @@ impl Cstr<Solution> for RouteCapacityMustNotExceedTruckCapacity {
         "Route #{} extrapolates truck capacity by {}\n",
         route_idx + 1,
         surplus
-      ))
+      ));
     });
     reasons
   }
 
+  #[inline]
   fn violations(&self, solution: &Solution) -> usize {
     let mut ret = 0;
     self.func(solution, |_, _| ret += 1);
@@ -125,10 +132,12 @@ impl MinCost {
 }
 
 impl Obj<f64, Solution> for MinCost {
+  #[inline]
   fn obj_direction(&self) -> ObjDirection {
     ObjDirection::Min
   }
 
+  #[inline]
   fn result(&self, solution: &Solution) -> f64 {
     let mut cost = 0.0;
     #[allow(
@@ -159,6 +168,7 @@ impl Problem<Domain, Solution, 1, 1> for Cvrp {
   const GRAPH_RANGES: [Range<f64>; 2] = [-3.0..13.0, -8.0..-4.0];
   const NAME: &'static str = "CVRP";
 
+  #[inline]
   fn domain() -> Domain {
     [
       45..=45,
@@ -194,10 +204,12 @@ impl Problem<Domain, Solution, 1, 1> for Cvrp {
     ]
   }
 
+  #[inline]
   fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 1] {
     [&RouteCapacityMustNotExceedTruckCapacity { data: &DATA }]
   }
 
+  #[inline]
   fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 1] {
     [&MinCost { data: &DATA }]
   }

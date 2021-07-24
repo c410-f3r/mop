@@ -8,10 +8,10 @@ rt='rust-tools --template you-rust'
 
 export CARGO_TARGET_DIR="$($rt target-dir)"
 export RUST_BACKTRACE=1
-export RUSTFLAGS="$($rt rust-flags '' -Dmissing_docs)"
+export RUSTFLAGS="$($rt rust-flags '' -Dmissing_docs,-Dunused_crate_dependencies,-Dvariant_size_differences)"
 
 $rt rustfmt
-$rt clippy -Aclippy::float_arithmetic,-Aclippy::indexing_slicing,-Aclippy::integer_arithmetic,-Aclippy::let_underscore_must_use,-Aclippy::panic,-Aclippy::type_complexity
+$rt clippy -Aclippy::float_arithmetic,-Aclippy::indexing_slicing,-Aclippy::integer_arithmetic,-Aclippy::let_underscore_must_use,-Aclippy::panic,-Aclippy::type_complexity,-Aclippy::default_numeric_fallback
 
 $rt test-generic mop-bindings
 $rt test-with-features mop-bindings with-futures

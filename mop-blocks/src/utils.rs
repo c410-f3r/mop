@@ -64,7 +64,7 @@ pub fn dummy_mp() -> DummyMpTy {
 #[inline]
 pub fn dummy_mp_with_solutions() -> DummyMpTy {
   let mut problem = dummy_mp();
-  problem
+  let _ = problem
     .rslts_mut()
     .constructor()
     .or_os_iter([4.0, 8.0].iter().cloned(), [2.0, 2.0])
@@ -91,7 +91,7 @@ pub fn dummy_mph() -> DummyMphTy {
 #[inline]
 pub fn dummy_mph_with_solutions() -> DummyMphTy {
   let mut problem = dummy_mph();
-  problem
+  let _ = problem
     .rslts_mut()
     .constructor()
     .or_hcos_iter([1, 2].iter().cloned(), [4.0, 8.0].iter().cloned(), [2.0, 2.0])

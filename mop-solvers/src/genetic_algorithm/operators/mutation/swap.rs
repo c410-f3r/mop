@@ -1,7 +1,7 @@
 use crate::{genetic_algorithm::operators::mutation::Mutation, utils::two_dist_rnd_num};
 use cl_traits::Storage;
 use mop_blocks::{gp::MpOrs, Pct, Solution};
-use rand::{rngs::StdRng, SeedableRng};
+use rand::rngs::OsRng;
 
 #[derive(Clone, Debug)]
 pub struct Swap {
@@ -26,7 +26,7 @@ where
 
   #[inline]
   fn mutation(&self, _: &M, source: &mut MpOrs<ORS, SS>) -> Result<(), Self::Error> {
-    let mut rng = StdRng::from_entropy();
+    let mut rng = OsRng;
     for mut individual in source.iter_mut() {
       let len = individual.solution_mut().len();
       if self.probability.is_in_rnd_pbty(&mut rng) {
@@ -49,7 +49,7 @@ mod tests {
   fn swap() {
     let mut problem = dummy_mp();
     let (defs, source) = problem.parts_mut();
-    source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [10.0, 20.0]);
+    let _ = source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [10.0, 20.0]);
     let rda = Swap::new(1, Pct::from_percent(100));
     rda.mutation(defs.domain(), source).unwrap();
     assert_eq!(*source.get(0).unwrap().solution().get(0).unwrap() as i32, 20);

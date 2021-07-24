@@ -1,7 +1,7 @@
 use crate::genetic_algorithm::operators::mutation::Mutation;
 use cl_traits::Storage;
 use mop_blocks::{gp::MpOrs, Domain, Pct, Solution};
-use rand::{rngs::StdRng, Rng, SeedableRng};
+use rand::{rngs::OsRng, Rng};
 
 #[derive(Clone, Debug)]
 pub struct RandomDomainAssignments {
@@ -27,11 +27,11 @@ where
 
   #[inline]
   fn mutation(&self, sd: &D, source: &mut MpOrs<ORS, SS>) -> Result<(), Self::Error> {
-    let mut rng = StdRng::from_entropy();
+    let mut rng = OsRng;
     for mut result in source.iter_mut() {
       if self.probability.is_in_rnd_pbty(&mut rng) {
         for _ in 0..self.times {
-          let var_idx = rng.gen_range(0, result.solution().len());
+          let var_idx = rng.gen_range(0..result.solution().len());
           sd.set_rnd_domain(result.solution_mut(), var_idx, &mut rng);
         }
       }
@@ -49,7 +49,7 @@ mod tests {
   fn random_domain_assignment() {
     let mut problem = dummy_mp();
     let (defs, source) = problem.parts_mut();
-    source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [1.0, 2.0]);
+    let _ = source.constructor().or_os_iter([2.0, 4.0].iter().cloned(), [1.0, 2.0]);
     let rda = RandomDomainAssignments::new(2, Pct::from_percent(100));
     rda.mutation(defs.domain(), source).unwrap();
     let solution = *source.get(0).unwrap().solution();

@@ -13,7 +13,7 @@ use alloc::vec::Vec;
 use arrayvec::ArrayVec;
 use cl_traits::{Push, Storage, WithCapacity};
 #[cfg(feature = "with-rand")]
-use rand::{rngs::StdRng, SeedableRng};
+use rand::rngs::OsRng;
 pub use {
   gp_definitions::*,
   gp_definitions_builder::*,
@@ -25,11 +25,11 @@ pub use {
 };
 
 /// Marker for unconstrained problems
-pub type NoCstr = ArrayVec<[(); 0]>;
+pub type NoCstr = ArrayVec<(), 0>;
 /// Marker result for unconstrained problems
-pub type NoCstrRslts = ArrayVec<[(); 0]>;
+pub type NoCstrRslts = ArrayVec<(), 0>;
 /// Marker for single-objective problems
-pub type OneObj<O> = ArrayVec<[O; 1]>;
+pub type OneObj<O> = ArrayVec<O, 1>;
 
 // MP (Multi-objective Problem)
 pub type Mp<D, ORS, OS, SS> = Gp<D, NoCstrRslts, NoCstr, ORS, OS, NoCstrRslts, NoCstr, SS>;
@@ -130,10 +130,10 @@ where
     OR: Clone + Default,
     SCR: Clone + Default,
   {
-    let mut rng = StdRng::from_entropy();
+    let mut rng = OsRng;
     let mut ors = GpOrs::with_capacity(&defs, rslts_num);
     let fun = (0..rslts_num).map(|_| defs.domain().new_random_solution(&mut rng));
-    ors.constructor().ors_s_iter(fun);
+    let _ = ors.constructor().ors_s_iter(fun);
     Ok(Self { defs, ors })
   }
 
@@ -150,7 +150,7 @@ where
     SCR: Clone + Default,
   {
     let mut ors = GpOrs::with_capacity(&defs, rslts_num);
-    ors.constructor().ors_s_iter((0..rslts_num).map(|idx| Ok::<_, ()>(f(idx))));
+    let _ = ors.constructor().ors_s_iter((0..rslts_num).map(|idx| Ok::<_, ()>(f(idx))));
     Self { defs, ors }
   }
 }

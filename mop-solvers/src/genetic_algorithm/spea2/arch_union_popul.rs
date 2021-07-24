@@ -2,14 +2,14 @@ use alloc::vec::Vec;
 use mop_blocks::gp::MpOrs;
 
 #[derive(Clone, Debug)]
-pub struct ArchUnionPopul<OR, ORS, SS> {
-  pub props: Vec<Properties<OR>>,
-  pub rslts: MpOrs<ORS, SS>,
+pub(crate) struct ArchUnionPopul<OR, ORS, SS> {
+  pub(crate) props: Vec<Properties<OR>>,
+  pub(crate) rslts: MpOrs<ORS, SS>,
 }
 
 #[derive(Clone, Debug)]
-pub struct Properties<T> {
-  pub fitness: T,
-  pub result_idx: usize,
-  pub strength: T,
+pub(crate) struct Properties<T> {
+  pub(crate) fitness: T,
+  pub(crate) result_idx: usize,
+  pub(crate) strength: T,
 }

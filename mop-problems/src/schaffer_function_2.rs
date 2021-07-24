@@ -31,14 +31,17 @@ impl Problem<Domain, Solution, 0, 2> for SchafferFunction2 {
   const GRAPH_RANGES: [Range<f64>; 2] = [-2.0..10.0, 0.0..30.0];
   const NAME: &'static str = "Schaffer function 2";
 
+  #[inline]
   fn domain() -> Domain {
     [-5.0..=10.0]
   }
 
+  #[inline]
   fn hcs<'a>() -> [&'a (dyn Cstr<Solution> + Send + Sync); 0] {
     []
   }
 
+  #[inline]
   fn objs<'a>() -> [&'a (dyn Obj<f64, Solution> + Send + Sync); 2] {
     [
       &(ObjDirection::Min, f1 as fn(&Solution) -> f64),

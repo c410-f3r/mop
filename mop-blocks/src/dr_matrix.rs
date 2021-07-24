@@ -26,8 +26,8 @@ pub type Result<T> = core::result::Result<T, DrMatrixError>;
 #[cfg_attr(feature = "with-serde", derive(serde::Deserialize, serde::Serialize))]
 #[derive(Clone, Copy, Debug, Default, Hash, PartialEq, PartialOrd)]
 pub struct DrMatrix<DS> {
-  pub(crate) data: DS,
   pub(crate) cols: usize,
+  pub(crate) data: DS,
   pub(crate) rows: usize,
 }
 
@@ -109,7 +109,7 @@ impl<DS> DrMatrix<DS> {
     if rows >= self.rows {
       return;
     }
-    self.data.truncate(self.cols.saturating_mul(rows));
+    let _ = self.data.truncate(self.cols.saturating_mul(rows));
     self.rows = rows;
   }
 
@@ -213,7 +213,7 @@ where
   /// ```
   #[inline]
   pub fn data(&self) -> &[DATA] {
-    &self.data.as_ref()
+    self.data.as_ref()
   }
 
   /// If `row_idx` is out of bounds, returns `None`. Otherwise, returns a slice
@@ -263,7 +263,7 @@ where
   /// ```
   #[inline]
   pub fn row_iter(&self) -> DrMatrixRowIter<'_, DATA> {
-    DrMatrixRowIter::new([self.rows, self.cols], self.data().as_ref())
+    DrMatrixRowIter::new([self.rows, self.cols], self.data())
   }
 
   /// Copies the internal data into a heap allocated `Vec` storage and

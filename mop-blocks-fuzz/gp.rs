@@ -1,13 +1,16 @@
 #![no_main]
 
-use libfuzzer_sys::fuzz_target;
-use mop_blocks::{gp::{MpVec, MpDefinitionsBuilderVec}, ObjDirection};
 use core::ops::RangeInclusive;
+use libfuzzer_sys::fuzz_target;
+use mop_blocks::{
+  gp::{MpDefinitionsBuilderVec, MpVec},
+  ObjDirection,
+};
 
 #[derive(Debug, arbitrary::Arbitrary)]
 struct Data {
   domain: [RangeInclusive<f64>; 2],
-  rslts_num: usize
+  rslts_num: usize,
 }
 
 fn obj(_: &[f64; 2]) -> f64 {
@@ -22,10 +25,9 @@ fuzz_target!(|data: Data| {
     .build();
 
   let mdb = if let Ok(r) = mdb_rslt {
-      r
-  }
-  else {
-      return;
+    r
+  } else {
+    return;
   };
 
   let _problem = MpVec::with_random_solutions(mdb, data.rslts_num);

@@ -11,12 +11,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
-          toolchain: nightly
+          toolchain: nightly-2023-10-15
           profile: minimal
           override: true
 
@@ -25,20 +25,20 @@ jobs:
           crate: cargo-fuzz
           use-tool-cache: true
 
-      - run: ./scripts/fuzz.sh
+      - run: .scripts/fuzz.sh
 
   tests:
     name: Tests
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install Rust toolchain
         uses: actions-rs/toolchain@v1
         with:
           components: clippy, rustfmt
-          toolchain: stable
+          toolchain: nightly-2023-10-15
           profile: minimal
           override: true
 
@@ -57,4 +57,4 @@ jobs:
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Tests
-        run: ./scripts/tests.sh
+        run: .scripts/tests.sh

@@ -1,2 +1,4 @@
 *.rs.bk
+artifacts
+corpus
 target

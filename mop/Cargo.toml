@@ -1,22 +1,30 @@
 [dependencies]
-mop-blocks = { default-features = false, features = ["with-rand"], path = "../mop-blocks", version = "0.5.0" }
-mop-facades = { default-features = false, path = "../mop-facades", version = "0.5" }
-mop-solvers = { default-features = false, optional = true, path = "../mop-solvers", version = "0.5.0" }
+arrayvec = { default-features = false, version = "0.7" }
+cl-aux = { default-features = false, features = ["alloc", "arrayvec"], version = "3.0" }
+js-sys = { default-features = false, optional = true, version = "0.3" }
+ndstruct = { default-features = false, features = ["rand"], optional = true, version = "2.0" }
+num-integer = { default-features = false, optional = true, version = "0.1" }
+num-traits = { default-features = false, features = ["libm"], version = "0.2" }
+rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.8" }
+rayon = { default-features = false, optional = true, version = "1.0" }
+serde = { default-features = false, features = ["derive"], optional = true, version = "1.0" }
+wasm-bindgen = { default-features = false, features = ["std", "spans"], optional = true, version = "0.2" }
+
+[dev-dependencies]
+wasm-bindgen-test = { default-features = false, version = "0.3" }
 
 [features]
 default = []
-std = ["mop-blocks/std", "mop-facades/std", "mop-solvers/std"]
-with-futures = ["mop-blocks/with-futures"]
-with-mop-solvers = ["mop-solvers"]
-with-ndsparse = ["mop-blocks/with-ndsparse"]
-with-serde = ["mop-blocks/with-serde"]
+rand = ["ndstruct/rand", "dep:rand"]
+solvers = ["dep:num-integer", "rand"]
+std = ["cl-aux/std"]
+wasm-bindgen = ["dep:js-sys", "solvers", "dep:wasm-bindgen"]
 
 [package]
 authors = ["Caio Fernandes <c410.f3r@gmail.com>"]
-categories = ["algorithms", "concurrency"]
-description = "Flexible and modular single or multi-objective framework for contiguous and discrete problems"
-edition = "2018"
-keywords = ["solver", "performance", "metaheuristic", "optimization"]
+description = "Foundation blocks for MOP"
+edition = "2021"
+keywords = ["mop"]
 license = "Apache-2.0"
 name = "mop"
 readme = "README.md"

@@ -25,7 +25,7 @@ jobs:
           crate: cargo-fuzz
           use-tool-cache: true
 
-      - run: ./scripts/fuzz.sh
+      - run: .scripts/fuzz.sh
 
   tests:
     name: Tests
@@ -38,7 +38,7 @@ jobs:
         uses: actions-rs/toolchain@v1
         with:
           components: clippy, rustfmt
-          toolchain: stable
+          toolchain: nightly-2022-01-28
           profile: minimal
           override: true
 
@@ -57,4 +57,4 @@ jobs:
           key: ${{ runner.os }}-cargo-build-target-${{ hashFiles('**/Cargo.lock') }}
 
       - name: Tests
-        run: ./scripts/tests.sh
+        run: .scripts/tests.sh

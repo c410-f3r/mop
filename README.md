@@ -8,7 +8,7 @@
 
 MOP is a flexible and modular framework for different NP-Problems with different solvers. Through its default pipeline you can define your own custom problem and choose any supported solver combination.
 
-See [this blog post](https://c410-f3r.github.io/posts/a-flexible-and-modular-framework-to-solve-np-problems) for more details or have fun using [the online playground](https://c410-f3r.github.io/mop-playground/).
+See [this blog post](https://c410-f3r.github.io/thoughts/a-flexible-and-modular-framework-to-solve-np-problems/) for more details or have fun using [the online playground](https://c410-f3r.github.io/mop-playground/).
 
 ## Example
 
@@ -78,8 +78,7 @@ fn print_result(result: MphOrRef<f64, Solution>) {
   println!();
 }
 
-#[tokio::main] // Or any other runtime
-async fn main() -> Result<(), mop::blocks::Error> {
+fn main() -> Result<(), mop::blocks::Error> {
   // Problem definitions and results
   let mut mph = MphVec::with_capacity(
     MphDefinitionsBuilder::default()
@@ -121,10 +120,10 @@ async fn main() -> Result<(), mop::blocks::Error> {
     .set_quality_comparator(ObjsAvg)
     .set_stagnation(Pct::from_percent(2), 10)?
     .solve_problem_with(&mut mp_ref, spea2)
-    .await?;
+    ?;
 
   // Transfers all solutions and objectives results of `mp` to `mph`.
-  MphMpMph::transfer(&mph_defs, &mut mph_rslts, &mp_ref).await?;
+  MphMpMph::transfer(&mph_defs, &mut mph_rslts, &mp_ref)?;
 
   for (result_idx, result) in mph_rslts.iter().enumerate() {
     println!("***** Result #{} *****", result_idx + 1);
@@ -159,6 +158,6 @@ async fn main() -> Result<(), mop::blocks::Error> {
 
 - `std`
 - Bindings (wasm-bindgen)
-- Concurrent evaluation (futures)
+- Parallel evaluation (rayon)
 - Deserialization/Serialization (serde)
-- Multidimensional storage (ndsparse)
+- Multidimensional storage (ndstruct)

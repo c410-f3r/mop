@@ -1,0 +1,25 @@
+[[bin]]
+name = "dr_matrix"
+path = "dr_matrix.rs"
+required-features = ["libfuzzer-sys/link_libfuzzer"]
+
+[[bin]]
+name = "gp"
+path = "gp.rs"
+required-features = ["libfuzzer-sys/link_libfuzzer"]
+
+[dependencies]
+arbitrary = { default-features = false, features = ["derive"], version = "1.0" }
+libfuzzer-sys = { default-features = false, version = "0.4" }
+mop = { default-features = false, features = ["rand"], path = "../mop" }
+
+[package]
+authors = ["Automatically generated"]
+edition = "2021"
+license = "Apache-2.0"
+name = "mop-fuzz"
+publish = false
+version = "0.0.0"
+
+[package.metadata]
+cargo-fuzz = true

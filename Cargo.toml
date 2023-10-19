@@ -11,13 +11,7 @@ rpath = false
 
 [workspace]
 members = [
-    "mop-bindings",
-    "mop-blocks",
-    "mop-blocks-fuzz",
-    "mop-common",
-    "mop-facades",
-    "mop-problems",
-    "mop-solvers",
     "mop",
+    "mop-fuzz",
 ]
 resolver = "2"

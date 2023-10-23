@@ -2,7 +2,7 @@
 arrayvec = { default-features = false, version = "0.7" }
 cl-aux = { default-features = false, features = ["alloc", "arrayvec"], version = "3.0" }
 js-sys = { default-features = false, optional = true, version = "0.3" }
-ndstruct = { default-features = false, features = ["rand"], optional = true, version = "2.0" }
+ndstruct = { default-features = false, features = ["rand"], optional = true, version = "2.2" }
 num-integer = { default-features = false, optional = true, version = "0.1" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.8" }

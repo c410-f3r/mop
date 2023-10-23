@@ -52,6 +52,14 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "11ba041ec000b10124b475f1885608b4287e4fed021b9bb374890ffe3ece566d"
 dependencies = [
  "arrayvec",
+]
+
+[[package]]
+name = "cl-aux"
+version = "4.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "386cc07fc82b5fea28267e971a2f7544ab381e7016ce25d340a6ef32e6e98327"
+dependencies = [
  "serde",
 ]
 
@@ -187,7 +195,7 @@ name = "mop"
 version = "0.5.0"
 dependencies = [
  "arrayvec",
- "cl-aux",
+ "cl-aux 3.0.0",
  "js-sys",
  "ndstruct",
  "num-integer",
@@ -210,11 +218,11 @@ dependencies = [
 
 [[package]]
 name = "ndstruct"
-version = "2.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59f4071a518304b498c6b92c7441b25c97828da71a19ffec4f3611b57a9bd913"
+checksum = "1dd79fc9ad054261520731834202d24a5cc01f3f314053331c97a9cda1619b07"
 dependencies = [
- "cl-aux",
+ "cl-aux 4.2.0",
  "rand",
 ]
 

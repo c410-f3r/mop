@@ -1,4 +1,4 @@
-//! Binh; A multiobjective evolutionary algorithm. The study cases
+//! Binh; A multi-objective evolutionary algorithm. The study cases
 
 mod common;
 

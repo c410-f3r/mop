@@ -1,4 +1,4 @@
-//! Binh  and  U.  Korn; MOBES:  A  multiobjective  evolution  strategy for constrained optimization problems
+//! Binh and U. Korn; MOBES: A multi-objective evolution strategy for constrained optimization problems
 
 mod common;
 

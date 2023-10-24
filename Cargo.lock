@@ -47,12 +47,13 @@ checksum = "baf1de4339761588bc0619e3cbc0120ee582ebb74b53b4efbf79117bd2da40fd"
 
 [[package]]
 name = "cl-aux"
-version = "3.0.0"
+version = "4.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "11ba041ec000b10124b475f1885608b4287e4fed021b9bb374890ffe3ece566d"
+checksum = "7f157ead6471a99b758bcf322b38e78a81c9b65434b9ba9afe79e60979584af3"
 dependencies = [
  "arrayvec",
  "serde",
+ "tinyvec",
 ]
 
 [[package]]
@@ -210,9 +211,9 @@ dependencies = [
 
 [[package]]
 name = "ndstruct"
-version = "2.1.0"
+version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "59f4071a518304b498c6b92c7441b25c97828da71a19ffec4f3611b57a9bd913"
+checksum = "1dd79fc9ad054261520731834202d24a5cc01f3f314053331c97a9cda1619b07"
 dependencies = [
  "cl-aux",
  "rand",
@@ -342,6 +343,21 @@ dependencies = [
  "quote",
  "unicode-ident",
 ]
+
+[[package]]
+name = "tinyvec"
+version = "1.6.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "87cc5ceb3875bb20c2890005a4e226a4651264a5c75edb2421b52861a0a0cb50"
+dependencies = [
+ "tinyvec_macros",
+]
+
+[[package]]
+name = "tinyvec_macros"
+version = "0.1.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "unicode-ident"

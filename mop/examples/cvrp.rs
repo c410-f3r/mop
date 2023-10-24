@@ -1,9 +1,9 @@
+//! http://vrp.galgos.inf.puc-rio.br/index.php/en/plotted-instances?data=B-n31-k5
+
 mod common;
 
 #[cfg(feature = "ndstruct")]
 mod module {
-  //! http://vrp.galgos.inf.puc-rio.br/index.php/en/plotted-instances?data=B-n31-k5
-
   use crate::common::Problem;
   use core::ops::{Range, RangeInclusive};
   use mop::{Cstr, Obj, ObjDirection};

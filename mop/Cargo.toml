@@ -1,6 +1,6 @@
 [dependencies]
 arrayvec = { default-features = false, version = "0.7" }
-cl-aux = { default-features = false, features = ["alloc", "arrayvec"], version = "3.0" }
+cl-aux = { default-features = false, features = ["alloc", "arrayvec"], version = "4.4" }
 js-sys = { default-features = false, optional = true, version = "0.3" }
 ndstruct = { default-features = false, features = ["rand"], optional = true, version = "2.0" }
 num-integer = { default-features = false, optional = true, version = "0.1" }

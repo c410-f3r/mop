@@ -6,7 +6,7 @@ ndstruct = { default-features = false, features = ["rand"], optional = true, ver
 num-integer = { default-features = false, optional = true, version = "0.1" }
 num-traits = { default-features = false, features = ["libm"], version = "0.2" }
 rand = { default-features = false, features = ["getrandom"], optional = true, version = "0.8" }
-rayon = { default-features = false, optional = true, version = "1.9" }
+rayon = { default-features = false, optional = true, version = "1.10" }
 serde = { default-features = false, features = ["derive"], optional = true, version = "1.0" }
 wasm-bindgen = { default-features = false, features = ["std", "spans"], optional = true, version = "0.2" }
 

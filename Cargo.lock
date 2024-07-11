@@ -51,8 +51,16 @@ version = "4.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7f157ead6471a99b758bcf322b38e78a81c9b65434b9ba9afe79e60979584af3"
 dependencies = [
- "arrayvec",
  "serde",
+]
+
+[[package]]
+name = "cl-aux"
+version = "5.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "6250f1186b49cf971d8af9c1c450e6c7bdda29abb1826d4cf8f9e2d8e9c662f6"
+dependencies = [
+ "arrayvec",
  "tinyvec",
 ]
 
@@ -188,7 +196,7 @@ name = "mop"
 version = "0.5.0"
 dependencies = [
  "arrayvec",
- "cl-aux",
+ "cl-aux 5.0.0",
  "js-sys",
  "ndstruct",
  "num-integer",
@@ -215,7 +223,7 @@ version = "2.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "1dd79fc9ad054261520731834202d24a5cc01f3f314053331c97a9cda1619b07"
 dependencies = [
- "cl-aux",
+ "cl-aux 4.4.0",
  "rand",
 ]
 
